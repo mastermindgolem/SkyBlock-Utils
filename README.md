@@ -10,7 +10,7 @@ Skyblock utils currently hovers around kuudra related features. [(Table of Conte
     - [Kuudra attribute Overlay](#kuudra-overlay)
     - [Party stats overall on Monke Finder](#kuudra-stats) 
     - [Show new member stats on join!](#on-join) 
-    - [**PROFIT CALCULATOR**](PROFIT CALCULATOR) 
+    - [PROFIT CALCULATOR](PROFIT CALCULATOR)
 - Commands
     - [Main](#main) 
     - [Lbin of attribute (**armor**)](#attribute-pricing)
