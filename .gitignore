@@ -1,0 +1,45 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+.vscode
+run
+
+# Too big of files
+java_pid8500.hprof
+java_pid16928.hprof
+*hprof
+
+OUTPUT
+
+.DS_STORE
+
+golemRun/*
+
+*.log
+
+setting.json
+
+.github
+
+my.patcharchive
+my.patch
+ApiInit.java
+ApiInitializer.java
