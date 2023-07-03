@@ -44,7 +44,7 @@ public class Config extends Vigilant
 	public String priorityAttributes = "";
 
 	@Property(type = PropertyType.TEXT, name = "Excluded Attributes", description = "Attributes here will not be valued in any circumstance.", category = "General", subcategory = "Kuudra Pricing")
-	public String attributesToExclude = "";
+	public String attributesToExclude = "experience, arachno_resistance, blazing_resistance, undead_resistance, life_regeneration, ender_resistance";
 
 	@Property(type = PropertyType.SWITCH, name = "Show Player Info", description = "Gives a summary on players joining kuudra parties.", category = "General", subcategory = "Party Finder")
 	public boolean showKuudraPlayerInfo = false;

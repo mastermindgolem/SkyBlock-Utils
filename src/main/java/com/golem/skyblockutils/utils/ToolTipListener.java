@@ -33,7 +33,7 @@ public class ToolTipListener {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onItemToolTipEvent(ItemTooltipEvent event) throws IOException {
+	public void onItemToolTipEvent(ItemTooltipEvent event) {
 		ItemStack item = event.itemStack;
 		NBTTagCompound itemNbt;
 		try {
