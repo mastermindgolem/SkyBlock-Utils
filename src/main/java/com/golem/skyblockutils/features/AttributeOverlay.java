@@ -45,8 +45,7 @@ public class AttributeOverlay {
 						best_tier = nbt.getInteger(key2);
 					}
 				}
-				JsonObject comboitem;
-				comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
+				JsonObject comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
 				if (comboitem != null && comboitem.get("starting_bid").getAsInt() > Math.max(best_value, Main.configFile.min_godroll_price * 1000000)) {
 					UGraphics.disableLighting();
 					UGraphics.disableDepth();

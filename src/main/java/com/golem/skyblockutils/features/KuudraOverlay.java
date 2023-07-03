@@ -91,81 +91,81 @@ public class KuudraOverlay {
 
 					NBTTagCompound nbt = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
 					String item_id = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
-					if (item_id.equals("BURNING_KUUDRA_CORE")) {
-						int price = LowestBin.get("Burning Kuudra Core");
-						displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
-					} else if (item_id.equals("WHEEL_OF_FATE")) {
-						int price = LowestBin.get("Wheel of Fate");
-						displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
-					} else if (item_id.equals("RUNIC_STAFF")) {
-						int price = LowestBin.get("Aurora Staff");
-						displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
-					} else if (item_id.equals("HOLLOW_WAND")) {
-						int price = LowestBin.get("Hollow Wand");
-						displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
-					} else if (item_id.equals("MANDRAA") || item_id.equals("KUUDRA_MANDIBLE")) {
-						String sell_type = (configFile.book_sell_method == 0 ? "sell_summary" : "buy_summary");
-						int price = 0;
-						try {
-							price = bazaar.get("products").getAsJsonObject().get(item_id).getAsJsonObject().get(sell_type).getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
-						} catch (Exception ignored) {}
-						displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
-					} else {
-						for (String key : all_kuudra_categories) {
-							if (!item_id.contains(key)) continue;
-							if ((key.equals("HELMET") || key.equals("CHESTPLATE") || key.equals("LEGGINGS") || key.equals("BOOTS")) &&
-									!item_id.contains("AURORA") && !item_id.contains("CRIMSON") && !item_id.contains("TERROR") && !item_id.contains("FERVOR") && !item_id.contains("HOLLOW")
-							) continue;
-
-							String best_attribute = "";
-							int best_tier = 0;
-							int best_value = 0;
-							int added_value = 0;
-
-							for (String key2 : nbt.getKeySet()) {
-								if (excludeAttributes.contains(key2)) continue;
-								ArrayList<JsonObject> items = AttributePrices.get(key).get(key2);
-								if (items == null || items.size() == 0) {
-									continue;
-								}
-								items = items.stream().filter(i -> i.get(key2).getAsInt() >= configFile.min_tier).collect(Collectors.toCollection(ArrayList::new));
-								if (items.size() == 0) {
-									continue;
-								}
-								items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
-								int value = items.get(0).get("price_per_tier").getAsInt();
-								added_value += (value * Math.pow(2, nbt.getInteger(key2) - 1));
-								if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(key2) && !Objects.equals(best_attribute, "")) continue;
-								if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(key2))
-									best_value = 0;
-								if (value * Math.pow(2, nbt.getInteger(key2) - 1) > best_value) {
-									best_value = (int) (value * Math.pow(2, nbt.getInteger(key2) - 1));
-									best_attribute = key2;
-									best_tier = nbt.getInteger(key2);
-								}
-							}
-							JsonObject comboitem;
-							comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
-							if (best_tier == 0) continue;
-							if (best_tier > 5 && comboitem != null && comboitem.get("starting_bid").getAsInt() > Main.configFile.min_godroll_price * 1000000) {
-								displayStrings.add(AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + nbt.getInteger(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + nbt.getInteger(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(comboitem.get("starting_bid").getAsDouble() + added_value));
-								totalValue = totalValue.add(new BigInteger(comboitem.get("starting_bid").getAsString())).add(new BigInteger(String.valueOf(added_value)));
-							} else if (comboitem != null && comboitem.get("starting_bid").getAsInt() > Math.max(best_value, Main.configFile.min_godroll_price * 1000000)) {
-								displayStrings.add(AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(comboitem.get("starting_bid").getAsDouble()));
-								totalValue = totalValue.add(new BigInteger(comboitem.get("starting_bid").getAsString()));
-							} else if (best_value > LowestBin.get(item_id)) {
-								displayStrings.add(AttributePrice.ShortenedAttribute(best_attribute) + " " + best_tier + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(best_value));
-								totalValue = totalValue.add(new BigInteger(String.valueOf(best_value)));
-							} else {
-								displayStrings.add("LBIN " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.get(item_id)));
-								totalValue = totalValue.add(new BigInteger(String.valueOf(LowestBin.get(item_id))));
-							}
+					switch (item_id) {
+						case "BURNING_KUUDRA_CORE":
+						case "WHEEL_OF_FATE":
+						case "RUNIC_STAFF":
+						case "HOLLOW_WAND": {
+							int price = LowestBin.get(item_id);
+							displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
+							totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
+							break;
 						}
+						case "MANDRAA":
+						case "KUUDRA_MANDIBLE": {
+							String sell_type = (configFile.book_sell_method == 0 ? "sell_summary" : "buy_summary");
+							int price = 0;
+							try {
+								price = bazaar.get("products").getAsJsonObject().get(item_id).getAsJsonObject().get(sell_type).getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+							} catch (Exception ignored) {
+							}
+							displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
+							totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
+							break;
+						}
+						default:
+							for (String key : all_kuudra_categories) {
+								if (!item_id.contains(key)) continue;
+								if ((key.equals("HELMET") || key.equals("CHESTPLATE") || key.equals("LEGGINGS") || key.equals("BOOTS")) &&
+										!item_id.contains("AURORA") && !item_id.contains("CRIMSON") && !item_id.contains("TERROR") && !item_id.contains("FERVOR") && !item_id.contains("HOLLOW")
+								) continue;
+
+								String best_attribute = "";
+								int best_tier = 0;
+								int best_value = 0;
+								int added_value = 0;
+
+								for (String key2 : nbt.getKeySet()) {
+									if (excludeAttributes.contains(key2)) continue;
+									ArrayList<JsonObject> items = AttributePrices.get(key).get(key2);
+									if (items == null || items.size() == 0) {
+										continue;
+									}
+									items = items.stream().filter(i -> i.get(key2).getAsInt() >= configFile.min_tier).collect(Collectors.toCollection(ArrayList::new));
+									if (items.size() == 0) {
+										continue;
+									}
+									items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
+									int value = items.get(0).get("price_per_tier").getAsInt();
+									added_value += (value * Math.pow(2, nbt.getInteger(key2) - 1));
+									if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(key2) && !Objects.equals(best_attribute, ""))
+										continue;
+									if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(key2))
+										best_value = 0;
+									if (value * Math.pow(2, nbt.getInteger(key2) - 1) > best_value) {
+										best_value = (int) (value * Math.pow(2, nbt.getInteger(key2) - 1));
+										best_attribute = key2;
+										best_tier = nbt.getInteger(key2);
+									}
+								}
+								JsonObject comboitem;
+								comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
+								if (best_tier == 0) continue;
+								if (best_tier > 5 && comboitem != null && comboitem.get("starting_bid").getAsInt() > Main.configFile.min_godroll_price * 1000000) {
+									displayStrings.add(AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + nbt.getInteger(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + nbt.getInteger(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(comboitem.get("starting_bid").getAsDouble() + added_value));
+									totalValue = totalValue.add(new BigInteger(comboitem.get("starting_bid").getAsString())).add(new BigInteger(String.valueOf(added_value)));
+								} else if (comboitem != null && comboitem.get("starting_bid").getAsInt() > Math.max(best_value, Main.configFile.min_godroll_price * 1000000)) {
+									displayStrings.add(AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(comboitem.get("starting_bid").getAsDouble()));
+									totalValue = totalValue.add(new BigInteger(comboitem.get("starting_bid").getAsString()));
+								} else if (best_value > LowestBin.get(item_id)) {
+									displayStrings.add(AttributePrice.ShortenedAttribute(best_attribute) + " " + best_tier + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(best_value));
+									totalValue = totalValue.add(new BigInteger(String.valueOf(best_value)));
+								} else {
+									displayStrings.add("LBIN " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.get(item_id)));
+									totalValue = totalValue.add(new BigInteger(String.valueOf(LowestBin.get(item_id))));
+								}
+							}
+							break;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.golem.skyblockutils.models;
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.RequestUtil;
 import com.google.gson.JsonArray;
@@ -108,6 +109,10 @@ public class AttributePrice {
 
 			return null;
 		}
+
+		List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
+
+		for (String attribute : attributes) if (excludeAttributes.contains(attribute)) return null;
 
 		Set<ArrayList<String>> CombosKeys = AllCombos.keySet();
 		try {
