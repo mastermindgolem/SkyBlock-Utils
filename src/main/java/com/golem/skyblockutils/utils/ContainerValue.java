@@ -32,6 +32,7 @@ public class ContainerValue {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
 			if (!isActive) return;
+			if (!configFile.container_value) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;

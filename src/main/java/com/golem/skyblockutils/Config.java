@@ -77,6 +77,14 @@ public class Config extends Vigilant
 			subcategory = "Kuudra Profit Overlay"
 	)
 	public boolean kuudra_overlay = true;
+	@Property(
+			type = PropertyType.SWITCH,
+			name = "Container Value",
+			description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).",
+			category = "General",
+			subcategory = "Kuudra Profit Overlay"
+	)
+	public boolean container_value = true;
 
 	@Property(
 			type = PropertyType.SELECTOR,

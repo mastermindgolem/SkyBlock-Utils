@@ -50,7 +50,7 @@ public class ToolTipListener {
 		} catch (NullPointerException e) {
 			return;
 		}
-		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && event.toolTip.size() > 0) {
+		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && event.toolTip.size() > 0 && shards != null) {
 			String[] s = shards.getKeySet().toArray(new String[0]);
 			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched)) {
 				JsonObject comboitem = AttributePrice.getComboValue(name, new ArrayList<>(shards.getKeySet()));
