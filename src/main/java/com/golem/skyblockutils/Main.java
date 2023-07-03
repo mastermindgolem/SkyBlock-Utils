@@ -129,14 +129,21 @@ public class Main
 		BigInteger million = BigInteger.valueOf(1000000);
 		BigInteger billion = BigInteger.valueOf(1000000000);
 
+		String prefix = "";
+
+		if (number.compareTo(BigInteger.ZERO) < 0) {
+			prefix = "-";
+			number = (BigInteger.ZERO).subtract(BigInteger.valueOf(50));
+		}
+
 		if (number.compareTo(thousand) < 0) {
-			return number.toString();
+			return prefix + number;
 		} else if (number.compareTo(million) < 0) {
-			return formatWithSuffix(number, thousand, "k");
+			return prefix + formatWithSuffix(number, thousand, "k");
 		} else if (number.compareTo(billion) < 0) {
-			return formatWithSuffix(number, million, "m");
+			return prefix + formatWithSuffix(number, million, "m");
 		} else {
-			return formatWithSuffix(number, billion, "b");
+			return prefix + formatWithSuffix(number, billion, "b");
 		}
 	}
 
