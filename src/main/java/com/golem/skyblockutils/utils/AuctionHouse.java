@@ -2,6 +2,7 @@ package com.golem.skyblockutils.utils;
 
 import com.golem.skyblockutils.command.commands.StatCommand;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.google.gson.JsonArray;
 import logger.Logger;
 
 import static com.golem.skyblockutils.Main.*;
@@ -27,7 +28,8 @@ public class AuctionHouse {
 				String urlString = "https://mastermindgolem.pythonanywhere.com/?auctions=mb";
 				new Thread(() -> {
 					try {
-						auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
+						JsonArray temp_auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
+						if (temp_auctions.size() > 0) auctions = temp_auctions;
 						AttributePrice.checkAuctions(auctions);
 						bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
 					} catch (NullPointerException ignored) {
