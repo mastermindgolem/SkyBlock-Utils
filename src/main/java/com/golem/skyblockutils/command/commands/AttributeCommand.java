@@ -227,11 +227,13 @@ public class AttributeCommand extends CommandBase implements Help {
 		if (auctions.size() == 0) {
 			final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem.");
 			mc.thePlayer.addChatMessage(msg);
-			String urlString = "https://mastermindgolem.pythonanywhere.com/?auctions=mb";
-			auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
+			new Thread(() -> {
+				String urlString = "https://mastermindgolem.pythonanywhere.com/?auctions=mb";
+				auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
+				AttributePrice.checkAuctions(auctions);
+				bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
+			}).start();
 			AuctionHouse.lastKnownLastUpdated = System.currentTimeMillis();
-			AttributePrice.checkAuctions(auctions);
-			bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
 			return true;
 		}
 		return false;

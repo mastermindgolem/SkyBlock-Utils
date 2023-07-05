@@ -8,6 +8,7 @@ import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 
 import java.util.*;
 
@@ -30,22 +31,39 @@ public class AttributeOverlay {
 
 				String best_attribute = "";
 				int best_tier = 0;
-				int best_value = 0;
+				int best_value = -1;
 
 				for (String key2 : nbt.getKeySet()) {
 					if (excludeAttributes.contains(key2)) continue;
-					ArrayList<JsonObject> items = AttributePrices.get(key).get(key2);
-					items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
-					int value = items.get(0).get("price_per_tier").getAsInt();
-					if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(key2) && !Objects.equals(best_attribute, "")) continue;
-					if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(key2)) best_value = 0;
-					if (value * Math.pow(2, nbt.getInteger(key2)-1) > best_value) {
-						best_value = (int) (value * Math.pow(2, nbt.getInteger(key2)-1));
+					ArrayList<JsonObject> items = null;
+					try {
+						items = AttributePrices.get(key).get(key2);
+					} catch (Exception ignored) {}
+					try {
+						if (items != null && items.size() > 0) {
+							items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
+							int value = items.get(0).get("price_per_tier").getAsInt();
+							if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(key2) && !Objects.equals(best_attribute, ""))
+								continue;
+							if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(key2))
+								best_value = 0;
+							if (value * Math.pow(2, nbt.getInteger(key2) - 1) > best_value) {
+								best_value = (int) (value * Math.pow(2, nbt.getInteger(key2) - 1));
+								best_attribute = key2;
+								best_tier = nbt.getInteger(key2);
+							}
+						}
+					} catch (Exception ignored) {
 						best_attribute = key2;
 						best_tier = nbt.getInteger(key2);
+						best_value = AttributePrice.LowestBin.get(item_id) + 1;
 					}
+
+
+
 				}
-				JsonObject comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
+				JsonObject comboitem = null;
+				if (!item_id.equals("ATTRIBUTE_SHARD")) comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
 				if (comboitem != null && comboitem.get("starting_bid").getAsInt() > Math.max(best_value, Main.configFile.min_godroll_price * 1000000)) {
 					UGraphics.disableLighting();
 					UGraphics.disableDepth();
@@ -91,7 +109,34 @@ public class AttributeOverlay {
 					);
 					GlStateManager.enableLighting();
 					GlStateManager.enableDepth();
+				} else if (item_id.equals("ATTRIBUTE_SHARD")) {
+					UGraphics.disableLighting();
+					UGraphics.disableDepth();
+					UGraphics.disableBlend();
+					UMatrixStack matrixStack = new UMatrixStack();
+					matrixStack.push();
+					matrixStack.translate(slot.xDisplayPosition, slot.yDisplayPosition, 1f);
+					matrixStack.scale(0.8, 0.8, 1.0);
 
+					String finalBest_attribute = new ArrayList<>(nbt.getKeySet()).get(0);
+					matrixStack.runWithGlobalState(() -> {
+						Main.mc.fontRendererObj.drawString(AttributePrice.ShortenedAttribute(finalBest_attribute), 0, 0, 0x00FFFF);
+					});
+
+					matrixStack.pop();
+					UGraphics.enableLighting();
+					UGraphics.enableDepth();
+					UGraphics.enableBlend();
+					GlStateManager.disableLighting();
+					GlStateManager.disableDepth();
+					GlStateManager.disableBlend();
+					Main.mc.fontRendererObj.drawStringWithShadow(String.valueOf(nbt.getInteger(finalBest_attribute)),
+							(float) (slot.xDisplayPosition + 17 - Main.mc.fontRendererObj.getStringWidth(String.valueOf(nbt.getInteger(finalBest_attribute)))),
+							slot.yDisplayPosition + 9,
+							0xFFFFFFFF
+					);
+					GlStateManager.enableLighting();
+					GlStateManager.enableDepth();
 				} else if (nbt.getKeySet().size() > 0){
 					UGraphics.disableLighting();
 					UGraphics.disableDepth();
@@ -113,7 +158,9 @@ public class AttributeOverlay {
 
 
 			}
-		} catch (Exception ignored) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 }
