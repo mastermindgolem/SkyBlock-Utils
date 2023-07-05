@@ -24,9 +24,9 @@ public class KeybindsInit {
 	public static void registerKeyBinds() {
 		KeyBinding[] keyBindings = {
 			openGUI = new KeyBinding("key.open_gui", Keyboard.KEY_V, "SkyblockUtils"),
-			getComboValue = new KeyBinding("key.combo_value", Keyboard.KEY_L, "SkyblockUtils.Kuudra"),
-			getContainerValue = new KeyBinding("key.container_value", Keyboard.KEY_K, "SkyblockUtils.Kuudra"),
-			getPartyInfo = new KeyBinding("key.get_party_info", Keyboard.KEY_O, "SkyblockUtils.Kuudra")
+			getComboValue = new KeyBinding("key.combo_value", Keyboard.KEY_L, "SkyblockUtils"),
+			getContainerValue = new KeyBinding("key.container_value", Keyboard.KEY_K, "SkyblockUtils"),
+			getPartyInfo = new KeyBinding("key.get_party_info", Keyboard.KEY_O, "SkyblockUtils")
 		};
 		for (KeyBinding keyBinding : keyBindings) {
 			ClientRegistry.registerKeyBinding(keyBinding);
