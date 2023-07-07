@@ -54,6 +54,7 @@ public class AuctionHouse {
 				auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
 				AttributePrice.checkAuctions(auctions);
 				bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
+				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Auctions updated"));
 			}).start();
 			AuctionHouse.lastKnownLastUpdated = System.currentTimeMillis();
 			return true;
