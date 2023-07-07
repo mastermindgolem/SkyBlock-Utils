@@ -26,9 +26,10 @@ public class Config extends Vigilant
 			description = "Time to wait between updating AH data. (0 turns it off)",
 			category = "General",
 			subcategory = "General",
+			min = 1,
 			max = 30
 	)
-	public int time_between_checks = 5;
+	public int time_between_checks = 1;
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Minimum Tier",

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
+import static com.golem.skyblockutils.utils.AuctionHouse.CheckIfAuctionsSearched;
 import static com.golem.skyblockutils.utils.Colors.getRarityCode;
 
 public class AttributeCommand extends CommandBase implements Help {
@@ -221,23 +222,7 @@ public class AttributeCommand extends CommandBase implements Help {
 
 	}
 
-	private boolean CheckIfAuctionsSearched() {
-		System.out.println("Checking " + auctions.size() + " auctions");
-		System.out.println(AttributePrices.keySet());
-		if (auctions.size() == 0) {
-			final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem.");
-			mc.thePlayer.addChatMessage(msg);
-			new Thread(() -> {
-				String urlString = "https://mastermindgolem.pythonanywhere.com/?auctions=mb";
-				auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
-				AttributePrice.checkAuctions(auctions);
-				bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
-			}).start();
-			AuctionHouse.lastKnownLastUpdated = System.currentTimeMillis();
-			return true;
-		}
-		return false;
-	}
+
 
 	public void getAttributePrice(String attribute, String[] keys, int level) {
 		for (String key: keys) {

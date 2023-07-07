@@ -1,4 +1,4 @@
-package com.golem.skyblockutils.utils;
+package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
@@ -98,12 +98,12 @@ public class ContainerValue {
 						} else if (comboitem != null && comboitem.get("starting_bid").getAsInt() > Math.max(best_value, Main.configFile.min_godroll_price * 1000000)) {
 							displayString = AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(0)) + " " + AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(1)) + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(comboitem.get("starting_bid").getAsDouble());
 							totalValue = totalValue.add(new BigInteger(comboitem.get("starting_bid").getAsString()));
-						} else if (best_value > LowestBin.get(item_id)) {
+						} else if (best_value > LowestBin.get(key)) {
 							displayString = AttributePrice.ShortenedAttribute(best_attribute) + " " + best_tier + " " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(best_value);
 							totalValue = totalValue.add(new BigInteger(String.valueOf(best_value)));
 						} else {
 							displayString = "LBIN " + slot.getStack().getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.get(item_id));
-							totalValue = totalValue.add(new BigInteger(String.valueOf(LowestBin.get(item_id))));
+							totalValue = totalValue.add(new BigInteger(String.valueOf(LowestBin.get(key))));
 						}
 
 						displayStrings.put(displayString, displayStrings.getOrDefault(displayString, 0) + 1);

@@ -13,6 +13,7 @@ import net.minecraft.util.ChatStyle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
@@ -44,10 +45,18 @@ public class SbuCommand extends CommandBase {
 	public void processCommand(ICommandSender sender, String[] args) throws CommandException {
 		if(args.length == 0) {
 			Main.display = configFile.gui();
-		} else {
-			Logger.debug("Sending help message!");
-			mc.thePlayer.addChatMessage(new ChatComponentText(Help.getChat()).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(Help.getHoverChat())))));
-			HelpInvocation.sendAll();
+			return;
+		}
+		if (args.length == 1) {
+			if (Objects.equals(args[0], "help")) {
+				Logger.debug("Sending help message!");
+				mc.thePlayer.addChatMessage(new ChatComponentText(Help.getChat()).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(Help.getHoverChat())))));
+				HelpInvocation.sendAll();
+				return;
+			}
+			if (Objects.equals(args[0], "update") || Objects.equals(args[0], "refresh")) {
+				return;
+			}
 		}
 	}
 }

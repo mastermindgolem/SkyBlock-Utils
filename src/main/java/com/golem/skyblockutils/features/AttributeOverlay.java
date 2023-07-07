@@ -56,14 +56,14 @@ public class AttributeOverlay {
 					} catch (Exception ignored) {
 						best_attribute = key2;
 						best_tier = nbt.getInteger(key2);
-						best_value = AttributePrice.LowestBin.get(item_id) + 1;
+						best_value = AttributePrice.LowestBin.get(key) + 1;
 					}
 
 
 
 				}
 				JsonObject comboitem = null;
-				if (!item_id.equals("ATTRIBUTE_SHARD")) comboitem = AttributePrice.getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
+				if (!item_id.equals("ATTRIBUTE_SHARD")) comboitem = AttributePrice.getComboValue(key, new ArrayList<>(nbt.getKeySet()));
 				if (comboitem != null && comboitem.get("starting_bid").getAsInt() > Math.max(best_value, Main.configFile.min_godroll_price * 1000000)) {
 					UGraphics.disableLighting();
 					UGraphics.disableDepth();
@@ -81,7 +81,7 @@ public class AttributeOverlay {
 					UGraphics.enableLighting();
 					UGraphics.enableDepth();
 //					UGraphics.enableBlend(); Keep the comment in-case it breaks something in the future, temp fix for overlay where it goes behind background
-				} else if (best_tier != 0 && !best_attribute.equals("") && best_value > AttributePrice.LowestBin.get(item_id)) {
+				} else if (best_tier != 0 && !best_attribute.equals("") && best_value > AttributePrice.LowestBin.get(key)) {
 					UGraphics.disableLighting();
 					UGraphics.disableDepth();
 					UGraphics.disableBlend();
@@ -109,7 +109,7 @@ public class AttributeOverlay {
 					);
 					GlStateManager.enableLighting();
 					GlStateManager.enableDepth();
-				} else if (item_id.equals("ATTRIBUTE_SHARD")) {
+				} else if (key.equals("ATTRIBUTE_SHARD")) {
 					UGraphics.disableLighting();
 					UGraphics.disableDepth();
 					UGraphics.disableBlend();

@@ -1,7 +1,7 @@
 package com.golem.skyblockutils.init;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.utils.ContainerValue;
+import com.golem.skyblockutils.features.ContainerValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;

@@ -12,6 +12,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RequestUtil {
 
@@ -51,7 +53,6 @@ public class RequestUtil {
 		return new RequestData(status, new HashMap<>(), errorObject);
 	}
 
-	@NotNull
 	private HttpsURLConnection getHttpsURLConnection(URL url, String post) throws IOException {
 		HttpsURLConnection uc;
 		uc = (HttpsURLConnection) url.openConnection();
@@ -60,7 +61,9 @@ public class RequestUtil {
 		uc.setConnectTimeout(20000);
 		uc.setRequestMethod(post);
 
-		uc.addRequestProperty("UUID", Main.mc.thePlayer.getUniqueID().toString());
+		try {
+			uc.addRequestProperty("UUID", Main.mc.thePlayer.getUniqueID().toString());
+		} catch (NullPointerException ignored) {return null;}
 		uc.addRequestProperty("IGN", Main.mc.thePlayer.getDisplayNameString());
 		uc.addRequestProperty("User-Agent", "golemmod");
 		uc.setRequestProperty("Content-Type", "application/json; utf-8");
@@ -77,6 +80,7 @@ public class RequestUtil {
 		try {
 			url = new URL(urlString);
 			uc = getHttpsURLConnection(url, "GET");
+			if (uc == null) return null;
 			status = uc.getResponseCode();
 			InputStream inputStream;
 			if (status != 200) {

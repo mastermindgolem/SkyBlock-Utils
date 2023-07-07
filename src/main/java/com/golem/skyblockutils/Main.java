@@ -57,8 +57,6 @@ public class Main
 		CommandInit.registerCommands();
 		EventInit.registerEvents();
 		HelpInit.registerHelp();
-		all_auctions = new AuctionHouse();
-		new Thread(getAuctions()::run, "fetch-auctions").start();
 
 	}
 
@@ -66,11 +64,15 @@ public class Main
 	public void post(FMLPostInitializationEvent event) {
 		configFile = new Config();
 		Logger.info(time.getDelay());
+		if (!AuctionHouse.isRunning) {
+			AuctionHouse.isRunning = true;
+			all_auctions = new AuctionHouse();
+			new Thread(getAuctions()::run, "fetch-auctions").start();
+		}
 	}
 
 	@SubscribeEvent
 	public void join(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-
 	}
 
 
