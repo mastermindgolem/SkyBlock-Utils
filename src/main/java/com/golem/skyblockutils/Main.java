@@ -108,14 +108,21 @@ public class Main
 		double million = 1000000.0;
 		double billion = 1000000000.0;
 
+		String prefix = "";
+
+		if (number < 0) {
+			prefix = "-";
+			number = 0 - number;
+		}
+
 		if (number < thousand) {
-			return Double.toString(number);
+			return prefix + number;
 		} else if (number < million) {
-			return formatWithSuffix(number, thousand, "k");
+			return prefix + formatWithSuffix(number, thousand, "k");
 		} else if (number < billion) {
-			return formatWithSuffix(number, million, "m");
+			return prefix + formatWithSuffix(number, million, "m");
 		} else {
-			return formatWithSuffix(number, billion, "b");
+			return prefix + formatWithSuffix(number, billion, "b");
 		}
 	}
 
@@ -133,7 +140,7 @@ public class Main
 
 		if (number.compareTo(BigInteger.ZERO) < 0) {
 			prefix = "-";
-			number = (BigInteger.ZERO).subtract(BigInteger.valueOf(50));
+			number = (BigInteger.ZERO).subtract(number);
 		}
 
 		if (number.compareTo(thousand) < 0) {

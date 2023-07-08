@@ -12,6 +12,7 @@ import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 public class AuctionHouse {
 	public static long lastKnownLastUpdated = 0;
 	public static boolean isRunning = false;
+	public static long lastErrorMessage = 0;
 
 
 	public void run(){

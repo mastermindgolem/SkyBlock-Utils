@@ -3,6 +3,9 @@ package com.golem.skyblockutils.command.commands;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.command.Help;
 import com.golem.skyblockutils.command.HelpInvocation;
+import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.utils.AuctionHouse;
+import com.golem.skyblockutils.utils.RequestUtil;
 import logger.Logger;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -10,13 +13,14 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class SbuCommand extends CommandBase {
 	@Override
@@ -55,7 +59,16 @@ public class SbuCommand extends CommandBase {
 				return;
 			}
 			if (Objects.equals(args[0], "update") || Objects.equals(args[0], "refresh")) {
-				return;
+				new Thread(() -> {
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Updating auctions"));
+					String urlString = "https://mastermindgolem.pythonanywhere.com/?auctions=mb";
+					auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
+					AttributePrice.checkAuctions(auctions);
+					bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Auctions updated"));
+				}).start();
+				AuctionHouse.lastKnownLastUpdated = System.currentTimeMillis();
+
 			}
 		}
 	}

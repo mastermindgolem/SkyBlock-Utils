@@ -26,10 +26,10 @@ public class Config extends Vigilant
 			description = "Time to wait between updating AH data. (0 turns it off)",
 			category = "General",
 			subcategory = "General",
-			min = 1,
+			min = 5,
 			max = 30
 	)
-	public int time_between_checks = 1;
+	public int time_between_checks = 5;
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Minimum Tier",
@@ -40,6 +40,10 @@ public class Config extends Vigilant
 			max = 5
 	)
 	public int min_tier = 1;
+	@Property(type = PropertyType.SWITCH, name = "Value Soulbound ARMOR", description = "Whether or not to value starred/soulbound kuudra armor.", category = "General", subcategory = "Kuudra Pricing")
+	public boolean valueStarredArmor = true;
+	@Property(type = PropertyType.SWITCH, name = "Show LBIN Overlay", description = "Whether or not to show the LBIN overlay for items whose attributes are not worth more than LBIN.", category = "General", subcategory = "Attribute Overlay")
+	public boolean showLbinOverlay = true;
 
 	@Property(type = PropertyType.TEXT, name = "Attributes to Prioritize", description = "If the item is not a godroll and one attribute is from this list, it will value it over the other attribute no matter what. Separate multiple by _", category = "General", subcategory = "Kuudra Pricing")
 	public String priorityAttributes = "";
