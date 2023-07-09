@@ -116,5 +116,5 @@ THE PROFIT CALCULATOR!! Self-explanatory
 ### Huh why?
 #### Well that's because if you have a suggestion, want to look at an faq, find something out without looking through a bunch of text. A real person tldr would be much better
 
-<a href="https://discord.gg/3tUSe37gZ4"><img src="https://github.com/mastermindgolem/SkyBlock-Utils/assets/97310758/c8e27cce-d523-46e6-93f0-79fb7a1884a6"></a>
+<a href="https://discord.gg/3tUSe37gZ4"><img src="https://github.com/mastermindgolem/SkyBlock-Utils/assets/97310758/c8e27cce-d523-46e6-93f0-79fb7a1884a6"></a><br>
 <a href="https://discord.gg/3tUSe37gZ4"><img height=50 width=444 src="https://img.shields.io/badge/Join%20Discord-282a2c?style=for-the-badge&label=Hangout%20with%20people%20who%20get%20it&labelColor=202225&color=37383b"></a>
