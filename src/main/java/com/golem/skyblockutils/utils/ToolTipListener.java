@@ -62,8 +62,10 @@ public class ToolTipListener {
 				previousItemSearched = name;
 				previousAttributesSearched = s;
 			}
-			String ToolTipString = EnumChatFormatting.GOLD + "Combo Value: " + EnumChatFormatting.GREEN + String.format("%,d", comboprice);
-			event.toolTip.add(event.toolTip.size(), ToolTipString);
+			if (shards.getKeySet().size() > 1) {
+				String ToolTipString = EnumChatFormatting.GOLD + "Combo Value: " + EnumChatFormatting.GREEN + String.format("%,d", comboprice);
+				event.toolTip.add(event.toolTip.size(), ToolTipString);
+			}
 			int attributeprice;
 			String key = "none";
 			for (String k : AttributePrices.keySet()) if (name.contains(k)) key = k;

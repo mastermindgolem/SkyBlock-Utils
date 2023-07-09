@@ -12,6 +12,7 @@ import net.minecraft.util.ChatComponentText;
 
 import java.util.*;
 
+import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 import static com.golem.skyblockutils.models.AttributePrice.all_kuudra_categories;
 
@@ -22,7 +23,8 @@ public class AttributeOverlay {
 		if (slot == null || !slot.getHasStack() || !Main.configFile.attribute_overlay) return;
 		try {
 			JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
-			assert valueData != null;
+			if (valueData == null) return;
+			if (Objects.equals(valueData.get("top_display").getAsString(), "LBIN") && !configFile.showLbinOverlay) return;
 
 			UGraphics.disableLighting();
 			UGraphics.disableDepth();
