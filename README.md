@@ -1,8 +1,33 @@
+<!--Test-->
+<link href="./styles.css" rel="stylesheet" type="text/css">
+
 # Skyblock Utilities!
-Skyblock utils currently hovers around kuudra related features. [(Table of Contents)](#table-of-contents) 
+
+<div align="center">
+    <!--Download link-->
+    <a href="https://sbu.kami-x.tk"><img alt="Click Me" src="https://img.shields.io/badge/SkyblockUtils-Click%20Me-191919?logo=Oracle" height=50></a>
+    <!--164 downloads as of today-->
+    <a href="https://sbu.kami-x.tk"><img src="https://img.shields.io/github/downloads/mastermindgolem/Skyblock-Utils/1.0.0/total?style=social&label=Downloads" alt="Download amount of 1.0.0"></a>
+    <!--
+        To get current lines since tokei seems to be not working for other sources such as         
+        https://img.shields.io/tokei/lines/github/ascopes/java-compiler-testing
+        This is our adaptation that I've made up using a mini bash script -Kami
+        I will be adding an endpoint later so that this can automatically update with a cron job using again bash!
+    The command to get entire lines is below but the script will prob just be another branch with the only nescessity folders written by us and would be shorten to `git ls-files | xargs wc -l`
+    `git ls-files | grep -v -e 'src/test/**' -e "src/main/resources/assets/golemmod/logger/**" -e "**/*.ogg" -e "**/*.png" -e "**/*.lang" |  xargs wc -l` -v to exclude, -e for pattern
+    -->
+    <a><img src="https://img.shields.io/badge/Lines-5402-331D2C"></a>
+    <!-- license -->
+    <a href="./LICENSE" target="_blank">
+        <img src="https://img.shields.io/github/license/mastermindgolem/Skyblock-Utils?color=3F2E3E&flat-square" alt="license">
+    </a>
+</div>
+
 
 [//]: # (<!--add future download link-->)
-### Mod: [SkyblockUtils-1.0.0.jar]()
+<!--### [![Cool text](https://img.shields.io/badge/SkyblockUtils-Click%20Me-8A2BE2?logo=Oracle)](https://github.com/mastermindgolem/SkyBlock-Utils/releases/tag/1.0.0)-->
+
+Skyblock utils <span title="May add other possible features!">currently<sub class="lb">*</sub></span> hovers around **kuudra related** features. [(Table of Contents)](#table-of-contents) 
 
 ## Table of Contents
 - Features
@@ -80,3 +105,5 @@ THE PROFIT CALCULATOR!! Self-explanatory
 
 #### Others
 `/alias`
+
+<a href="https://github.com/mastermindgolem/SkyBlock-Utils/releases/tag/1.0.0"><img alt="Static Badge" src="https://img.shields.io/badge/Made%20by-golem%2C%20Kami-8A2BE2?logo=caffeine"></a>
