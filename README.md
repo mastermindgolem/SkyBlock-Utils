@@ -3,9 +3,10 @@
 
 # Skyblock Utilities!
 
+
 <div align="center">
     <!--Download link-->
-    <a href="https://sbu.kami-x.tk"><img alt="Click Me" src="https://img.shields.io/badge/SkyblockUtils-Click%20Me-191919?logo=Oracle" height=50></a>
+    <a href="https://sbu.kami-x.tk"><img alt="Click Me" src="https://img.shields.io/badge/SkyblockUtils-Click%20Me-191919?logo=Oracle&logoColor=red" height=50></a>
     <!--164 downloads as of today-->
     <a href="https://sbu.kami-x.tk"><img src="https://img.shields.io/github/downloads/mastermindgolem/Skyblock-Utils/1.0.0/total?style=social&label=Downloads" alt="Download amount of 1.0.0"></a>
     <!--
@@ -20,6 +21,9 @@
     <!-- license -->
     <a href="./LICENSE" target="_blank">
         <img src="https://img.shields.io/github/license/mastermindgolem/Skyblock-Utils?color=3F2E3E&flat-square" alt="license">
+    </a>
+    <a>
+        <img src="https://img.shields.io/discord/1127609092240838757?color=A78295" alt="Discord status">
     </a>
 </div>
 
@@ -107,3 +111,11 @@ THE PROFIT CALCULATOR!! Self-explanatory
 `/alias`
 
 <a href="https://github.com/mastermindgolem/SkyBlock-Utils/releases/tag/1.0.0"><img alt="Static Badge" src="https://img.shields.io/badge/Made%20by-golem%2C%20Kami-8A2BE2?logo=caffeine"></a>
+
+## Wow, you scrolled to the end! Why end your journey here? Come on down and join our discord!
+### Huh why?
+#### Well that's because if you have a suggestion, want to look at an faq, find something out without looking through a bunch of text. A real person tldr would be much better
+
+<a href="https://discord.gg/3tUSe37gZ4"><img src="https://github.com/mastermindgolem/SkyBlock-Utils/assets/97310758/c8e27cce-d523-46e6-93f0-79fb7a1884a6"></a>
+<a href="https://discord.gg/3tUSe37gZ4"><img height=50 width=444 src="https://img.shields.io/badge/Join%20Discord-282a2c?style=for-the-badge&label=Hangout%20with%20people%20who%20get%20it&labelColor=202225&color=37383b"></a>
+
