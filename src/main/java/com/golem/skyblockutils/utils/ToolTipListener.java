@@ -84,8 +84,8 @@ public class ToolTipListener {
 					} else {
 						attributeprice = (int) (items.get(0).get("price_per_tier").getAsDouble() * Math.pow(2,shards.getInteger(attribute)-1));
 					}
-					ToolTipString = EnumChatFormatting.GOLD + TitleCase(attribute) + " " + shards.getInteger(attribute) + ": " + EnumChatFormatting.GREEN + String.format("%,d", attributeprice);
-					event.toolTip.add(event.toolTip.size(), ToolTipString);
+					String ToolTipString1 = EnumChatFormatting.GOLD + TitleCase(attribute) + " " + shards.getInteger(attribute) + ": " + EnumChatFormatting.GREEN + String.format("%,d", attributeprice);
+					event.toolTip.add(event.toolTip.size(), ToolTipString1);
 
 				}
 			} catch (NullPointerException e) {
