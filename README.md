@@ -1,4 +1,3 @@
-<!--Test-->
 <link href="./styles.css" rel="stylesheet" type="text/css">
 
 # Skyblock Utilities!
@@ -22,8 +21,9 @@
     <a href="./LICENSE" target="_blank">
         <img src="https://img.shields.io/github/license/mastermindgolem/Skyblock-Utils?color=3F2E3E&flat-square" alt="license">
     </a>
-    <a>
-        <img src="https://img.shields.io/discord/1127609092240838757?color=A78295" alt="Discord status">
+    <!--Discord total members-->
+    <a href="https://discord.gg/3tUSe37gZ4">
+        <img src="https://img.shields.io/discord/1127609092240838757?color=A78295&label=Discord" alt="Discord status">
     </a>
 </div>
 
