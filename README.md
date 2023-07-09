@@ -22,7 +22,7 @@
         <img src="https://img.shields.io/github/license/mastermindgolem/Skyblock-Utils?color=3F2E3E&flat-square" alt="license">
     </a>
     <!--Discord total members-->
-    <a href="https://discord.gg/3tUSe37gZ4">
+    <a href="https://discord.gg/M7t9bJykCh">
         <img src="https://img.shields.io/discord/1127609092240838757?color=A78295&label=Discord" alt="Discord status">
     </a>
 </div>
@@ -116,5 +116,5 @@ THE PROFIT CALCULATOR!! Self-explanatory
 ### Huh why?
 #### Well that's because if you have a suggestion, want to look at an faq, find something out without looking through a bunch of text. A real person tldr would be much better
 
-<a href="https://discord.gg/3tUSe37gZ4"><img src="https://github.com/mastermindgolem/SkyBlock-Utils/assets/97310758/c8e27cce-d523-46e6-93f0-79fb7a1884a6"></a><br>
-<a href="https://discord.gg/3tUSe37gZ4"><img height=50 width=444 src="https://img.shields.io/badge/Join%20Discord-282a2c?style=for-the-badge&label=Hangout%20with%20people%20who%20get%20it&labelColor=202225&color=37383b"></a>
+<a href="https://discord.gg/M7t9bJykCh"><img src="https://github.com/mastermindgolem/SkyBlock-Utils/assets/97310758/c8e27cce-d523-46e6-93f0-79fb7a1884a6"></a><br>
+<a href="https://discord.gg/M7t9bJykCh"><img height=50 width=444 src="https://img.shields.io/badge/Join%20Discord-282a2c?style=for-the-badge&label=Hangout%20with%20people%20who%20get%20it&labelColor=202225&color=37383b"></a>
