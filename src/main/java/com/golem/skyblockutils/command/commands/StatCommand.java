@@ -198,8 +198,14 @@ public class StatCommand extends CommandBase implements Help {
 
 
 		addChatMessage(EnumChatFormatting.RED + "------------------");
-		addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign);
-		addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
+		if (data.get("Expert Plus").getAsBoolean()) {
+			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]");
+		} else if (data.get("Expert Plus").getAsBoolean()) {
+			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]");
+		} else {
+			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign);
+		}
+			addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
 		addChatMessage(EnumChatFormatting.GREEN + "Magical Power: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
 
 
