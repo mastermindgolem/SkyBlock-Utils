@@ -201,7 +201,6 @@ public class EquipmentCommand extends CommandBase implements Help {
 				})));
 			}
 		}
-
 	}
 
 	public String example() {

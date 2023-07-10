@@ -24,7 +24,7 @@ public class AuctionHouse {
 				long sleepTime = lastKnownLastUpdated + 60000L * configFile.time_between_checks - System.currentTimeMillis() + 10000L;
 				if (sleepTime > 0) {
 					try {
-						Logger.debug("Sleep Time:" + sleepTime);
+						Logger.info("Sleep Time: " + sleepTime);
 						Thread.sleep(sleepTime);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -36,7 +36,9 @@ public class AuctionHouse {
 						auctions = new RequestUtil().sendGetRequest(urlString).getJsonAsObject().get("auctions").getAsJsonArray();
 						AttributePrice.checkAuctions(auctions);
 						bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
+						Logger.info("Fetched auctions!");
 					} catch (NullPointerException ignored) {
+						Logger.error("Nom");
 						Logger.error("Error fetching auctions");
 					}
 				}).start();

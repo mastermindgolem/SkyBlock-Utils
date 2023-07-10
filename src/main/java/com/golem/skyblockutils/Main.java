@@ -63,7 +63,7 @@ public class Main
 	@Mod.EventHandler
 	public void post(FMLPostInitializationEvent event) {
 		configFile = new Config();
-		Logger.info(time.getDelay());
+		Logger.info("Time taken to reach post initialization: " + time.getDelay());
 		if (!AuctionHouse.isRunning) {
 			AuctionHouse.isRunning = true;
 			all_auctions = new AuctionHouse();

@@ -62,9 +62,9 @@ public class RequestUtil {
 		uc.setRequestMethod(post);
 
 		try {
-			uc.addRequestProperty("UUID", Main.mc.thePlayer.getUniqueID().toString());
+			uc.addRequestProperty("UUID", Main.mc.getSession().getPlayerID());
 		} catch (NullPointerException ignored) {return null;}
-		uc.addRequestProperty("IGN", Main.mc.thePlayer.getDisplayNameString());
+		uc.addRequestProperty("IGN", Main.mc.getSession().getUsername());
 		uc.addRequestProperty("User-Agent", "golemmod");
 		uc.setRequestProperty("Content-Type", "application/json; utf-8");
 		uc.setRequestProperty("Accept", "application/json");
