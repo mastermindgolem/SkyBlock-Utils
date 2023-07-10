@@ -200,7 +200,7 @@ public class StatCommand extends CommandBase implements Help {
 		addChatMessage(EnumChatFormatting.RED + "------------------");
 		if (data.get("Expert Plus").getAsBoolean()) {
 			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]");
-		} else if (data.get("Expert Plus").getAsBoolean()) {
+		} else if (data.get("Expert").getAsBoolean()) {
 			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]");
 		} else {
 			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign);
