@@ -1,5 +1,6 @@
 package com.golem.skyblockutils.utils;
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.AttributePrice;
 import logger.Logger;
 import net.minecraft.util.ChatComponentText;
@@ -19,6 +20,7 @@ public class AuctionHouse {
 		while(true) {
 			try {
 				if (configFile.time_between_checks == 0) continue;
+				if (mc == null || mc.thePlayer == null) continue;
 				long sleepTime = lastKnownLastUpdated + 60000L * configFile.time_between_checks - System.currentTimeMillis() + 10000L;
 				if (sleepTime > 0) {
 					try {

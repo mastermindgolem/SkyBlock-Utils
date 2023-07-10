@@ -56,7 +56,7 @@ public class ContainerValue {
 					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
 						continue;
 					JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
-					if (valueData == null) return;
+					if (valueData == null) continue;
 					String displayString = valueData.get("display_string").getAsString();
 					totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
 					displayStrings.put(displayString, displayStrings.getOrDefault(displayString, 0) + 1);

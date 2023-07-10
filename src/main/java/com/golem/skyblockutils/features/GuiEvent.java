@@ -21,9 +21,6 @@ import java.util.regex.Pattern;
 import static com.golem.skyblockutils.Main.mc;
 
 public class GuiEvent {
-
-
-	private Thread thread;
 	List<String> lastPartyChecked = new ArrayList<>();
 	Pattern pattern = Pattern.compile("^\\s*(.*?)\\s+\\(");
 
