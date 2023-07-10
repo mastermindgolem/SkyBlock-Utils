@@ -17,7 +17,5 @@ import java.io.IOException;
 import static com.golem.skyblockutils.utils.RequestUtil.getAllowAllFactory;
 
 public class Apache {
-	public static JsonObject bazaar() throws IOException {
 
-	}
 }

@@ -57,13 +57,14 @@ public class Main
 		CommandInit.registerCommands();
 		EventInit.registerEvents();
 		HelpInit.registerHelp();
-
+		Logger.debug(mc.getSession().getPlayerID());
+		Logger.debug(mc.getSession().getUsername());
 	}
 
 	@Mod.EventHandler
 	public void post(FMLPostInitializationEvent event) {
 		configFile = new Config();
-		Logger.info(time.getDelay());
+		Logger.info("Time taken to reach post initialization: " + time.getDelay());
 		if (!AuctionHouse.isRunning) {
 			AuctionHouse.isRunning = true;
 			all_auctions = new AuctionHouse();
