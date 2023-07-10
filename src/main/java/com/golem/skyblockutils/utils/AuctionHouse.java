@@ -35,6 +35,7 @@ public class AuctionHouse {
 						AttributePrice.checkAuctions(auctions);
 						bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
 					} catch (NullPointerException ignored) {
+						Logger.error("Nom");
 						Logger.error("Error fetching auctions");
 					}
 				}).start();

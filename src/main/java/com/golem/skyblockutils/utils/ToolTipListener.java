@@ -75,8 +75,9 @@ public class ToolTipListener {
 					if (!shards.getKeySet().contains(attribute)) continue;
 					if (!AttributePrices.get(key).containsKey(attribute)) continue;
 					ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
+					System.out.println(items.get(0));
 					items = items.stream()
-							.filter(i -> i.get(attribute).getAsInt() >= configFile.min_tier)
+							.filter(i -> i.get(attribute).getAsInt() >= 1 /*configFile.min_tier*/)
 							.collect(Collectors.toCollection(ArrayList::new));
 					items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
 					if (items.size() == 0) {

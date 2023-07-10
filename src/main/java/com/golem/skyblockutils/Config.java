@@ -4,6 +4,7 @@ import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
 import logger.Logger;
 import org.jetbrains.annotations.NotNull;
+import scala.sys.Prop;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +19,6 @@ public class Config extends Vigilant
 {
 	public static String stonksFolder;
 	public File CONFIG_FILE;
-
-
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Time between AH Checks",
@@ -32,16 +31,29 @@ public class Config extends Vigilant
 	public int time_between_checks = 5;
 	@Property(
 			type = PropertyType.SLIDER,
-			name = "Minimum Tier",
-			description = "Minimum tier to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
+			name = "Minimum Shard Tier",
+			description = "Minimum tier SHARD to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
 			category = "General",
 			subcategory = "Kuudra Pricing",
 			min = 1,
-			max = 5
+			max = 3
 	)
-	public int min_tier = 1;
+	public int min_armor_tier = 1;
+
+	@Property(
+		type = PropertyType.SLIDER,
+		name = "Minimum Armour Tier",
+		description = "Minimum tier ARMOUR or EQUIPMENT to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
+		category = "General",
+		subcategory = "Kuudra Pricing",
+		min = 1,
+		max = 10
+	)
+	public int min_shard_tier = 1;
+
 	@Property(type = PropertyType.SWITCH, name = "Value Soulbound ARMOR", description = "Whether or not to value starred/soulbound kuudra armor.", category = "General", subcategory = "Kuudra Pricing")
 	public boolean valueStarredArmor = true;
+
 	@Property(type = PropertyType.SWITCH, name = "Show LBIN Overlay", description = "Whether or not to show the LBIN overlay for items whose attributes are not worth more than LBIN.", category = "General", subcategory = "Attribute Overlay")
 	public boolean showLbinOverlay = true;
 
