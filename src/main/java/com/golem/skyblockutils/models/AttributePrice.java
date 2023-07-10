@@ -199,7 +199,7 @@ public class AttributePrice {
 				result.addProperty("display_string", AttributePrice.ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + AttributePrice.ShortenedAttribute(attrArray.get(1)) + " " + nbt.getInteger(attrArray.get(1)) + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(added_value));
 				result.addProperty("value", added_value);
 				return result;
-			} else if (combo_value > configFile.min_godroll_price && combo_value > best_value) {
+			} else if (combo_value > configFile.min_godroll_price * 1000000 && combo_value > best_value) {
 				result.addProperty("top_display", "GR");
 				result.addProperty("bottom_display", 0);
 				result.addProperty("display_string", AttributePrice.ShortenedAttribute(attrArray.get(0)) + " " + AttributePrice.ShortenedAttribute(attrArray.get(1)) + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(combo_value));
@@ -210,6 +210,12 @@ public class AttributePrice {
 				result.addProperty("bottom_display", best_tier);
 				result.addProperty("display_string", AttributePrice.ShortenedAttribute(best_attribute) + " " + best_tier + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(best_value));
 				result.addProperty("value", best_value);
+				return result;
+			} else if (item_id.equals("ATTRIBUTE_SHARD")) {
+				result.addProperty("top_display", "LBIN");
+				result.addProperty("bottom_display", 0);
+				result.addProperty("display_string", AttributePrice.ShortenedAttribute(new ArrayList<>(nbt.getKeySet()).get(0)) + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.getOrDefault(item_id, 0)));
+				result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
 				return result;
 			} else if (LowestBin.getOrDefault(item_id, 0) > 0 && nbt.getKeySet().size() > 0) {
 				result.addProperty("top_display", "LBIN");

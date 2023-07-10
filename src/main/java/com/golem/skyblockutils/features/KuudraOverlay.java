@@ -119,7 +119,7 @@ public class KuudraOverlay {
 						}
 						default: {
 							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
-							if (valueData == null) return;
+							if (valueData == null) break;
 							String displayString = valueData.get("display_string").getAsString();
 							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
 							displayStrings.add(displayString);
