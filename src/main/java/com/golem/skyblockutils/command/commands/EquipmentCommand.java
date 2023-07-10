@@ -216,7 +216,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 			if (items == null) continue;
 			if (level == 0) {
 				items = items.stream()
-						.filter(item -> item.get(attribute).getAsInt() >= 1 /*configFile.min_tier*/)
+						.filter(item -> item.get(attribute).getAsInt() >= configFile.min_tier)
 						.collect(Collectors.toCollection(ArrayList::new));
 			} else {
 				items = items.stream()

@@ -29,7 +29,19 @@ public class Config extends Vigilant
 			max = 30
 	)
 	public int time_between_checks = 5;
+
 	@Property(
+		type = PropertyType.SLIDER,
+		name = "Minimum Tier",
+		description = "Minimum tier to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
+		category = "General",
+		subcategory = "Kuudra Pricing",
+		min = 1,
+		max = 5
+	)
+	public int min_tier = 1;
+
+/*	@Property(
 			type = PropertyType.SLIDER,
 			name = "Minimum Shard Tier",
 			description = "Minimum tier SHARD to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
@@ -49,7 +61,7 @@ public class Config extends Vigilant
 		min = 1,
 		max = 10
 	)
-	public int min_shard_tier = 1;
+	public int min_shard_tier = 1;*/
 
 	@Property(type = PropertyType.SWITCH, name = "Value Soulbound ARMOR", description = "Whether or not to value starred/soulbound kuudra armor.", category = "General", subcategory = "Kuudra Pricing")
 	public boolean valueStarredArmor = true;
@@ -65,6 +77,7 @@ public class Config extends Vigilant
 
 	@Property(type = PropertyType.SWITCH, name = "Show Player Info", description = "Gives a summary on players joining kuudra parties.", category = "General", subcategory = "Party Finder")
 	public boolean showKuudraPlayerInfo = false;
+
 	@Property(type = PropertyType.SWITCH, name = "Show Own Player Info", description = "Shows your own player info when you join a party finder party.", category = "General", subcategory = "Party Finder")
 	public boolean showOwnPlayerInfo = true;
 
@@ -78,6 +91,7 @@ public class Config extends Vigilant
 			max = 300
 	)
 	public int min_godroll_price = 50;
+
 	@Property(
 			type = PropertyType.SWITCH,
 			name = "Display Attribute Overlay",
@@ -86,6 +100,7 @@ public class Config extends Vigilant
 			subcategory = "Attribute Overlay"
 	)
 	public boolean attribute_overlay = true;
+
 	@Property(
 			type = PropertyType.SWITCH,
 			name = "Display Kuudra Overlay",
@@ -94,6 +109,7 @@ public class Config extends Vigilant
 			subcategory = "Kuudra Profit Overlay"
 	)
 	public boolean kuudra_overlay = true;
+
 	@Property(
 			type = PropertyType.SWITCH,
 			name = "Container Value",
@@ -112,6 +128,7 @@ public class Config extends Vigilant
 			options = {"Common", "Uncommon", "Rare", "Epic", "Legendary"}
 	)
 	public int kuudraPetRarity = 0;
+
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Kuudra Pet Level",
@@ -121,6 +138,7 @@ public class Config extends Vigilant
 			max = 100
 	)
 	public int kuudraPetLevel = 0;
+
 	@Property(
 			type = PropertyType.SELECTOR,
 			name = "Book Valuation",
@@ -130,6 +148,7 @@ public class Config extends Vigilant
 			options = {"Instant Sell", "Sell Offer"}
 	)
 	public int book_sell_method = 0;
+
 	@Property(
 			type = PropertyType.SWITCH,
 			name = "Sell Essence",
@@ -148,7 +167,6 @@ public class Config extends Vigilant
 			subcategory = "Kuudra Profit Overlay"
 	)
 	public int faction = 0;
-
 
 	private void checkFolderExists() {
 		Path directory = Paths.get(stonksFolder);

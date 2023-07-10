@@ -160,7 +160,7 @@ public class AttributePrice {
 				if (items == null || items.size() == 0) {
 					continue;
 				}
-				items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= 1 /*configFile.min_tier*/).collect(Collectors.toCollection(ArrayList::new));
+				items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= configFile.min_tier).collect(Collectors.toCollection(ArrayList::new));
 				if (items.size() == 0) {
 					continue;
 				}
