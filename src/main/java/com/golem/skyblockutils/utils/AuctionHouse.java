@@ -36,6 +36,7 @@ public class AuctionHouse {
 						bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
 						Logger.info("Fetched auctions!");
 					} catch (NullPointerException ignored) {
+						Logger.error("Nom");
 						Logger.error("Error fetching auctions");
 					}
 				}).start();

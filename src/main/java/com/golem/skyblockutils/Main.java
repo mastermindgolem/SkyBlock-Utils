@@ -57,8 +57,7 @@ public class Main
 		CommandInit.registerCommands();
 		EventInit.registerEvents();
 		HelpInit.registerHelp();
-		Logger.debug(mc.getSession().getPlayerID());
-		Logger.debug(mc.getSession().getUsername());
+
 	}
 
 	@Mod.EventHandler
