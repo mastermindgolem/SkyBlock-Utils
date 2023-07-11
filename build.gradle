@@ -9,7 +9,7 @@ project.setProperty("mainClassName", "com.golem.skyblockutils.Main")
 
 def majorVersion = 1
 def minorVersion = 0
-def patchVersion = 0
+def patchVersion = 1
 
 version = "${majorVersion}.${minorVersion}.${patchVersion}"
 group = "com.golem.skyblockutils"

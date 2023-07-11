@@ -16,10 +16,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static com.golem.skyblockutils.Main.coolFormat;
 import static com.golem.skyblockutils.Main.mc;
@@ -196,6 +193,10 @@ public class UpgradeCommand extends CommandBase implements Help {
 		if (!AttributePrices.get(key).containsKey(attribute)) return;
 		System.out.println("Passed guard clause");
 		ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
+		if (!Objects.equals(key, "SHARD")) {
+			ArrayList<JsonObject> items2 = AttributePrices.get("SHARD").get(attribute);
+			if (items2 != null) items.addAll(items2);
+		}
 		if (items == null) return;
 
 		items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
