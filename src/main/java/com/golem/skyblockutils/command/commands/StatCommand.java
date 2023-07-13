@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.command.commands;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.GuiEvent;
 import com.golem.skyblockutils.utils.RequestUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,9 +9,8 @@ import com.google.gson.JsonParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -21,10 +21,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.golem.skyblockutils.Main.mc;
 
@@ -116,7 +113,7 @@ public class StatCommand extends CommandBase implements Help {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
 		if (args.length == 0) {
-			showPlayerStats(mc.thePlayer.getDisplayNameString());
+			showPlayerStats(mc.getSession().getUsername(), false);
 		}
 
 		if (args.length == 1) {
@@ -124,7 +121,7 @@ public class StatCommand extends CommandBase implements Help {
 				sendHelpMessage();
 				return;
 			}
-			showPlayerStats(args[0]);
+			showPlayerStats(args[0], false);
 		}
 	}
 
@@ -190,7 +187,7 @@ public class StatCommand extends CommandBase implements Help {
 		return null;
 	}
 
-	public static void processProfileData(JsonObject data, String uuid, String ign) {
+	public static void processProfileData(JsonObject data, String ign, boolean partyFinder) {
 
 		IChatComponent msg;
 		DecimalFormat formatter = new DecimalFormat("#,###");
@@ -205,8 +202,13 @@ public class StatCommand extends CommandBase implements Help {
 		} else {
 			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign);
 		}
-			addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
+		addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
 		addChatMessage(EnumChatFormatting.GREEN + "Magical Power: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
+
+		if (!GuiEvent.kuudraLevel.containsKey(ign) || (GuiEvent.kuudraLevel.containsKey(ign) && Main.time.getCurrentMS() - GuiEvent.kuudraLevel.getOrDefault(ign, new long[]{0L, 0L})[1] > 900)) {
+			GuiEvent.kuudraLevel.put(ign, new long[]{data.get("Kuudra Level").getAsInt(), Main.time.getCurrentMS()});
+		}
+
 
 
 		msg = new ChatComponentText(
@@ -262,6 +264,42 @@ public class StatCommand extends CommandBase implements Help {
 		Main.mc.thePlayer.addChatMessage(msg);
 
 		addChatMessage(EnumChatFormatting.RED + "------------------");
+
+		if (partyFinder) {
+
+			if (data.get("Kuudra Level").getAsInt() < ParseInt(Main.configFile.minKuudraLevel)) {
+				mc.thePlayer.sendChatMessage("/party kick " + ign);
+				return;
+			}
+			if (data.get("Magical Power").getAsInt() < ParseInt(Main.configFile.minMagicalPower)) {
+				mc.thePlayer.sendChatMessage("/party kick " + ign);
+				return;
+			}
+			int comps = data.get("Basic Comps").getAsInt();
+			switch (Main.configFile.minCompsTier) {
+				case 1:
+					comps = data.get("Hot Comps").getAsInt();
+					break;
+				case 2:
+					comps = data.get("Burning Comps").getAsInt();
+					break;
+				case 3:
+					comps = data.get("Fiery Comps").getAsInt();
+					break;
+				case 4:
+					comps = data.get("Infernal Comps").getAsInt();
+					break;
+			}
+
+			if (comps < ParseInt(Main.configFile.minComps)) {
+				mc.thePlayer.sendChatMessage("/party kick " + ign);
+				return;
+			}
+
+
+			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED + "[Kick Player]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party kick " + ign))));
+		}
+
 	}
 
 	public static void displayItem(JsonObject item) {
@@ -277,7 +315,7 @@ public class StatCommand extends CommandBase implements Help {
 		} catch (Exception e) {e.printStackTrace();}
 	}
 
-	public static void showPlayerStats(String name) {
+	public static void showPlayerStats(String name, boolean partyFinder) {
 		new Thread(() -> {
 			try {
 				String ign = name;
@@ -287,13 +325,19 @@ public class StatCommand extends CommandBase implements Help {
 				ign = uuidData.get("name").getAsString();
 				JsonObject profileData = fetchProfileData(uuid);
 				assert profileData != null;
-				processProfileData(profileData, uuid, ign);
+				processProfileData(profileData, ign, partyFinder);
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}).start();
 	}
 
+	private static int ParseInt(String s) {
+		try {
+			return Integer.parseInt(s);
+		} catch (Exception ignored) {return 0;}
+	}
 	public static void addChatMessage(String string) {
 		mc.thePlayer.addChatMessage(new ChatComponentText(string));
 	}
