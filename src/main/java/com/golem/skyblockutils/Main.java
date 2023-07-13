@@ -44,7 +44,7 @@ public class Main
 	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
-	private static TimeHelper time = new TimeHelper();
+	public static TimeHelper time = new TimeHelper();
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {

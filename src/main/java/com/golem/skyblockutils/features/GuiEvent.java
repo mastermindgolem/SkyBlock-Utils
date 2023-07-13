@@ -13,6 +13,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -23,6 +24,8 @@ import static com.golem.skyblockutils.Main.mc;
 public class GuiEvent {
 	List<String> lastPartyChecked = new ArrayList<>();
 	Pattern pattern = Pattern.compile("^\\s*(.*?)\\s+\\(");
+
+	public static HashMap<String, long[]> kuudraLevel = new HashMap<>();
 
 	@SubscribeEvent
 	public void onItemToolTipEvent(ItemTooltipEvent event) {
@@ -42,14 +45,26 @@ public class GuiEvent {
 
 			List<String> currentParty = new ArrayList<>();
 
+			List<String> toolTip = new ArrayList<>(event.toolTip);
 			for (String line : event.toolTip) {
-				line = line.replaceAll("§.", "");
+				String line1 = line.replaceAll("§.", "");
 
-				Matcher matcher = pattern.matcher(line);
+				Matcher matcher = pattern.matcher(line1);
 				if (matcher.find()) {
-					currentParty.add(matcher.group(0).split(" ")[1]);
+					String ign = matcher.group(0).split(" ")[1];
+					currentParty.add(ign);
+					int index = event.toolTip.indexOf(line);
+					toolTip.remove(line);
+					String updatedString = line.replaceAll("\\(§e\\d+§b\\)", "(§e" + kuudraLevel.getOrDefault(ign, new long[]{0, 0})[0] + "§b)");
+					System.out.println(updatedString);
+					toolTip.add(index, updatedString);
 				}
 			}
+
+
+			event.toolTip.clear();
+			event.toolTip.addAll(toolTip);
+
 
 			boolean cont = true;
 			for (String a : currentParty)
@@ -58,9 +73,12 @@ public class GuiEvent {
 					break;
 				}
 			if (cont) {
-				currentParty.forEach(StatCommand::showPlayerStats);
+				currentParty.forEach(member -> StatCommand.showPlayerStats(member, false));
 				lastPartyChecked = currentParty;
 			}
+
+
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
