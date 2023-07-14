@@ -268,10 +268,12 @@ public class StatCommand extends CommandBase implements Help {
 		if (partyFinder) {
 
 			if (data.get("Kuudra Level").getAsInt() < ParseInt(Main.configFile.minKuudraLevel)) {
+				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Kuudra Level");
 				mc.thePlayer.sendChatMessage("/party kick " + ign);
 				return;
 			}
 			if (data.get("Magical Power").getAsInt() < ParseInt(Main.configFile.minMagicalPower)) {
+				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Magical Power");
 				mc.thePlayer.sendChatMessage("/party kick " + ign);
 				return;
 			}
@@ -292,8 +294,55 @@ public class StatCommand extends CommandBase implements Help {
 			}
 
 			if (comps < ParseInt(Main.configFile.minComps)) {
+				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Completions");
 				mc.thePlayer.sendChatMessage("/party kick " + ign);
 				return;
+			}
+
+			if (!data.get("InventoryAPI").getAsBoolean() || !Main.configFile.kickAPIoff) {
+				if (data.get("Dominance").getAsInt() < Main.configFile.minDomLevel) {
+					addChatMessage(EnumChatFormatting.RED + "Kicking player for low Dominance Levels");
+					mc.thePlayer.sendChatMessage("/party kick " + ign);
+					return;
+				}
+
+				if (Main.configFile.minAuroraTier > 0) {
+					if (!data.get("Aurora Chestplate").getAsJsonObject().has("stars") || data.get("Aurora Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier) {
+						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
+						mc.thePlayer.sendChatMessage("/party kick " + ign);
+						return;
+					}
+					if (!data.get("Aurora Leggings").getAsJsonObject().has("stars") || data.get("Aurora Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier) {
+						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
+						mc.thePlayer.sendChatMessage("/party kick " + ign);
+						return;
+					}
+					if (!data.get("Aurora Boots").getAsJsonObject().has("stars") || data.get("Aurora Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier) {
+						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
+						mc.thePlayer.sendChatMessage("/party kick " + ign);
+						return;
+					}
+				}
+				if (Main.configFile.minTerrorTier > 0) {
+					if (!data.get("Terror Chestplate").getAsJsonObject().has("stars") || data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier) {
+						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
+						mc.thePlayer.sendChatMessage("/party kick " + ign);
+						System.out.println(data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt());
+						return;
+					}
+					if (!data.get("Terror Leggings").getAsJsonObject().has("stars") || data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier) {
+						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
+						mc.thePlayer.sendChatMessage("/party kick " + ign);
+						System.out.println(data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt());
+
+						return;
+					}
+					if (!data.get("Terror Boots").getAsJsonObject().has("stars") || data.get("Terror Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier) {
+						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
+						mc.thePlayer.sendChatMessage("/party kick " + ign);
+						return;
+					}
+				}
 			}
 
 
@@ -312,7 +361,7 @@ public class StatCommand extends CommandBase implements Help {
 						+ "\n"
 						+ item.get("item_lore").getAsString()))));
 			Main.mc.thePlayer.addChatMessage(msg);
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {}
 	}
 
 	public static void showPlayerStats(String name, boolean partyFinder) {

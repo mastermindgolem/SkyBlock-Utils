@@ -138,23 +138,25 @@ public class KuudraOverlay {
 				itemCost = bazaar.get("products").getAsJsonObject().get(item).getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 			} catch (Exception ignored) {}
 			if (chestName.contains("Paid")) {
-				String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
-				if (keySlotLore.contains("Infernal")) {
-					keyCost += 3000000;
-					keyCost += itemCost * 120;
-				} else if (keySlotLore.contains("Fiery")) {
-					keyCost += 1500000;
-					keyCost += itemCost * 60;
-				} else if (keySlotLore.contains("Burning")) {
-					keyCost += 750000;
-					keyCost += itemCost * 20;
-				} else if (keySlotLore.contains("Hot")) {
-					keyCost += 400000;
-					keyCost += itemCost * 60;
-				} else {
-					keyCost += 200000;
-					keyCost += itemCost * 2;
-				}
+				try {
+					String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
+					if (keySlotLore.contains("Infernal")) {
+						keyCost += 3000000;
+						keyCost += itemCost * 120;
+					} else if (keySlotLore.contains("Fiery")) {
+						keyCost += 1500000;
+						keyCost += itemCost * 60;
+					} else if (keySlotLore.contains("Burning")) {
+						keyCost += 750000;
+						keyCost += itemCost * 20;
+					} else if (keySlotLore.contains("Hot")) {
+						keyCost += 400000;
+						keyCost += itemCost * 60;
+					} else {
+						keyCost += 200000;
+						keyCost += itemCost * 2;
+					}
+				} catch (Exception ignored) {}
 			}
 
 
