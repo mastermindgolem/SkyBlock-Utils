@@ -1,9 +1,11 @@
 package com.golem.skyblockutils.features.KuudraFight;
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -31,11 +33,11 @@ public class Waypoints {
 
 
         for (Map.Entry<Vec3, Integer> supply : Kuudra.supplyWaypoints.entrySet()) {
-            if (supply.getValue() == 101) {
+            if (supply.getValue() == 101 && Main.configFile.showSupplyWaypoint) {
                 int rgb = 0x00FFFF; //AQUA
                 RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, rgb, 1.0f, event.partialTicks);
             }
-            else if (supply.getValue() > -1) {
+            else if (supply.getValue() < 101 && supply.getValue() > -1 && Main.configFile.showBuildWaypoint) {
                 int percent = supply.getValue();
                 int rgb = percent == 0 ? 0xFF0000 : percent == 100 ? 0x00FF00 : (int) ((1 - (percent / 100.0)) * 0xFF) << 16 | (int) ((percent / 100.0) * 0xFF) << 8;
                 RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, rgb, 1.0f, event.partialTicks);
@@ -55,12 +57,11 @@ public class Waypoints {
                     if (Kuudra.supplyWaypoints.getOrDefault(supply, -1) == 101) Kuudra.supplyWaypoints.put(supply, -1);
                 }
                 if (name.contains("%") && name.contains("PROGRESS: ")) {
-                    if (name.contains("COMPLETE")) {
-                        Kuudra.supplyWaypoints.put(supply, -1);
-                    } else {
-                        int percent = Integer.parseInt(name.split(" ")[1].split("%")[0]);
-                        Kuudra.supplyWaypoints.put(supply, percent);
-                    }
+                    int percent = Integer.parseInt(name.split(" ")[1].split("%")[0]);
+                    Kuudra.supplyWaypoints.put(supply, percent);
+                }
+                if (name.contains("COMPLETE") && name.contains("PROGRESS")) {
+                    Kuudra.supplyWaypoints.put(supply, -1);
                 }
             }
         }
