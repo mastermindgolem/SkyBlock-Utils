@@ -8,6 +8,11 @@ import com.golem.skyblockutils.features.KuudraFight.Waypoints;
 import com.golem.skyblockutils.features.KuudraHealth;
 import com.golem.skyblockutils.features.KuudraOverlay;
 import com.golem.skyblockutils.features.ContainerValue;
+import com.golem.skyblockutils.models.Overlay.ImageOverlay.FlareOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.DungeonOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.DungeonSkillOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.KuudraTestOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.KuudraTestSkillOverlay;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -21,9 +26,15 @@ public class EventInit {
 			new ContainerValue(),
 			new ChatListener(),
 			new GuiEvent(),
-				new KuudraHealth(),
-				new Kuudra(),
-				new Waypoints()
+			new KuudraHealth(),
+			new Kuudra(),
+			new Waypoints(),
+			new GuiEvent(),
+			new KuudraTestOverlay(),
+			new KuudraTestSkillOverlay(),
+			new DungeonSkillOverlay(),
+			new DungeonOverlay(),
+			new FlareOverlay()
 		};
 
 		for (Object listener : listeners) {
