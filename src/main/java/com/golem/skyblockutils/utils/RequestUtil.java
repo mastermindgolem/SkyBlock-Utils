@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.utils;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.NoteForDecompilers;
 import com.google.gson.*;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,10 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestUtil {
+	@NoteForDecompilers("a session variable does not mean i am trying to rat you. I am simply getting the player's username.")
+	private static final String username = Main.mc.getSession().getUsername();
+	@NoteForDecompilers("Just getting uuid, why ware you still here .w.")
+	private static final String uuid = Main.mc.getSession().getPlayerID();
 
 	public static SSLSocketFactory getAllowAllFactory() {
 		// Create a trust manager that does not validate certificate chains
@@ -62,9 +67,9 @@ public class RequestUtil {
 		uc.setRequestMethod(post);
 
 		try {
-			uc.addRequestProperty("UUID", Main.mc.getSession().getPlayerID());
+			uc.addRequestProperty("UUID", uuid);
 		} catch (NullPointerException ignored) {return null;}
-		uc.addRequestProperty("IGN", Main.mc.getSession().getUsername());
+		uc.addRequestProperty("IGN", username);
 		uc.addRequestProperty("User-Agent", "golemmod");
 		uc.setRequestProperty("Content-Type", "application/json; utf-8");
 		uc.setRequestProperty("Accept", "application/json");
