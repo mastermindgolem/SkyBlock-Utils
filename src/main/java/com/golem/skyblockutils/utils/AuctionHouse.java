@@ -1,5 +1,7 @@
 package com.golem.skyblockutils.utils;
 
+import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.NoteForDecompilers;
 import com.golem.skyblockutils.models.AttributePrice;
 import logger.Logger;
 import net.minecraft.util.ChatComponentText;
@@ -15,6 +17,7 @@ public class AuctionHouse {
 	public static long lastErrorMessage = 0;
 
 
+	@NoteForDecompilers("a session variable does not mean i am trying to rat you. I am simply getting the player's info.")
 	public void run(){
 		while(true) {
 			try {
