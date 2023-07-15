@@ -1,10 +1,11 @@
 package com.golem.skyblockutils;
 
+import com.golem.skyblockutils.models.gui.MoveGui;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
 import logger.Logger;
+import net.minecraft.client.gui.GuiScreen;
 import org.jetbrains.annotations.NotNull;
-import scala.sys.Prop;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +20,36 @@ public class Config extends Vigilant
 {
 	public static String stonksFolder;
 	public File CONFIG_FILE;
+	@Property(
+		type = PropertyType.SWITCH,
+		name = "Test move overlay",
+		description = "Dw abt this",
+		category = "General",
+		subcategory = "General"
+	)
+	public boolean testGui = true;
+
+	@Property(type = PropertyType.BUTTON, name = "Move flare alert", description = "Test", category = "General", subcategory = "General")
+	@SuppressWarnings("unused")
+	public void MoveFlare() {
+		Main.mc.displayGuiScreen(new MoveGui("Flares"));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.BUTTON, name = "Test move gui", description = "Test", category = "General", subcategory = "General")
+	@SuppressWarnings("unused")
+	public void MoveGuiInit() {
+		Main.mc.displayGuiScreen(new MoveGui("Ahh"));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.BUTTON, name = "Test move Dungeons", description = "Test", category = "General", subcategory = "General")
+	@SuppressWarnings("unused")
+	public void MoveGuiInit2() {
+		Main.mc.displayGuiScreen(new MoveGui("Nom"));
+		Main.display = null;
+	}
+
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Time between AH Checks",
