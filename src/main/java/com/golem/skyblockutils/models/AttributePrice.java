@@ -221,7 +221,7 @@ public class AttributePrice {
 				result.addProperty("top_display", "LBIN");
 				result.addProperty("bottom_display", 0);
 				result.addProperty("display_string", "LBIN " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.getOrDefault(item_id, 0)));
-				result.addProperty("value", combo_value);
+				result.addProperty("value", LowestBin.getOrDefault(item_id, 0));
 				return result;
 			}
 
