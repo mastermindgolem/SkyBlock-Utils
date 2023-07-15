@@ -1,12 +1,5 @@
-package com.golem.skyblockutils;
-
-import com.golem.skyblockutils.init.*;
-import com.golem.skyblockutils.models.gui.GuiElement;
-import com.golem.skyblockutils.utils.AuctionHouse;
-import com.golem.skyblockutils.utils.TimeHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import logger.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.common.Mod;
@@ -19,59 +12,36 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
 
 @Mod(modid = Main.MODID, version = Main.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.9]")
 public class Main
 {
-	public static final String MODID = "SkyblockUtils";
+	public static final String MODID = "Nom";
 	private static final String[] c = new String[]{"k", "m", "b"};
-	private AuctionHouse all_auctions;
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
 	public static final String VERSION = "1.0.1";
-	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
-	private static final TimeHelper time = new TimeHelper();
-	public static List<GuiElement> StaticPosition = GuiInit.getOverlayLoaded();
-
-	public static PersistentData persistentData = new PersistentData();
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
-		time.setLastMS();
+
 	}
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {
-		// Note: HelpInit.registerHelp() needs to be called last for proper initialization
-		KeybindsInit.registerKeyBinds();
-		CommandInit.registerCommands();
-		EventInit.registerEvents();
-		for (GuiElement element : GuiInit.getOverlayLoaded()) {
-			Logger.debug(element); //remove later
-//			[Main | DEBUG] com.golem.skyblockutils.models.gui.GuiElement@3013568a
-//    	[Main | DEBUG] com.golem.skyblockutils.models.gui.GuiElement@209c5364
-		}
-		HelpInit.registerHelp();
 
 	}
 
 	@Mod.EventHandler
 	public void post(FMLPostInitializationEvent event) {
-		configFile = new Config();
-		Logger.info("Time taken to reach post initialization: " + time.getDelay());
-		if (!AuctionHouse.isRunning) {
-			AuctionHouse.isRunning = true;
-			all_auctions = new AuctionHouse();
-			new Thread(getAuctions()::run, "fetch-auctions").start();
-		}
+
 	}
 
 	@SubscribeEvent
 	public void join(FMLNetworkEvent.ClientConnectedToServerEvent event) {
 	}
+
 
 
 	@SubscribeEvent
@@ -84,10 +54,7 @@ public class Main
 		if (event.phase != TickEvent.Phase.START) {
 			return;
 		}
-		if (Main.display != null) {
-			Main.mc.displayGuiScreen(Main.display);
-			Main.display = null;
-		}
+
 	}
 
 	public static String coolFormat(final double n, final int iteration) {
@@ -159,12 +126,8 @@ public class Main
 		return String.format("%.1f%s", formattedNumber, suffix);
 	}
 
-	public AuctionHouse getAuctions() {
-		return all_auctions;
-	}
 
 	static {
-		Main.display = null;
 		mc = Minecraft.getMinecraft();
 	}
 }
