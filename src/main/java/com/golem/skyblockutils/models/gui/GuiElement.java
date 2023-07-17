@@ -17,8 +17,8 @@ public class GuiElement {
 	}
 
 	private final String name;
-	private final int width;
-	private final int height;
+	private int width;
+	private int height;
 	public GuiPosition position;
 
 	public GuiElement(String name, int width, int height) {
@@ -35,6 +35,7 @@ public class GuiElement {
 			Logger.debug(this.name);
 			position = new GuiPosition(rndWidth, rndHeight, 1.0);
 			PersistentData.getPositions().put(name, position);
+
 		}
 
 	}
@@ -60,14 +61,18 @@ public class GuiElement {
 		position.setY(coercedY);
 	}
 
+	public void setWidth(int w) {width = w;}
+
+	public void setHeight(int h) {height = h;}
+
 	public void draw(double mouseX, double mouseY) {
 		GlStateManager.pushMatrix();
 		double renderWidth = width * position.getScale();
 		double renderHeight = height * position.getScale();
-		GlStateManager.translate(position.getX() - padding * renderWidth, position.getY() - padding * renderWidth, 400.0);
+		GlStateManager.translate(position.getX() - padding * renderWidth, position.getY() - padding * renderHeight, 400.0);
 		Color color = (StaticPosition.stream().filter(element -> element.isInsideElement(mouseX, mouseY)).findFirst().orElse(null) == this) ?
 			new Color(255, 255, 255, 128) : new Color(128, 128, 128, 128);
-		OverlayUtils.renderRect(0.0, 0.0, renderWidth * (1 + padding * 2), renderHeight * (1 + padding * 2), color);
+		OverlayUtils.renderRect(0.0, 0.0, renderWidth, renderHeight, color);
 		GlStateManager.popMatrix();
 	}
 

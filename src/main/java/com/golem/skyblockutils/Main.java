@@ -34,7 +34,7 @@ public class Main
 	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
-	private static final TimeHelper time = new TimeHelper();
+	public static final TimeHelper time = new TimeHelper();
 	public static List<GuiElement> StaticPosition = GuiInit.getOverlayLoaded();
 
 	public static PersistentData persistentData = new PersistentData();

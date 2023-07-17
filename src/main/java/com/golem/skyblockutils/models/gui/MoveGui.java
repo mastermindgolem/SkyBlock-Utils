@@ -1,7 +1,5 @@
 package com.golem.skyblockutils.models.gui;
 
-import com.golem.skyblockutils.models.Overlay.ImageOverlay.FlareDrawing;
-import com.golem.skyblockutils.models.Overlay.ImageOverlay.FlareOverlay;
 import logger.Logger;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
