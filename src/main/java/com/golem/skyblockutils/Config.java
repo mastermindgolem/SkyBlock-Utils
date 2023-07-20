@@ -1,5 +1,9 @@
 package com.golem.skyblockutils;
 
+import com.golem.skyblockutils.models.Overlay.TextOverlay.AlignOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.ChampionOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.RagnarokOverlay;
 import com.golem.skyblockutils.models.gui.MoveGui;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
@@ -28,27 +32,6 @@ public class Config extends Vigilant
 		subcategory = "General"
 	)
 	public boolean testGui = true;
-
-	@Property(type = PropertyType.BUTTON, name = "Move flare alert", description = "Test", category = "General", subcategory = "General")
-	@SuppressWarnings("unused")
-	public void MoveFlare() {
-		Main.mc.displayGuiScreen(new MoveGui("Flares"));
-		Main.display = null;
-	}
-
-	@Property(type = PropertyType.BUTTON, name = "Test move gui", description = "Test", category = "General", subcategory = "General")
-	@SuppressWarnings("unused")
-	public void MoveGuiInit() {
-		Main.mc.displayGuiScreen(new MoveGui("Ahh"));
-		Main.display = null;
-	}
-
-	@Property(type = PropertyType.BUTTON, name = "Test move Dungeons", description = "Test", category = "General", subcategory = "General")
-	@SuppressWarnings("unused")
-	public void MoveGuiInit2() {
-		Main.mc.displayGuiScreen(new MoveGui("Nom"));
-		Main.display = null;
-	}
 
 	@Property(
 			type = PropertyType.SLIDER,
@@ -138,9 +121,45 @@ public class Config extends Vigilant
 
 	@Property(type = PropertyType.SWITCH, name = "Show Unfinished Supplies Waypoints", description = "temp", category = "General", subcategory = "Kuudra")
 	public boolean showSupplyWaypoint = false;
-
 	@Property(type = PropertyType.SWITCH, name = "Show Unfinished Build Waypoints", description = "temp", category = "General", subcategory = "Kuudra")
 	public boolean showBuildWaypoint = false;
+	@Property(type = PropertyType.SWITCH, name = "Show Instastun Block", description = "Highlights the block to etherwarp to and the block to mine to instastun easily. Thanks to @Magma_Cao for this.", category = "General", subcategory = "Kuudra")
+	public boolean showStunLocation = false;
+	@Property(type = PropertyType.SWITCH, name = "Show Align Timer", description = "Show time till cells alignment runs out", category = "Overlays", subcategory = "Align Timer")
+	public boolean alignTimer = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Align Timer", description = "Test", category = "Overlays", subcategory = "Align Timer")
+	@SuppressWarnings("unused")
+	public void MoveAlignTimer() {
+		Main.mc.displayGuiScreen(new MoveGui(AlignOverlay.element));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "Show Ragnarok Timer", description = "Show ragnarok buff timer and cooldown timer", category = "Overlays", subcategory = "Ragnarok Timer")
+	public boolean ragnarokTimer = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Ragnarok Timer", description = "Test", category = "Overlays", subcategory = "Ragnarok Timer")
+	@SuppressWarnings("unused")
+	public void MoveRagnarokTimer() {
+		Main.mc.displayGuiScreen(new MoveGui(RagnarokOverlay.element));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "Show Supply Info", description = "Show where supplies are and who got how many supplies", category = "Overlays", subcategory = "Supply Info")
+	public boolean supplyInfo = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Supply Info", description = "Test", category = "Overlays", subcategory = "Supply Info")
+	@SuppressWarnings("unused")
+	public void MoveSupplyInfo() {
+		Main.mc.displayGuiScreen(new MoveGui(CratesOverlay.element));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "Broken Wither Impact Notification", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Broken Wither Impact")
+	public boolean brokenHyp = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Broken Wither Impact", description = "Test", category = "Overlays", subcategory = "Broken Wither Impact")
+	@SuppressWarnings("unused")
+	public void MoveWitherImpact() {
+		Main.mc.displayGuiScreen(new MoveGui(ChampionOverlay.element));
+		Main.display = null;
+	}
 
 	@Property(
 			type = PropertyType.SLIDER,
@@ -171,14 +190,12 @@ public class Config extends Vigilant
 	)
 	public boolean kuudra_overlay = true;
 
-	@Property(
-			type = PropertyType.SWITCH,
-			name = "Container Value",
-			description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).",
-			category = "General",
-			subcategory = "Kuudra Profit Overlay"
-	)
+	@Property(type = PropertyType.SWITCH, name = "Container Value", description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).", category = "Overlays", subcategory = "Container Value")
 	public boolean container_value = true;
+	@Property(type = PropertyType.SWITCH, name = "Compact Container Value", description = "Compacts text by removing \"Terror\", \"Aurora\", etc. when it doesn't affect value", category = "Overlays", subcategory = "Container Value")
+	public boolean compactContainerValue = true;
+	@Property(type = PropertyType.SELECTOR, name = "Sorting of Container Value", description = "Decide how container value display is sorted.", category = "Overlays", subcategory = "Container Value", options = {"Descending Price", "Ascending Price", "Alphabetical", "Attribute Tier", "Item Type"})
+	public int containerSorting = 0;
 
 	@Property(
 			type = PropertyType.SELECTOR,
@@ -262,6 +279,6 @@ public class Config extends Vigilant
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
 		}
 
-		private final List<String> categories = Arrays.asList("General"); //
+		private final List<String> categories = Arrays.asList("General", "Overlays"); //
 	}
 }

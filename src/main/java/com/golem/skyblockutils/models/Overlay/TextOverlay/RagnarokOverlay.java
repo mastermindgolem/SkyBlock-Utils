@@ -21,7 +21,7 @@ public class RagnarokOverlay {
 
     private final DecimalFormat formatter = new DecimalFormat("0.00");
     private static long lastUse = 0;
-    private static long lastActive = 0;
+    private static long lastFail = 0;
 
     public static int renderWidth(String text) {
         return mc.fontRendererObj.getStringWidth(text);
@@ -34,14 +34,12 @@ public class RagnarokOverlay {
         if (message.contains("CASTING IN 3")) {
             lastUse = time.getCurrentMS();
         }
-        if (message.contains("CASTING") && !message.contains("IN")) {
-            lastActive = time.getCurrentMS();
-        }
+        if (message.equals("Ragnarock was cancelled due to being hit!")) lastFail = time.getCurrentMS();
     }
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !configFile.ragnarokTimer) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
@@ -50,7 +48,7 @@ public class RagnarokOverlay {
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
-            double buffLeft = lastActive + 12000 - time.getCurrentMS();
+            double buffLeft = (time.getCurrentMS() - lastFail > 20000 && time.getCurrentMS() - lastUse > 3000 && time.getCurrentMS() - lastUse < 14000 ? lastUse + 14000 - time.getCurrentMS() : -1);
             double cooldown = lastUse + 20000 - time.getCurrentMS();
             String string1;
             if (buffLeft < 0) {
@@ -65,7 +63,7 @@ public class RagnarokOverlay {
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
 
             element.setWidth(Math.max(renderWidth(string1), renderWidth(string2)));
-            element.setHeight((int) (20 * element.position.getScale()));
+            element.setHeight(20);
 
             GlStateManager.popMatrix();
         } else if (mc.currentScreen instanceof MoveGui) {
@@ -80,7 +78,7 @@ public class RagnarokOverlay {
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
 
             element.setWidth(Math.max(renderWidth(string1), renderWidth(string2)));
-            element.setHeight((int) (20 * element.position.getScale()));
+            element.setHeight(20);
 
             GlStateManager.popMatrix();
         }

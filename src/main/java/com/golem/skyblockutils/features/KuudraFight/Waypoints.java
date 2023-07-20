@@ -6,10 +6,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityMagmaCube;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -65,6 +68,14 @@ public class Waypoints {
                 }
             }
         }
+
+        if (Kuudra.currentPhase == 3 && Kuudra.stunner && Main.configFile.showStunLocation) {
+            RenderUtils.drawBlockBox(new BlockPos(-168, 29, -166), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-169 , 31, -166), Color.GREEN, 5, event.partialTicks);
+        }
+
+
+
     }
 
 

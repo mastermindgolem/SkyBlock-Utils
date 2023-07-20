@@ -1,5 +1,8 @@
 package com.golem.skyblockutils.models.gui;
 
+import com.golem.skyblockutils.Main;
+import gg.essential.universal.UResolution;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -122,6 +125,27 @@ public class OverlayUtils {
 		worldRenderer.pos((double) (x + width), (double) y, 0.0).tex(1.0, 0.0).endVertex();
 		worldRenderer.pos((double) x, (double) y, 0.0).tex(0.0, 0.0).endVertex();
 		tessellator.draw();
+	}
+
+	public static void drawTitle(String text, ScaledResolution scaledResolution) {
+		float scale = 4f; // Scale is normally 4, but if it's larger than the screen, scale it down...
+
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(0,scaledResolution.getScaledHeight() / 2F, 0.0f);
+		GlStateManager.enableBlend();
+		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(scale, scale, scale);
+
+		mc.fontRendererObj.drawString(
+				text,
+				0,
+				0,
+				-1,
+				true
+		);
+		GlStateManager.popMatrix();
+		GlStateManager.popMatrix();
 	}
 }
 

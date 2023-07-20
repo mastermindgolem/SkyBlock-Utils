@@ -192,35 +192,38 @@ public class AttributePrice {
 
 			ArrayList<String> attrArray = new ArrayList<>(nbt.getKeySet());
 
+			String displayName = item.getDisplayName();
+			if (configFile.compactContainerValue) for (String r : new String[]{"Terror ", "Aurora ", "Crimson ", "Fervor ", "Hollow ", "Molten ", "Gauntlet of ", "Attribute "}) displayName = displayName.replace(r, "");
+
 
 			if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1000000) {
 				result.addProperty("top_display", "GR");
 				result.addProperty("bottom_display", 0);
-				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + nbt.getInteger(attrArray.get(1)) + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(added_value));
+				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + nbt.getInteger(attrArray.get(1)) + " " + displayName);
 				result.addProperty("value", added_value);
 				return result;
 			} else if (combo_value > configFile.min_godroll_price * 1000000 && combo_value > best_value) {
 				result.addProperty("top_display", "GR");
 				result.addProperty("bottom_display", 0);
-				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(combo_value));
+				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + displayName);
 				result.addProperty("value", combo_value);
 				return result;
 			} else if (best_value > LowestBin.getOrDefault(item_id, 0)) {
 				result.addProperty("top_display", ShortenedAttribute(best_attribute));
 				result.addProperty("bottom_display", best_tier);
-				result.addProperty("display_string", ShortenedAttribute(best_attribute) + " " + best_tier + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(best_value));
+				result.addProperty("display_string", ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName);
 				result.addProperty("value", best_value);
 				return result;
 			} else if (item_id.equals("ATTRIBUTE_SHARD")) {
 				result.addProperty("top_display", ShortenedAttribute(attrArray.get(0)));
 				result.addProperty("bottom_display", nbt.getInteger(attrArray.get(0)));
-				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getString(attrArray.get(0)) + " " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.getOrDefault(item_id, 0)));
+				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + displayName);
 				result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
 				return result;
 			} else if (LowestBin.getOrDefault(item_id, 0) > 0 && nbt.getKeySet().size() > 0) {
 				result.addProperty("top_display", "LBIN");
 				result.addProperty("bottom_display", 0);
-				result.addProperty("display_string", "LBIN " + item.getDisplayName() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(LowestBin.getOrDefault(item_id, 0)));
+				result.addProperty("display_string", "LBIN " + displayName);
 				result.addProperty("value", LowestBin.getOrDefault(item_id, 0));
 				return result;
 			}

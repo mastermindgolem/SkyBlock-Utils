@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models.gui;
 
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.PersistentData;
 import gg.essential.universal.UResolution;
 import logger.Logger;
@@ -20,12 +21,13 @@ public class GuiElement {
 	private int width;
 	private int height;
 	public GuiPosition position;
+	private static final double padding = 0.05;
 
 	public GuiElement(String name, int width, int height) {
 		this.name = name;
 		this.width = width;
 		this.height = height;
-		this.position = PersistentData.getPositions().get(name);
+		this.position = PersistentData.positions.get(name);
 
 		if (position == null) {
 			Logger.info("Position entered?");
@@ -34,7 +36,8 @@ public class GuiElement {
 			Logger.debug(rndWidth, " ", rndHeight);
 			Logger.debug(this.name);
 			position = new GuiPosition(rndWidth, rndHeight, 1.0);
-			PersistentData.getPositions().put(name, position);
+			PersistentData.positions.put(name, position);
+			Main.persistentData.save();
 
 		}
 
@@ -76,6 +79,5 @@ public class GuiElement {
 		GlStateManager.popMatrix();
 	}
 
-	private static final double padding = 0.05;
 
 }

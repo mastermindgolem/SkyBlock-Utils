@@ -12,19 +12,6 @@ public class GuiInit {
 	}
 
 	private static final List<GuiElement> OverlayLoaded = Arrays.asList(
-		AlignOverlay.element, RagnarokOverlay.element
-	);
-
-	public static List<GuiElement> get2ndOverlayLoaded() { return Overlay2Loaded; }
-
-	private static final List<GuiElement> Overlay2Loaded = Arrays.asList(
-	);
-
-	public static List<GuiElement> getFlareOverlayList() {
-		return FlareOverlayList;
-	}
-
-	private static final List<GuiElement> FlareOverlayList = Arrays.asList(
-
+		AlignOverlay.element, RagnarokOverlay.element, CratesOverlay.element, ChampionOverlay.element
 	);
 }

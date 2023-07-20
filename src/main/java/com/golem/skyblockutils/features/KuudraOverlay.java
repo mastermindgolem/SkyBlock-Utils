@@ -120,7 +120,7 @@ public class KuudraOverlay {
 						default: {
 							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
 							if (valueData == null) break;
-							String displayString = valueData.get("display_string").getAsString();
+							String displayString = valueData.get("display_string").getAsString() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(valueData.get("value").getAsBigInteger());
 							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
 							displayStrings.add(displayString);
 							break;

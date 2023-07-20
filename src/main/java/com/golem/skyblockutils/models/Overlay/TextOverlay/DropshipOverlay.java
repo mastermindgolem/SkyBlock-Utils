@@ -10,13 +10,13 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.DecimalFormat;
-import java.util.regex.Pattern;
 
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
 
-public class AlignOverlay {
-    public static GuiElement element = new GuiElement("Align Overlay", 50, 20);
+public class DropshipOverlay {
+
+    public static GuiElement element = new GuiElement("Dropship Overlay", 50, 20);
 
     private static final TimeHelper time = new TimeHelper();
     private final DecimalFormat formatter = new DecimalFormat("0.00");
@@ -36,7 +36,7 @@ public class AlignOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !Main.configFile.alignTimer) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
@@ -51,7 +51,7 @@ public class AlignOverlay {
                 timeString = EnumChatFormatting.DARK_RED + "NO ALIGN";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                //OverlayUtils.drawTitle(EnumChatFormatting.RED + "ALIGN NOW", event.resolution);
+                //TitleUtils.getInstance().createTitle("ALIGN NOW", 1, 0xFF0000);
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
             }
@@ -59,7 +59,7 @@ public class AlignOverlay {
             OverlayUtils.drawString(0, 0, timeString, textStyle, Alignment.Left);
 
             element.setWidth(renderWidth(timeString));
-            element.setHeight(10);
+            element.setHeight((int) (10 * element.position.getScale()));
 
             GlStateManager.popMatrix();
         } else if (mc.currentScreen instanceof MoveGui) {
@@ -71,9 +71,10 @@ public class AlignOverlay {
             OverlayUtils.drawString(0, 0, string, textStyle, Alignment.Left);
 
             element.setWidth(renderWidth(string));
-            element.setHeight(10);
+            element.setHeight((int) (10 * element.position.getScale()));
 
             GlStateManager.popMatrix();
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.features.KuudraFight;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -27,11 +28,14 @@ public class Kuudra {
     public static HashMap<Vec3, Integer> supplyWaypoints = new HashMap<>(6);
     public static Float[] splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
     public static int currentPhase = 0;
+    public static boolean stunner = false;
 
     @SubscribeEvent
     public void onWorldLoad(EntityJoinWorldEvent event) {
         if (event.entity != Main.mc.thePlayer) return;
         supplyWaypoints = new HashMap<>(6);
+        CratesOverlay.crates = new HashMap<>();
+        CratesOverlay.playerInfo = new HashMap<>();
     }
 
     @SubscribeEvent
@@ -40,7 +44,10 @@ public class Kuudra {
         if (message.equals("[NPC] Elle: Talk with me to begin!")) {
             currentPhase = 0;
             supplyWaypoints = new HashMap<>(6);
+            CratesOverlay.crates = new HashMap<>();
+            CratesOverlay.playerInfo = new HashMap<>();
             splits[0] = (float) Main.time.getCurrentMS();
+            stunner = false;
         }
         if (message.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             currentPhase = 1;
@@ -81,6 +88,7 @@ public class Kuudra {
         }
         if (message.equals("[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!")) {
             currentPhase = 4;
+            stunner = false;
             splits[4] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + formatter.format(splits[4]/1000F - splits[3]/1000F) + "s");
 
@@ -99,6 +107,7 @@ public class Kuudra {
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + formatter.format(splits[4]/1000F - splits[3]/1000F) + "s");
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + formatter.format(splits[5]/1000F - splits[4]/1000F) + "s");
         }
+        if (message.endsWith("has been eaten by Kuudra!") && message.startsWith(Main.mc.getSession().getUsername())) stunner = true;
 
     }
 

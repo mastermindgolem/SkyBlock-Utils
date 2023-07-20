@@ -30,12 +30,12 @@ public class Main
 	private AuctionHouse all_auctions;
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
-	public static final String VERSION = "1.0.1";
+	public static final String VERSION = "1.0.2";
 	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
 	public static final TimeHelper time = new TimeHelper();
-	public static List<GuiElement> StaticPosition = GuiInit.getOverlayLoaded();
+	public static List<GuiElement> StaticPosition;
 
 	public static PersistentData persistentData = new PersistentData();
 
@@ -49,11 +49,6 @@ public class Main
 		KeybindsInit.registerKeyBinds();
 		CommandInit.registerCommands();
 		EventInit.registerEvents();
-		for (GuiElement element : GuiInit.getOverlayLoaded()) {
-			Logger.debug(element); //remove later
-//			[Main | DEBUG] com.golem.skyblockutils.models.gui.GuiElement@3013568a
-//    	[Main | DEBUG] com.golem.skyblockutils.models.gui.GuiElement@209c5364
-		}
 		HelpInit.registerHelp();
 
 	}
@@ -61,6 +56,8 @@ public class Main
 	@Mod.EventHandler
 	public void post(FMLPostInitializationEvent event) {
 		configFile = new Config();
+		PersistentData.load();
+		EventInit.registerOverlays();
 		Logger.info("Time taken to reach post initialization: " + time.getDelay());
 		if (!AuctionHouse.isRunning) {
 			AuctionHouse.isRunning = true;

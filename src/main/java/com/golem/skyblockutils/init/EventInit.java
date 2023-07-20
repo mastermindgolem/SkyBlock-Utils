@@ -2,14 +2,10 @@ package com.golem.skyblockutils.init;
 
 import com.golem.skyblockutils.ChatListener;
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.GuiEvent;
+import com.golem.skyblockutils.features.*;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
-import com.golem.skyblockutils.features.KuudraHealth;
-import com.golem.skyblockutils.features.KuudraOverlay;
-import com.golem.skyblockutils.features.ContainerValue;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
-import com.golem.skyblockutils.models.gui.TitleUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -27,14 +23,24 @@ public class EventInit {
 			new Kuudra(),
 			new Waypoints(),
 			new GuiEvent(),
-			new AlignOverlay(),
-			new TitleUtils(),
-			new RagnarokOverlay()
+			new BrokenHyp()
 		};
 
 		for (Object listener : listeners) {
 			MinecraftForge.EVENT_BUS.register(listener);
 		}
+	}
 
+	public static void registerOverlays() {
+		Object[] listeners = {
+				new AlignOverlay(),
+				new RagnarokOverlay(),
+				new CratesOverlay(),
+				new ChampionOverlay()
+		};
+
+		for (Object listener : listeners) {
+			MinecraftForge.EVENT_BUS.register(listener);
+		}
 	}
 }

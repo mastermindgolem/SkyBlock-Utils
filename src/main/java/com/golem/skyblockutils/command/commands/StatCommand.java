@@ -248,6 +248,7 @@ public class StatCommand extends CommandBase implements Help {
 		displayItem(data.get("Terror Boots").getAsJsonObject());
 
 		for (JsonElement equipment : data.get("Equipment").getAsJsonArray()) displayItem(equipment.getAsJsonObject());
+		displayItem(data.get("Support Item").getAsJsonObject());
 
 		if (!data.get("InventoryAPI").getAsBoolean()) addChatMessage(EnumChatFormatting.RED + "This player has their inventory API disabled.");
 

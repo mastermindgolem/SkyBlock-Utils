@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.mc;
 
@@ -56,7 +57,6 @@ public class GuiEvent {
 					int index = event.toolTip.indexOf(line);
 					toolTip.remove(line);
 					String updatedString = line.replaceAll("\\(§e\\d+§b\\)", "(§e" + kuudraLevel.getOrDefault(ign, new long[]{0, 0})[0] + "§b)");
-					System.out.println(updatedString);
 					toolTip.add(index, updatedString);
 				}
 			}
@@ -67,11 +67,15 @@ public class GuiEvent {
 
 
 			boolean cont = true;
+
+			currentParty = currentParty.stream().distinct().collect(Collectors.toList());
+
 			for (String a : currentParty)
 				if (lastPartyChecked.contains(a)) {
 					cont = false;
 					break;
 				}
+
 			if (cont) {
 				currentParty.forEach(member -> StatCommand.showPlayerStats(member, false));
 				lastPartyChecked = currentParty;

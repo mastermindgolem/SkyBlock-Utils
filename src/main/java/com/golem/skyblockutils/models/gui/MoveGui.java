@@ -1,5 +1,6 @@
 package com.golem.skyblockutils.models.gui;
 
+import com.golem.skyblockutils.PersistentData;
 import logger.Logger;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,17 +20,12 @@ public class MoveGui extends GuiScreen {
 	private GuiElement currentElement = null;
 	private double clickOffsetX = 0.0;
 	private double clickOffsetY = 0.0;
-	private List<GuiElement> Elements = null;
+	private GuiElement Element = null;
 
-	public MoveGui(String check) {
-		if(Objects.equals(check, "Nom")) {
-			this.Elements = get2ndOverlayLoaded();
-		} else if(Objects.equals(check, "Flares")) {
-			this.Elements = getFlareOverlayList();
-		} else {
-			this.Elements = getOverlayLoaded();
-		}
+	public MoveGui(GuiElement element) {
+		this.Element = element;
 	}
+
 	@Override
 	public void drawScreen(int x, int y, float partialTicks) {
 		super.drawScreen(x, y, partialTicks);
@@ -44,12 +40,7 @@ public class MoveGui extends GuiScreen {
 		OverlayUtils.drawString(0, 10, "Drag to move GUI elements.", TextStyle.Outline, Alignment.Center);
 		OverlayUtils.drawString(0, 20, "Scroll inside elements to scale.", TextStyle.Outline, Alignment.Center);
 		GlStateManager.popMatrix();
-		for (GuiElement element : Elements) {
-			if (Objects.equals(element.getName(), "Flares")) {
-				continue;
-			}
-			element.draw(mouseX, mouseY);
-		}
+		this.Element.draw(mouseX, mouseY);
 	}
 
 	@Override
@@ -59,17 +50,8 @@ public class MoveGui extends GuiScreen {
 		mouseX = mouseCoordinates[0];
 		mouseY = mouseCoordinates[1];
 
-		currentElement = Elements.stream()
-			.filter(element -> element.isInsideElement(mouseX, mouseY))
-			.findFirst()
-			.map(element -> {
-				double clickOffsetX = mouseX - element.position.getX();
-				double clickOffsetY = mouseY - element.position.getY();
-				this.clickOffsetX = clickOffsetX;
-				this.clickOffsetY = clickOffsetY;
-				return element;
-			})
-			.orElse(null);
+		currentElement = (Element.isInsideElement(mouseX, mouseY) ? Element : null);
+
 		super.mouseClicked(x, y, mouseButton);
 	}
 
@@ -91,6 +73,7 @@ public class MoveGui extends GuiScreen {
 
 	/**
 	 * Scrolling stuff
+	 *
 	 * @throws IOException
 	 */
 	@Override
@@ -101,27 +84,24 @@ public class MoveGui extends GuiScreen {
 		mouseX = mouseCoordinates[0];
 		mouseY = mouseCoordinates[1];
 
-		double dScroll =  (Integer.signum(Mouse.getEventDWheel()) * 0.1);
+		double dScroll = (Integer.signum(Mouse.getEventDWheel()) * 0.1);
 		if (dScroll == 0) {
 			return;
 		}
 
-		for (GuiElement element : Elements) {
-			if (element.isInsideElement(mouseX, mouseY)) {
-				currentElement = element;
-				clickOffsetX = mouseX - element.position.getX();
-				clickOffsetY = mouseY - element.position.getY();
+		if (Element.isInsideElement(mouseX, mouseY)) {
+			currentElement = Element;
+			clickOffsetX = mouseX - Element.position.getX();
+			clickOffsetY = mouseY - Element.position.getY();
 
-				double oldScale = element.position.getScale();
-				double newScale = Math.max(oldScale + dScroll, 0.1);
+			double oldScale = Element.position.getScale();
+			double newScale = Math.max(oldScale + dScroll, 0.1);
 
-				element.position.setX(mouseX + ((newScale / oldScale) * (element.position.getX() - mouseX)));
-				element.position.setY(mouseY + ((newScale / oldScale) * (element.position.getY() - mouseY)));
-				element.position.setScale(newScale);
+			Element.position.setX(mouseX + ((newScale / oldScale) * (Element.position.getX() - mouseX)));
+			Element.position.setY(mouseY + ((newScale / oldScale) * (Element.position.getY() - mouseY)));
+			Element.position.setScale(newScale);
 
-				element.coerceIntoScreen();
-				break;
-			}
+			Element.coerceIntoScreen();
 		}
 	}
 
@@ -133,6 +113,7 @@ public class MoveGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
+		PersistentData.positions.put(Element.getName(), Element.position);
 		persistentData.save();
 	}
 
