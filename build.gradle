@@ -4,6 +4,7 @@ plugins {
 	id "org.spongepowered.mixin" version "0.6-SNAPSHOT"
 	id "java"
 	id "application"
+	id "groovy"
 }
 project.setProperty("mainClassName", "com.golem.skyblockutils.Main")
 
@@ -61,12 +62,12 @@ dependencies {
 	implementation "gg.essential:essential-1.8.9-forge:2666"
 	// Discord
 	implementation "org.javacord:javacord:3.8.0"
-	// Inc Tests
-	testImplementation "junit:junit:4.13.2"
 	// Logger
 	implementation "com.github.VlxtIykg:Logger:1.1.0"
 	// Our gui
 
+	// Unit testing
+	testImplementation "org.spockframework:spock-core:2.4-M1-groovy-4.0"
 }
 
 mixin {
@@ -125,6 +126,9 @@ processResources {
 	from(file("LICENSE"))
 }
 
+test {
+	useJUnitPlatform()
+}
 
 tasks.reobfJar.dependsOn(shadowJar)
 sourceSets { main { output.resourcesDir = java.classesDirectory } }
