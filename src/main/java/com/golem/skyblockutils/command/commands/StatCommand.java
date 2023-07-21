@@ -13,7 +13,6 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
 import java.io.BufferedReader;
@@ -24,6 +23,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import static com.golem.skyblockutils.Main.mc;
+import static net.minecraft.util.EnumChatFormatting.*;
+
 
 public class StatCommand extends CommandBase implements Help {
 
@@ -51,38 +52,38 @@ public class StatCommand extends CommandBase implements Help {
 	@Override
 	public List<String> getHoverStrings() {
 		return Arrays.asList(
-			EnumChatFormatting.BLUE + "====================Kuudra help menu!====================",
-			EnumChatFormatting.RESET + "\n",
+			BLUE + "====================Kuudra help menu!====================",
+			RESET + "\n",
 			example() + "                  Checks kuudra stats of a person!                  ",
-			EnumChatFormatting.RESET + "\n",
-			EnumChatFormatting.GOLD + "/ks help" +
-			EnumChatFormatting.GRAY + " ⬅ Shows this elaborate menu.",
-			EnumChatFormatting.RESET + "\n",
-			EnumChatFormatting.RESET + "\n",
-			EnumChatFormatting.GOLD + "/ks [ign]" +
-			EnumChatFormatting.GRAY + " ⬅ Shows player's kuudra stats unless [ign] is specified",
-			EnumChatFormatting.RESET + "\n",
+			RESET + "\n",
+			GOLD + "/ks help" +
+			GRAY + " ⬅ Shows this elaborate menu.",
+			RESET + "\n",
+			RESET + "\n",
+			GOLD + "/ks [ign]" +
+			GRAY + " ⬅ Shows player's kuudra stats unless [ign] is specified",
+			RESET + "\n",
 			example() + "E.g. /ks duophug",
-			EnumChatFormatting.RESET + "\n",
-			EnumChatFormatting.RESET + "\n",
-			EnumChatFormatting.RED + "Legend:" +
-			EnumChatFormatting.RESET + "\n  " +
-			EnumChatFormatting.DARK_AQUA + "ign: Pheiaa" +
-			EnumChatFormatting.RESET + "\n",
-			EnumChatFormatting.BLUE + " ======================================================== "
+			RESET + "\n",
+			RESET + "\n",
+			RED + "Legend:" +
+			RESET + "\n  " +
+			DARK_AQUA + "ign: Pheiaa" +
+			RESET + "\n",
+			BLUE + " ======================================================== "
 		);
 	}
 
 	@Override
 	public String getHelpMessage() {
 		return
-			EnumChatFormatting.GRAY + "▶ " +
-			EnumChatFormatting.GOLD + "/kuudrastats " +
-			EnumChatFormatting.AQUA + "ign" +
+			GRAY + "▶ " +
+			GOLD + "/kuudrastats " +
+			AQUA + "ign" +
 			example() + "(Aliases: /kuudra /ks)" +
-			EnumChatFormatting.RESET + "\n" +
-			EnumChatFormatting.WHITE + "Try it out! /ks drfie" +
-			EnumChatFormatting.RESET + "\n";
+			RESET + "\n" +
+			WHITE + "Try it out! /ks drfie" +
+			RESET + "\n";
 	}
 
 	@Override
@@ -126,7 +127,7 @@ public class StatCommand extends CommandBase implements Help {
 	}
 
 	public String example() {
-		return EnumChatFormatting.GRAY + " " + EnumChatFormatting.ITALIC;
+		return GRAY + " " + ITALIC;
 	}
 
 	private void sendHelpMessage() {
@@ -194,16 +195,16 @@ public class StatCommand extends CommandBase implements Help {
 		DecimalFormat formatter2 = new DecimalFormat("#,###.####");
 
 
-		addChatMessage(EnumChatFormatting.RED + "------------------");
+		addChatMessage(RED + "------------------");
 		if (data.get("Expert Plus").getAsBoolean()) {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]");
+			addChatMessage(AQUA + "Kuudra Stats for " + ign + DARK_GREEN + " [Expert Plus]");
 		} else if (data.get("Expert").getAsBoolean()) {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]");
+			addChatMessage(AQUA + "Kuudra Stats for " + ign + DARK_GREEN + " [Expert]");
 		} else {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign);
+			addChatMessage(AQUA + "Kuudra Stats for " + ign);
 		}
-		addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
-		addChatMessage(EnumChatFormatting.GREEN + "Magical Power: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
+		addChatMessage(GREEN + "Kuudra Level: " + YELLOW + data.get("Kuudra Level").getAsInt());
+		addChatMessage(GREEN + "Magical Power: " + YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
 
 		if (!GuiEvent.kuudraLevel.containsKey(ign) || (GuiEvent.kuudraLevel.containsKey(ign) && Main.time.getCurrentMS() - GuiEvent.kuudraLevel.getOrDefault(ign, new long[]{0L, 0L})[1] > 900)) {
 			GuiEvent.kuudraLevel.put(ign, new long[]{data.get("Kuudra Level").getAsInt(), Main.time.getCurrentMS()});
@@ -212,31 +213,31 @@ public class StatCommand extends CommandBase implements Help {
 
 
 		msg = new ChatComponentText(
-			EnumChatFormatting.AQUA + "Kuudra Completions: " + EnumChatFormatting.GRAY + "(Hover)"
+			AQUA + "Kuudra Completions: " + GRAY + "(Hover)"
 		).setChatStyle(new ChatStyle().setChatHoverEvent(
 			new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(
-					EnumChatFormatting.GOLD + "Basic: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Basic Comps").getAsInt()) + EnumChatFormatting.GRAY + " (" + formatter.format(data.get("Basic Key Amt").getAsInt()) + " keys)" + "\n" +
-					EnumChatFormatting.GOLD + "Hot: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Hot Comps").getAsInt()) + EnumChatFormatting.GRAY + " (" + formatter.format(data.get("Hot Key Amt").getAsInt()) + " keys)" + "\n" +
-					EnumChatFormatting.GOLD + "Burning: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Burning Comps").getAsInt()) + EnumChatFormatting.GRAY + " (" + formatter.format(data.get("Burning Key Amt").getAsInt()) + " keys)" + "\n" +
-					EnumChatFormatting.GOLD + "Fiery: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Fiery Comps").getAsInt()) + EnumChatFormatting.GRAY + " (" + formatter.format(data.get("Fiery Key Amt").getAsInt()) + " keys)" + "\n" +
-					EnumChatFormatting.GOLD + "Infernal: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Infernal Comps").getAsInt()) + EnumChatFormatting.GRAY + " (" + formatter.format(data.get("Infernal Key Amt").getAsInt()) + " keys)"
+					GOLD + "Basic: " + YELLOW + formatter.format(data.get("Basic Comps").getAsInt()) + GRAY + " (" + formatter.format(data.get("Basic Key Amt").getAsInt()) + " keys)" + "\n" +
+					GOLD + "Hot: " + YELLOW + formatter.format(data.get("Hot Comps").getAsInt()) + GRAY + " (" + formatter.format(data.get("Hot Key Amt").getAsInt()) + " keys)" + "\n" +
+					GOLD + "Burning: " + YELLOW + formatter.format(data.get("Burning Comps").getAsInt()) + GRAY + " (" + formatter.format(data.get("Burning Key Amt").getAsInt()) + " keys)" + "\n" +
+					GOLD + "Fiery: " + YELLOW + formatter.format(data.get("Fiery Comps").getAsInt()) + GRAY + " (" + formatter.format(data.get("Fiery Key Amt").getAsInt()) + " keys)" + "\n" +
+					GOLD + "Infernal: " + YELLOW + formatter.format(data.get("Infernal Comps").getAsInt()) + GRAY + " (" + formatter.format(data.get("Infernal Key Amt").getAsInt()) + " keys)"
 			))));
 		Main.mc.thePlayer.addChatMessage(msg);
 
 		msg = new ChatComponentText(
-			EnumChatFormatting.AQUA + "Important Items: " + EnumChatFormatting.GRAY + "(Hover)"
+			AQUA + "Important Items: " + GRAY + "(Hover)"
 		).setChatStyle(new ChatStyle().setChatHoverEvent(
 			new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(
-				(data.get("Wither Impact Weapon").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Wither Impact Weapon\n" +
-				(data.get("Precursor Eye").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Precursor Eye\n" +
-				(data.get("Gyrokinetic Wand").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Gyrokinetic Wand\n" +
-				(data.get("Warden Helmet").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Warden Helmet\n" +
-				(data.get("1B Bank").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "1 Billion Bank\n" +
-				(data.get("Level 200 Golden Dragon").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Level 200 Golden Dragon\n" +
-				(data.get("Reaper Armor").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Reaper Armor\n" +
-				(data.get("Duplex Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Duplex Terminator\n" +
-				(data.get("FT Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Fatal Tempo Terminator\n" +
-				(data.get("Rend Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Rend Terminator"
+				(data.get("Wither Impact Weapon").getAsBoolean() ? GREEN : DARK_RED) + "Wither Impact Weapon\n" +
+				(data.get("Precursor Eye").getAsBoolean() ? GREEN : DARK_RED) + "Precursor Eye\n" +
+				(data.get("Gyrokinetic Wand").getAsBoolean() ? GREEN : DARK_RED) + "Gyrokinetic Wand\n" +
+				(data.get("Warden Helmet").getAsBoolean() ? GREEN : DARK_RED) + "Warden Helmet\n" +
+				(data.get("1B Bank").getAsBoolean() ? GREEN : DARK_RED) + "1 Billion Bank\n" +
+				(data.get("Level 200 Golden Dragon").getAsBoolean() ? GREEN : DARK_RED) + "Level 200 Golden Dragon\n" +
+				(data.get("Reaper Armor").getAsBoolean() ? GREEN : DARK_RED) + "Reaper Armor\n" +
+				(data.get("Duplex Term").getAsBoolean() ? GREEN : DARK_RED) + "Duplex Terminator\n" +
+				(data.get("FT Term").getAsBoolean() ? GREEN : DARK_RED) + "Fatal Tempo Terminator\n" +
+				(data.get("Rend Term").getAsBoolean() ? GREEN : DARK_RED) + "Rend Terminator"
 			))));
 		Main.mc.thePlayer.addChatMessage(msg);
 
@@ -250,31 +251,31 @@ public class StatCommand extends CommandBase implements Help {
 		for (JsonElement equipment : data.get("Equipment").getAsJsonArray()) displayItem(equipment.getAsJsonObject());
 		displayItem(data.get("Support Item").getAsJsonObject());
 
-		if (!data.get("InventoryAPI").getAsBoolean()) addChatMessage(EnumChatFormatting.RED + "This player has their inventory API disabled.");
+		if (!data.get("InventoryAPI").getAsBoolean()) addChatMessage(RED + "This player has their inventory API disabled.");
 
 		msg = new ChatComponentText(
-			EnumChatFormatting.AQUA + "General Information: " + EnumChatFormatting.GRAY + "(Hover)"
+			AQUA + "General Information: " + GRAY + "(Hover)"
 		).setChatStyle(new ChatStyle().setChatHoverEvent(
 			new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(
-				EnumChatFormatting.GOLD + "Kuudra Score: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Kuudra Score").getAsInt()) + "\n" +
-					EnumChatFormatting.GOLD + "Vanquisher Chance: " + EnumChatFormatting.YELLOW + formatter2.format(data.get("Vanquisher Chance").getAsDouble()) + "%" + "\n" +
-					EnumChatFormatting.GOLD + "Mage Reputation: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Mage Rep").getAsInt()) + "\n" +
-					EnumChatFormatting.GOLD + "Barbarian Reputation: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Barb Rep").getAsInt()) + "\n" +
-					EnumChatFormatting.GOLD + "Nether Stars: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Stars Amount").getAsInt())
+				GOLD + "Kuudra Score: " + YELLOW + formatter.format(data.get("Kuudra Score").getAsInt()) + "\n" +
+					GOLD + "Vanquisher Chance: " + YELLOW + formatter2.format(data.get("Vanquisher Chance").getAsDouble()) + "%" + "\n" +
+					GOLD + "Mage Reputation: " + YELLOW + formatter.format(data.get("Mage Rep").getAsInt()) + "\n" +
+					GOLD + "Barbarian Reputation: " + YELLOW + formatter.format(data.get("Barb Rep").getAsInt()) + "\n" +
+					GOLD + "Nether Stars: " + YELLOW + formatter.format(data.get("Stars Amount").getAsInt())
 			))));
 		Main.mc.thePlayer.addChatMessage(msg);
 
-		addChatMessage(EnumChatFormatting.RED + "------------------");
+		addChatMessage(RED + "------------------");
 
 		if (partyFinder) {
 
-			if (data.get("Kuudra Level").getAsInt() < ParseInt(Main.configFile.minKuudraLevel)) {
-				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Kuudra Level");
+			if (data.get("Kuudra Level").getAsInt() < intOrDefault(Main.configFile.minKuudraLevel)) {
+				addChatMessage(RED + "Kicking player for low Kuudra Level");
 				mc.thePlayer.sendChatMessage("/party kick " + ign);
 				return;
 			}
-			if (data.get("Magical Power").getAsInt() < ParseInt(Main.configFile.minMagicalPower)) {
-				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Magical Power");
+			if (data.get("Magical Power").getAsInt() < intOrDefault(Main.configFile.minMagicalPower)) {
+				addChatMessage(RED + "Kicking player for low Magical Power");
 				mc.thePlayer.sendChatMessage("/party kick " + ign);
 				return;
 			}
@@ -294,52 +295,52 @@ public class StatCommand extends CommandBase implements Help {
 					break;
 			}
 
-			if (comps < ParseInt(Main.configFile.minComps)) {
-				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Completions");
+			if (comps < intOrDefault(Main.configFile.minComps)) {
+				addChatMessage(RED + "Kicking player for low Completions");
 				mc.thePlayer.sendChatMessage("/party kick " + ign);
 				return;
 			}
 
 			if (!data.get("InventoryAPI").getAsBoolean() || !Main.configFile.kickAPIoff) {
 				if (data.get("Dominance").getAsInt() < Main.configFile.minDomLevel) {
-					addChatMessage(EnumChatFormatting.RED + "Kicking player for low Dominance Levels");
+					addChatMessage(RED + "Kicking player for low Dominance Levels");
 					mc.thePlayer.sendChatMessage("/party kick " + ign);
 					return;
 				}
 
 				if (Main.configFile.minAuroraTier > 0) {
 					if (!data.get("Aurora Chestplate").getAsJsonObject().has("stars") || data.get("Aurora Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
+						addChatMessage(RED + "Kicking player for low Aurora Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
 						return;
 					}
 					if (!data.get("Aurora Leggings").getAsJsonObject().has("stars") || data.get("Aurora Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
+						addChatMessage(RED + "Kicking player for low Aurora Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
 						return;
 					}
 					if (!data.get("Aurora Boots").getAsJsonObject().has("stars") || data.get("Aurora Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
+						addChatMessage(RED + "Kicking player for low Aurora Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
 						return;
 					}
 				}
 				if (Main.configFile.minTerrorTier > 0) {
 					if (!data.get("Terror Chestplate").getAsJsonObject().has("stars") || data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
+						addChatMessage(RED + "Kicking player for low Terror Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
 						System.out.println(data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt());
 						return;
 					}
 					if (!data.get("Terror Leggings").getAsJsonObject().has("stars") || data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
+						addChatMessage(RED + "Kicking player for low Terror Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
 						System.out.println(data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt());
 
 						return;
 					}
 					if (!data.get("Terror Boots").getAsJsonObject().has("stars") || data.get("Terror Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
+						addChatMessage(RED + "Kicking player for low Terror Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
 						return;
 					}
@@ -347,7 +348,7 @@ public class StatCommand extends CommandBase implements Help {
 			}
 
 
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED + "[Kick Player]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party kick " + ign))));
+			mc.thePlayer.addChatMessage(new ChatComponentText(DARK_RED + "[Kick Player]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party kick " + ign))));
 		}
 
 	}
@@ -383,7 +384,7 @@ public class StatCommand extends CommandBase implements Help {
 		}).start();
 	}
 
-	private static int ParseInt(String s) {
+	private static int intOrDefault(String s) {
 		try {
 			return Integer.parseInt(s);
 		} catch (Exception ignored) {return 0;}
