@@ -1,4 +1,5 @@
-# Skyblock Utilities!
+![nice-logo](https://github.com/Gabagooooooooooool/SkyBlock-Utils/assets/116589326/c0d5c21c-2128-4f5d-a524-7eaa85e123c3)
+
     
 [![Click Me](https://img.shields.io/badge/SkyblockUtils-Click%20Me-191919?logo=Oracle&logoColor=red)](https://sbu.kami-x.tk)
 [![Downloads](https://img.shields.io/github/downloads/mastermindgolem/Skyblock-Utils/1.0.1/total?style=social&label=Downloads)](https://sbu.kami-x.tk)
