@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static net.minecraft.util.EnumChatFormatting.*;
+
 public class Alias extends CommandBase implements Help {
 	private final List<String> helpStrings;
 	public Alias() {
@@ -48,25 +50,25 @@ public class Alias extends CommandBase implements Help {
 	@Override
 	public String getHelpMessage() {
 		return
-				EnumChatFormatting.GRAY + "▶ " +
-				EnumChatFormatting.GOLD + "/alias " +
-				EnumChatFormatting.AQUA + "command" +
-				EnumChatFormatting.RESET + "\n";
+				GRAY + "▶ " +
+				GOLD + "/alias " +
+				AQUA + "command" +
+				RESET + "\n";
 	}
 
 	@Override
 	public List<String> getHoverStrings() {
 		return Arrays.asList(
-			EnumChatFormatting.STRIKETHROUGH +
-			String.valueOf(EnumChatFormatting.RED) + "/alias command1 command2",
-			EnumChatFormatting.RESET + "\n ",
-			EnumChatFormatting.STRIKETHROUGH +
-			String.valueOf(EnumChatFormatting.YELLOW) + "That will show all the available aliases for both.",
-			EnumChatFormatting.RESET + "\n ",
-			EnumChatFormatting.STRIKETHROUGH +
-			String.valueOf(EnumChatFormatting.GRAY) + "E.g. /alias attributeprice equipmentprice",
-			EnumChatFormatting.RESET + "\n ",
-			EnumChatFormatting.BOLD + String.valueOf(EnumChatFormatting.RED) + "W.I.P"
+			STRIKETHROUGH +
+			String.valueOf(RED) + "/alias command1 command2",
+			RESET + "\n ",
+			STRIKETHROUGH +
+			String.valueOf(YELLOW) + "That will show all the available aliases for both.",
+			RESET + "\n ",
+			STRIKETHROUGH +
+			String.valueOf(GRAY) + "E.g. /alias attributeprice equipmentprice",
+			RESET + "\n ",
+			BOLD + String.valueOf(RED) + "W.I.P"
 		);
 	}
 
