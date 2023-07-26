@@ -51,7 +51,6 @@ public class DropshipOverlay {
                 timeString = EnumChatFormatting.DARK_RED + "NO ALIGN";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                //TitleUtils.getInstance().createTitle("ALIGN NOW", 1, 0xFF0000);
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
             }

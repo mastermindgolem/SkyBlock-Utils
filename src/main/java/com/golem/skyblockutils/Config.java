@@ -152,6 +152,9 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
+	@Property(type = PropertyType.SWITCH, name = "Supply Ender Pearls", description = "Show where to ender pearl to get to supply", category = "Overlays", subcategory = "Supply Info")
+	public boolean enderPearl = false;
+
 	@Property(type = PropertyType.SWITCH, name = "Broken Wither Impact Notification", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Broken Wither Impact")
 	public boolean brokenHyp = false;
 	@Property(type = PropertyType.BUTTON, name = "Move Broken Wither Impact", description = "Test", category = "Overlays", subcategory = "Broken Wither Impact")
@@ -172,14 +175,11 @@ public class Config extends Vigilant
 	)
 	public int min_godroll_price = 50;
 
-	@Property(
-			type = PropertyType.SWITCH,
-			name = "Display Attribute Overlay",
-			description = "Show the best attribute on any attribute item (Will also show if it's a godroll).",
-			category = "General",
-			subcategory = "Attribute Overlay"
-	)
+	@Property(type = PropertyType.SWITCH, name = "Display Attribute Overlay", description = "Show the best attribute on any attribute item (Will also show if it's a godroll).", category = "General", subcategory = "Attribute Overlay")
 	public boolean attribute_overlay = true;
+
+	@Property(type = PropertyType.SELECTOR, name = "Combine Helper", description = "temp", category = "General", subcategory = "Other", options = {"", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "ignition", "combo", "attack_speed", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "ender", "mana_steal", "blazing", "elite", "arachno", "undead", "warrior", "deadeye", "fortitude", "magic_find"})
+	public int combineAttribute = 0;
 
 	@Property(
 			type = PropertyType.SWITCH,
@@ -266,6 +266,15 @@ public class Config extends Vigilant
 		this.checkFolderExists();
 		this.CONFIG_FILE = new File(Config.stonksFolder + "config.toml");
 		this.initialize();
+
+		try {
+			addDependency("MoveAlignTimer", "alignTimer");
+			addDependency("MoveRagnarokTimer", "ragnarokTimer");
+			addDependency("MoveWitherImpact", "brokenHyp");
+			addDependency("MoveSupplyInfo", "supplyInfo");
+			addDependency("compactContainerValue", "container_value");
+			addDependency("containerSorting", "container_value");
+		} catch (Exception ignored) {}
 	}
 
 	static {

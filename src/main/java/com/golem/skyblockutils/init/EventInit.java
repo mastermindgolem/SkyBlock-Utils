@@ -3,6 +3,7 @@ package com.golem.skyblockutils.init;
 import com.golem.skyblockutils.ChatListener;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.*;
+import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
@@ -23,7 +24,9 @@ public class EventInit {
 			new Kuudra(),
 			new Waypoints(),
 			new GuiEvent(),
-			new BrokenHyp()
+			new BrokenHyp(),
+			new CombineHelper(),
+			new EnderPearl()
 		};
 
 		for (Object listener : listeners) {

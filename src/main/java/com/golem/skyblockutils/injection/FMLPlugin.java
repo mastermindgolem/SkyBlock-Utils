@@ -16,7 +16,7 @@ public class FMLPlugin implements IFMLLoadingPlugin {
 	public FMLPlugin() {
 		Logger.info("mixins initialized");
 		MixinBootstrap.init();
-		Mixins.addConfiguration("mixins.golemmod.json");
+		Mixins.addConfiguration("mixins.skyblockutils.json");
 		MixinEnvironment
 			.getDefaultEnvironment()
 			.setSide(MixinEnvironment.Side.CLIENT);

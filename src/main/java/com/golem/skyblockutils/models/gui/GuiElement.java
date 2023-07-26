@@ -73,8 +73,11 @@ public class GuiElement {
 		double renderWidth = width * position.getScale();
 		double renderHeight = height * position.getScale();
 		GlStateManager.translate(position.getX() - padding * renderWidth, position.getY() - padding * renderHeight, 400.0);
-		Color color = (StaticPosition.stream().filter(element -> element.isInsideElement(mouseX, mouseY)).findFirst().orElse(null) == this) ?
-			new Color(255, 255, 255, 128) : new Color(128, 128, 128, 128);
+		Color color = new Color(255, 255, 255);
+		try {
+			color = (StaticPosition.stream().filter(element -> element.isInsideElement(mouseX, mouseY)).findFirst().orElse(null) == this) ?
+					new Color(255, 255, 255, 128) : new Color(128, 128, 128, 128);
+		} catch (Exception ignored) {}
 		OverlayUtils.renderRect(0.0, 0.0, renderWidth, renderHeight, color);
 		GlStateManager.popMatrix();
 	}

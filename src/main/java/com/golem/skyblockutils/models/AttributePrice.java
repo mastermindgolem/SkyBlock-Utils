@@ -115,19 +115,16 @@ public class AttributePrice {
 
 		for (String attribute : attributes) if (excludeAttributes.contains(attribute)) return null;
 
-		Set<ArrayList<String>> CombosKeys = AllCombos.keySet();
-		try {
-			for (ArrayList<String> key : CombosKeys) {
-				if (item_id.contains(key.get(0)) && key.contains(attributes.get(0)) && key.contains(attributes.get(1))) {
-					auction = AllCombos.get(key);
-				}
+		Set<ArrayList<String>> combosKeys = AllCombos.keySet();
+
+		for (ArrayList<String> key : combosKeys) {
+			if (item_id.contains(key.get(0)) && key.containsAll(attributes)) {
+				return AllCombos.get(key);
 			}
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-			return auction;
 		}
 
-		return auction;
+		return null;
+
 	}
 
 	public static JsonObject AttributeValue(ItemStack item) {
