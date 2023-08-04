@@ -2,8 +2,6 @@ package com.golem.skyblockutils.command.commands;
 
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.utils.AttributeUtils;
-import com.golem.skyblockutils.utils.AuctionHouse;
-import com.golem.skyblockutils.utils.RequestUtil;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import logger.Logger;
@@ -145,7 +143,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 			addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase());
 			getAttributePrice(attribute1, item_types, 0);
 
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1) {
+			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1) {
 				@Override
 				public Action getAction() {
 					//custom behavior
@@ -173,7 +171,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 				addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + level);
 				getAttributePrice(attribute1, item_types, level);
 
-				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1 + " " + level) {
+				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1 + " " + level) {
 					@Override
 					public Action getAction() {
 						return Action.RUN_COMMAND;
@@ -193,7 +191,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 					}).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + "\n" + item.get("item_lore").getAsString()))));
 					mc.thePlayer.addChatMessage(msg);
 				}
-				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1 + " " + attribute2) {
+				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1 + " " + attribute2) {
 					@Override
 					public Action getAction() {
 						return Action.RUN_COMMAND;
@@ -216,7 +214,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 			if (items == null) continue;
 			if (level == 0) {
 				items = items.stream()
-						.filter(item -> item.get(attribute).getAsInt() >= configFile.min_tier)
+						.filter(item -> item.get(attribute).getAsInt() >= configFile.minArmorTier)
 						.collect(Collectors.toCollection(ArrayList::new));
 			} else {
 				items = items.stream()

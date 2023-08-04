@@ -2,7 +2,6 @@ package com.golem.skyblockutils.models;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.AuctionHouse;
-import com.golem.skyblockutils.utils.RequestUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -105,6 +104,7 @@ public class AttributePrice {
 		if (AllCombos.keySet().size() == 0) {
 			if (System.currentTimeMillis() - AuctionHouse.lastErrorMessage > 30000) {
 				final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
+				AuctionHouse.lastErrorMessage = time.getCurrentMS();
 				mc.thePlayer.addChatMessage(msg);
 			}
 
@@ -157,7 +157,11 @@ public class AttributePrice {
 				if (items == null || items.size() == 0) {
 					continue;
 				}
-				items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= configFile.min_tier).collect(Collectors.toCollection(ArrayList::new));
+				if ((item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
+					items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= (item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
+				} else {
+					items = items.stream().filter(i -> i.get(attr_key).getAsInt() == nbt.getInteger(attr_key)).collect(Collectors.toCollection(ArrayList::new));
+				}
 				if (items.size() == 0) {
 					continue;
 				}

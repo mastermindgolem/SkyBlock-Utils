@@ -10,6 +10,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.golem.skyblockutils.Main.configFile;
@@ -49,11 +50,13 @@ public class AlignOverlay {
             String timeString;
             if (timeLeft < 0) {
                 timeString = EnumChatFormatting.DARK_RED + "NO ALIGN";
+                if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                //OverlayUtils.drawTitle(EnumChatFormatting.RED + "ALIGN NOW", event.resolution);
+                AlertOverlay.text = EnumChatFormatting.DARK_RED + "ALIGN NOW";
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
+                if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             }
 
             OverlayUtils.drawString(0, 0, timeString, textStyle, Alignment.Left);

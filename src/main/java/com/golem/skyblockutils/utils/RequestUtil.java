@@ -70,7 +70,7 @@ public class RequestUtil {
 			uc.addRequestProperty("UUID", uuid);
 		} catch (NullPointerException ignored) {return null;}
 		uc.addRequestProperty("IGN", username);
-		uc.addRequestProperty("User-Agent", "golemmod");
+		uc.addRequestProperty("User-Agent", "SBU-" + Main.VERSION);
 		uc.setRequestProperty("Content-Type", "application/json; utf-8");
 		uc.setRequestProperty("Accept", "application/json");
 		return uc;

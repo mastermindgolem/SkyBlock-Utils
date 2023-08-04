@@ -1,16 +1,13 @@
 package com.golem.skyblockutils;
 
-import com.golem.skyblockutils.models.Overlay.TextOverlay.AlignOverlay;
-import com.golem.skyblockutils.models.Overlay.TextOverlay.ChampionOverlay;
-import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
-import com.golem.skyblockutils.models.Overlay.TextOverlay.RagnarokOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
 import com.golem.skyblockutils.models.gui.MoveGui;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
 import logger.Logger;
-import net.minecraft.client.gui.GuiScreen;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,16 +41,11 @@ public class Config extends Vigilant
 	)
 	public int time_between_checks = 5;
 
-	@Property(
-		type = PropertyType.SLIDER,
-		name = "Minimum Tier",
-		description = "Minimum tier to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
-		category = "General",
-		subcategory = "Kuudra Pricing",
-		min = 1,
-		max = 5
-	)
-	public int min_tier = 1;
+	@Property(type = PropertyType.SLIDER, name = "Armor/Equipment Minimum Tier", description = "Minimum tier to consider for valuing armor/equipment and showing them in /ap and /ep. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 5)
+	public int minArmorTier = 0;
+	@Property(type = PropertyType.SLIDER, name = "Shard Minimum Tier", description = "Minimum tier to consider for valuing shards and showing them in /ap. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 3)
+	public int minShardTier = 0;
+
 
 /*	@Property(
 			type = PropertyType.SLIDER,
@@ -123,14 +115,32 @@ public class Config extends Vigilant
 	public boolean showSupplyWaypoint = false;
 	@Property(type = PropertyType.SWITCH, name = "Show Unfinished Build Waypoints", description = "temp", category = "General", subcategory = "Kuudra")
 	public boolean showBuildWaypoint = false;
+	@Property(type = PropertyType.SWITCH, name = "TAP Reminder", description = "Warns when you enter a run without TAP.", category = "General", subcategory = "Kuudra")
+	public boolean TapWarning = false;
 	@Property(type = PropertyType.SWITCH, name = "Show Instastun Block", description = "Highlights the block to etherwarp to and the block to mine to instastun easily. Thanks to @Magma_Cao for this.", category = "General", subcategory = "Kuudra")
 	public boolean showStunLocation = false;
+
+	@Property(type = PropertyType.BUTTON, name = "Move Main Alerts", description = "Press this button to decide where big alerts like Hype Broken show", category = "Overlays", subcategory = "Main Alerts")
+	@SuppressWarnings("unused")
+	public void MoveAlertLocation() {
+		Main.mc.displayGuiScreen(new MoveGui(AlertOverlay.element));
+		Main.display = null;
+	}
 	@Property(type = PropertyType.SWITCH, name = "Show Align Timer", description = "Show time till cells alignment runs out", category = "Overlays", subcategory = "Align Timer")
 	public boolean alignTimer = false;
 	@Property(type = PropertyType.BUTTON, name = "Move Align Timer", description = "Test", category = "Overlays", subcategory = "Align Timer")
 	@SuppressWarnings("unused")
 	public void MoveAlignTimer() {
 		Main.mc.displayGuiScreen(new MoveGui(AlignOverlay.element));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "Show Splits Overlay", description = "Show splits", category = "Overlays", subcategory = "Splits Overlay")
+	public boolean splitsOverlay = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Splits Overlay", description = "Test", category = "Overlays", subcategory = "Splits Overlay")
+	@SuppressWarnings("unused")
+	public void MoveSplits() {
+		Main.mc.displayGuiScreen(new MoveGui(SplitsOverlay.element));
 		Main.display = null;
 	}
 
@@ -143,8 +153,19 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
+	@Property(type = PropertyType.SWITCH, name = "Show Reaper Timer", description = "Show reaper buff timer and cooldown timer", category = "Overlays", subcategory = "Reaper Timer")
+	public boolean reaperTimer = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Reaper Timer", description = "Test", category = "Overlays", subcategory = "Reaper Timer")
+	@SuppressWarnings("unused")
+	public void MoveReaperTimer() {
+		Main.mc.displayGuiScreen(new MoveGui(ReaperOverlay.element));
+		Main.display = null;
+	}
+
 	@Property(type = PropertyType.SWITCH, name = "Show Supply Info", description = "Show where supplies are and who got how many supplies", category = "Overlays", subcategory = "Supply Info")
 	public boolean supplyInfo = false;
+	@Property(type = PropertyType.COLOR, name = "Supply Waypoints Color", description = "Choose the color for supply waypoints", category = "Overlays", subcategory = "Supply Info")
+	public Color supplyColor = Color.BLUE;
 	@Property(type = PropertyType.BUTTON, name = "Move Supply Info", description = "Test", category = "Overlays", subcategory = "Supply Info")
 	@SuppressWarnings("unused")
 	public void MoveSupplyInfo() {
@@ -154,6 +175,8 @@ public class Config extends Vigilant
 
 	@Property(type = PropertyType.SWITCH, name = "Supply Ender Pearls", description = "Show where to ender pearl to get to supply", category = "Overlays", subcategory = "Supply Info")
 	public boolean enderPearl = false;
+	@Property(type = PropertyType.COLOR, name = "Pearl Waypoint Color", description = "Choose the color of pearl waypoints", category = "Overlays", subcategory = "Supply Info")
+	public Color enderPearlColor = Color.RED;
 
 	@Property(type = PropertyType.SWITCH, name = "Broken Wither Impact Notification", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Broken Wither Impact")
 	public boolean brokenHyp = false;
@@ -161,6 +184,15 @@ public class Config extends Vigilant
 	@SuppressWarnings("unused")
 	public void MoveWitherImpact() {
 		Main.mc.displayGuiScreen(new MoveGui(ChampionOverlay.element));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "Fishing Overlay", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Fishing")
+	public boolean fishingOverlay = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Fishing Overlay", description = "Test", category = "Overlays", subcategory = "Fishing")
+	@SuppressWarnings("unused")
+	public void MoveFishingOverlay() {
+		Main.mc.displayGuiScreen(new MoveGui(FishingOverlay.element));
 		Main.display = null;
 	}
 
@@ -196,6 +228,8 @@ public class Config extends Vigilant
 	public boolean compactContainerValue = true;
 	@Property(type = PropertyType.SELECTOR, name = "Sorting of Container Value", description = "Decide how container value display is sorted.", category = "Overlays", subcategory = "Container Value", options = {"Descending Price", "Ascending Price", "Alphabetical", "Attribute Tier", "Item Type"})
 	public int containerSorting = 0;
+	@Property(type = PropertyType.SELECTOR, name = "Data Source", description = "Decide where the data is gotten from for valuing items.", category = "Overlays", subcategory = "Container Value", options = {"Auction House", "Cofl"})
+	public int dataSource = 0;
 
 	@Property(
 			type = PropertyType.SELECTOR,
@@ -270,8 +304,11 @@ public class Config extends Vigilant
 		try {
 			addDependency("MoveAlignTimer", "alignTimer");
 			addDependency("MoveRagnarokTimer", "ragnarokTimer");
+			addDependency("MoveReaperTimer", "reaperTimer");
 			addDependency("MoveWitherImpact", "brokenHyp");
 			addDependency("MoveSupplyInfo", "supplyInfo");
+			addDependency("MoveSplits", "splitsOverlay");
+			addDependency("MoveFishingOverlay", "fishingOverlay");
 			addDependency("compactContainerValue", "container_value");
 			addDependency("containerSorting", "container_value");
 		} catch (Exception ignored) {}

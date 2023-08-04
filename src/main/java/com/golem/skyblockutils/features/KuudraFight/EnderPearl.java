@@ -173,7 +173,7 @@ public class EnderPearl {
                         y = supply.yCoord + distance * Math.tan(Math.toRadians(i));
                     }
                 }
-                RenderUtils.drawBlockBox(new BlockPos((int) x, (int) y, (int) z), Color.RED, 5, event.partialTicks);
+                RenderUtils.drawBlockBox(new BlockPos(x - 0.5, y - 0.5, z - 0.5), Main.configFile.enderPearlColor, 5, event.partialTicks);
             }
         }
 

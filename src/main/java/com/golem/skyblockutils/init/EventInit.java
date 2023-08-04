@@ -26,7 +26,8 @@ public class EventInit {
 			new GuiEvent(),
 			new BrokenHyp(),
 			new CombineHelper(),
-			new EnderPearl()
+			new EnderPearl(),
+			new DescriptionHandler()
 		};
 
 		for (Object listener : listeners) {
@@ -39,7 +40,11 @@ public class EventInit {
 				new AlignOverlay(),
 				new RagnarokOverlay(),
 				new CratesOverlay(),
-				new ChampionOverlay()
+				new ChampionOverlay(),
+				new FishingOverlay(),
+				new AlertOverlay(),
+				new SplitsOverlay(),
+				new ReaperOverlay()
 		};
 
 		for (Object listener : listeners) {

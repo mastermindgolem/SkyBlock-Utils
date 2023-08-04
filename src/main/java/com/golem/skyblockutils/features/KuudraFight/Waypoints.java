@@ -36,9 +36,8 @@ public class Waypoints {
 
 
         for (Map.Entry<Vec3, Integer> supply : Kuudra.supplyWaypoints.entrySet()) {
-            if (supply.getValue() == 101 && Main.configFile.showSupplyWaypoint) {
-                int rgb = 0x00FFFF; //AQUA
-                RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, rgb, 1.0f, event.partialTicks);
+            if (supply.getValue() == 101 && Main.configFile.showSupplyWaypoint && supply.getKey().yCoord < 80) {
+                RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, Main.configFile.supplyColor.getRGB(), 1.0f, event.partialTicks);
             }
             else if (supply.getValue() < 101 && supply.getValue() > -1 && Main.configFile.showBuildWaypoint) {
                 int percent = supply.getValue();
