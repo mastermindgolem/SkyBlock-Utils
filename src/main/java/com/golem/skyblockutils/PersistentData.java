@@ -15,16 +15,14 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.golem.skyblockutils.Config.stonksFolder;
+import static com.golem.skyblockutils.Config.configFolder;
 
 public class PersistentData implements Serializable {
 	public boolean isFirstLoad = true;
 
 	public static Map<String, GuiPosition> positions = new HashMap<>();
 
-
-
-	private static final File configFile = new File(stonksFolder, "positions.json");
+	private static final File configFile = new File(configFolder, "positions.json");
 
 	public PersistentData() {
 		positions = new HashMap<>();

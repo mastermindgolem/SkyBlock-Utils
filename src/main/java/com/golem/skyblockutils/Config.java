@@ -5,6 +5,8 @@ import com.golem.skyblockutils.models.gui.MoveGui;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
 import logger.Logger;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -19,7 +21,7 @@ import java.util.List;
 
 public class Config extends Vigilant
 {
-	public static String stonksFolder;
+	public static String configFolder;
 	public File CONFIG_FILE;
 	@Property(
 		type = PropertyType.SWITCH,
@@ -117,6 +119,12 @@ public class Config extends Vigilant
 	public boolean showBuildWaypoint = false;
 	@Property(type = PropertyType.SWITCH, name = "TAP Reminder", description = "Warns when you enter a run without TAP.", category = "General", subcategory = "Kuudra")
 	public boolean TapWarning = false;
+	@Property(type = PropertyType.SWITCH, name = "Fresh Tools Alert", description = "Alert you when fresh tools procs.", category = "General", subcategory = "Kuudra")
+	public boolean freshAlert = false;
+	@Property(type = PropertyType.SWITCH, name = "Notify party of fresh tools", description = "Allows other SBU users to know when fresh tools procs.", category = "General", subcategory = "Kuudra")
+	public boolean freshNotify = false;
+	@Property(type = PropertyType.TEXT, name = "Fresh Alert Custom Message", description = "Add a custom message when notifying your party that your fresh tools procced.", category = "General", subcategory = "Kuudra")
+	public String freshMessage = "";
 	@Property(type = PropertyType.SWITCH, name = "Show Instastun Block", description = "Highlights the block to etherwarp to and the block to mine to instastun easily. Thanks to @Magma_Cao for this.", category = "General", subcategory = "Kuudra")
 	public boolean showStunLocation = false;
 
@@ -126,11 +134,15 @@ public class Config extends Vigilant
 		Main.mc.displayGuiScreen(new MoveGui(AlertOverlay.element));
 		Main.display = null;
 	}
-	@Property(type = PropertyType.SWITCH, name = "Show Align Timer", description = "Show time till cells alignment runs out", category = "Overlays", subcategory = "Align Timer")
-	public boolean alignTimer = false;
+	@Property(type = PropertyType.SELECTOR, name = "Show Align Timer", description = "Show time till cells alignment runs out", category = "Overlays", subcategory = "Align Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	public int alignTimer = 0;
 	@Property(type = PropertyType.BUTTON, name = "Move Align Timer", description = "Test", category = "Overlays", subcategory = "Align Timer")
 	@SuppressWarnings("unused")
 	public void MoveAlignTimer() {
+		if (alignTimer == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Align Timer is off."));
+			return;
+		}
 		Main.mc.displayGuiScreen(new MoveGui(AlignOverlay.element));
 		Main.display = null;
 	}
@@ -144,20 +156,28 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SWITCH, name = "Show Ragnarok Timer", description = "Show ragnarok buff timer and cooldown timer", category = "Overlays", subcategory = "Ragnarok Timer")
-	public boolean ragnarokTimer = false;
+	@Property(type = PropertyType.SELECTOR, name = "Show Ragnarok Timer", description = "Show ragnarok buff timer and cooldown timer", category = "Overlays", subcategory = "Ragnarok Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	public int ragnarokTimer = 0;
 	@Property(type = PropertyType.BUTTON, name = "Move Ragnarok Timer", description = "Test", category = "Overlays", subcategory = "Ragnarok Timer")
 	@SuppressWarnings("unused")
 	public void MoveRagnarokTimer() {
+		if (ragnarokTimer == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Ragnarok Timer is off."));
+			return;
+		}
 		Main.mc.displayGuiScreen(new MoveGui(RagnarokOverlay.element));
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SWITCH, name = "Show Reaper Timer", description = "Show reaper buff timer and cooldown timer", category = "Overlays", subcategory = "Reaper Timer")
-	public boolean reaperTimer = false;
+	@Property(type = PropertyType.SELECTOR, name = "Show Reaper Timer", description = "Show reaper buff timer and cooldown timer", category = "Overlays", subcategory = "Reaper Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	public int reaperTimer = 0;
 	@Property(type = PropertyType.BUTTON, name = "Move Reaper Timer", description = "Test", category = "Overlays", subcategory = "Reaper Timer")
 	@SuppressWarnings("unused")
 	public void MoveReaperTimer() {
+		if (reaperTimer == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Reaper Timer is off."));
+			return;
+		}
 		Main.mc.displayGuiScreen(new MoveGui(ReaperOverlay.element));
 		Main.display = null;
 	}
@@ -195,6 +215,45 @@ public class Config extends Vigilant
 		Main.mc.displayGuiScreen(new MoveGui(FishingOverlay.element));
 		Main.display = null;
 	}
+	@Property(type = PropertyType.SELECTOR, name = "Fatal Tempo Overlay", description = "Shows Fatal Tempo bonus in Phase 4 of Kuudra", category = "Overlays", subcategory = "Fatal Tempo", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	public int ftOverlay = 0;
+	@Property(type = PropertyType.BUTTON, name = "Move Fatal Tempo Overlay", description = "Test", category = "Overlays", subcategory = "Fatal Tempo")
+	@SuppressWarnings("unused")
+	public void MoveFTOverlay() {
+		if (ftOverlay == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Fatal Tempo Overlay is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(FatalTempoOverlay.element));
+		Main.display = null;
+	}
+	@Property(type = PropertyType.SELECTOR, name = "Profit Overlay", description = "Shows Coins / Hour and other profit info for Kuudra", category = "Overlays", subcategory = "Profit", options = {"Off", "On", "Kuudra Only", "End of Run only"})
+	public int profitOverlay = 0;
+	@Property(type = PropertyType.BUTTON, name = "Move Profit Overlay", description = "Test", category = "Overlays", subcategory = "Profit")
+	@SuppressWarnings("unused")
+	public void MoveProfitOverlay() {
+		if (profitOverlay == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Profit Overlay is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(ProfitOverlay.element));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SELECTOR, name = "Damage Bonus Indicator", description = "Shows an indicator to show whether dominance / lifeline is active.", category = "Overlays", subcategory = "Damage Bonus", options = {"None", "Dominance", "Lifeline"})
+	public int damageOverlay = 0;
+	@Property(type = PropertyType.BUTTON, name = "Move Damage Overlay", description = "Test", category = "Overlays", subcategory = "Damage Bonus")
+	@SuppressWarnings("unused")
+	public void MoveDamageOverlay() {
+		if (damageOverlay == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Damage Bonus Indicator is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(DamageOverlay.element));
+		Main.display = null;
+	}
+
+
 
 	@Property(
 			type = PropertyType.SLIDER,
@@ -222,14 +281,26 @@ public class Config extends Vigilant
 	)
 	public boolean kuudra_overlay = true;
 
-	@Property(type = PropertyType.SWITCH, name = "Container Value", description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).", category = "Overlays", subcategory = "Container Value")
-	public boolean container_value = true;
+	@Property(type = PropertyType.SELECTOR, name = "Container Value", description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).", category = "Overlays", subcategory = "Container Value", options = {"Off", "Next to GUI", "Custom"})
+	public int container_value = 0;
 	@Property(type = PropertyType.SWITCH, name = "Compact Container Value", description = "Compacts text by removing \"Terror\", \"Aurora\", etc. when it doesn't affect value", category = "Overlays", subcategory = "Container Value")
 	public boolean compactContainerValue = true;
+	@Property(type = PropertyType.SWITCH, name = "Sell Shards as Equipment", description = "Use Equipment prices to price attribute shards", category = "Overlays", subcategory = "Container Value")
+	public boolean shardEquipmentPricing = true;
 	@Property(type = PropertyType.SELECTOR, name = "Sorting of Container Value", description = "Decide how container value display is sorted.", category = "Overlays", subcategory = "Container Value", options = {"Descending Price", "Ascending Price", "Alphabetical", "Attribute Tier", "Item Type"})
 	public int containerSorting = 0;
 	@Property(type = PropertyType.SELECTOR, name = "Data Source", description = "Decide where the data is gotten from for valuing items.", category = "Overlays", subcategory = "Container Value", options = {"Auction House", "Cofl"})
 	public int dataSource = 0;
+	@Property(type = PropertyType.BUTTON, name = "Move Container Value", description = "Test", category = "Overlays", subcategory = "Container Value")
+	@SuppressWarnings("unused")
+	public void MoveContainerValue() {
+		if (container_value == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Container Value is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(ContainerOverlay.element));
+		Main.display = null;
+	}
 
 	@Property(
 			type = PropertyType.SELECTOR,
@@ -270,18 +341,14 @@ public class Config extends Vigilant
 	)
 	public boolean considerEssenceValue = true;
 
-	@Property(
-			type = PropertyType.SELECTOR,
-			name = "Faction",
-			description = "Needed to calculate key cost for kuudra.",
-			category = "General",
-			options = {"Mage", "Barbarian"},
-			subcategory = "Kuudra Profit Overlay"
-	)
+	@Property(type = PropertyType.SELECTOR, name = "Faction", description = "Needed to calculate key cost for kuudra.", category = "General", options = {"Mage", "Barbarian"}, subcategory = "Kuudra Profit Overlay")
 	public int faction = 0;
 
+	@Property(type = PropertyType.SELECTOR, name = "Auto-Updater", description = "Notifies when a new mod version is available.", category = "Updater", options = {"Off", "Full Release Only", "Full & Beta Release"}, subcategory = "Updater")
+	public int autoUpdater = 0;
+
 	private void checkFolderExists() {
-		Path directory = Paths.get(stonksFolder);
+		Path directory = Paths.get(configFolder);
 		if (!Files.exists(directory)) {
 			try {
 				Logger.warn("Created directory!", "\n", "Potentially config issue being initialized twice or first time using mod.");
@@ -294,28 +361,23 @@ public class Config extends Vigilant
 	}
 
 	public Config() {
-		super(new File(Config.stonksFolder + "config.toml"), "golemmod", new JVMAnnotationPropertyCollector(),
+		super(new File(Config.configFolder + "config.toml"), "SkyblockUtils", new JVMAnnotationPropertyCollector(),
 				new ConfigSorting());
 
 		this.checkFolderExists();
-		this.CONFIG_FILE = new File(Config.stonksFolder + "config.toml");
+		this.CONFIG_FILE = new File(Config.configFolder + "config.toml");
 		this.initialize();
 
 		try {
-			addDependency("MoveAlignTimer", "alignTimer");
-			addDependency("MoveRagnarokTimer", "ragnarokTimer");
-			addDependency("MoveReaperTimer", "reaperTimer");
 			addDependency("MoveWitherImpact", "brokenHyp");
 			addDependency("MoveSupplyInfo", "supplyInfo");
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
-			addDependency("compactContainerValue", "container_value");
-			addDependency("containerSorting", "container_value");
 		} catch (Exception ignored) {}
 	}
 
 	static {
-		Config.stonksFolder = "config/golemmod/";
+		Config.configFolder = "config/SkyblockUtils/";
 	}
 
 	public static class ConfigSorting extends SortingBehavior {
@@ -325,6 +387,6 @@ public class Config extends Vigilant
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Overlays"); //
+		private final List<String> categories = Arrays.asList("General", "Overlays", "Updater"); //
 	}
 }

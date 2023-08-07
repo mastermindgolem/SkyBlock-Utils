@@ -49,9 +49,10 @@ public class DescriptionHandler{
 
     @SubscribeEvent
     public void loadDescriptionAndListenForChanges(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (Main.configFile.dataSource == 0 || !Main.configFile.container_value || !ContainerValue.isActive) return;
+        if (Main.configFile.dataSource == 0 || Main.configFile.container_value == 0 || !ContainerValue.isActive) return;
         if (!(event.gui instanceof GuiContainer)) return;
         GuiContainer gc = (GuiContainer) event.gui;
+        if (!hasAnyStackChanged(gc)) return;
         new Thread(() -> loadDescriptionForInventory(event, gc)).start();
 
     }
@@ -109,6 +110,7 @@ public class DescriptionHandler{
 
 
             JsonArray info = new RequestUtil().sendPostRequest("https://sky.coflnet.com/api/price/nbt", data).getJson().getAsJsonArray();
+            System.out.println(info);
             displayStrings = new LinkedHashMap<>();
             for (int i = 0; i < info.size(); i++) {
                 ItemStack stack = stacks.get(i);
@@ -116,7 +118,6 @@ public class DescriptionHandler{
                 tooltipItemMap.put(stack, info.get(i).getAsJsonObject());
                 if (isAttributeItem(stack)) {
                     JsonObject itemdata = info.get(i).getAsJsonObject();
-                    Main.mc.thePlayer.addChatMessage(new ChatComponentText(Objects.requireNonNull(AttributePrice.AttributeValue(stack)).get("display_string").getAsString() + ": " + Main.formatNumber(itemdata.get("lbin").getAsInt()) + " (" + Main.formatNumber(itemdata.get("median").getAsInt()) + ")"));
                     String displayString = Objects.requireNonNull(AttributePrice.AttributeValue(stack)).get("display_string").getAsString();
                     displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, itemdata.get("lbin").getAsLong(), itemdata.get("median").getAsLong()));
                 }

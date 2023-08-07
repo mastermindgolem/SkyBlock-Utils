@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
@@ -43,11 +44,11 @@ public class ReaperOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !configFile.reaperTimer) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui) {
+        if (configFile.testGui && (configFile.reaperTimer == 1 || (configFile.reaperTimer == 2 && Kuudra.currentPhase > 0) || (configFile.reaperTimer == 3 && Kuudra.currentPhase == 4))) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);

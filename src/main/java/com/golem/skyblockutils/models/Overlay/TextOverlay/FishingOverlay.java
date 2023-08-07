@@ -25,6 +25,7 @@ public class FishingOverlay {
 
     public static GuiElement element = new GuiElement("Fishing Overlay", 50, 10);
     private static final TimeHelper time = new TimeHelper();
+    private static long timer = 0;
 
     public static String text = "";
 
@@ -35,12 +36,16 @@ public class FishingOverlay {
 
     @SubscribeEvent
     public void RenderEvent(RenderWorldLastEvent event) {
-        ArrayList<Entity> entities = Kuudra.getAllEntitiesInRange(10);
+        ArrayList<Entity> entities = Kuudra.getAllEntitiesInRange(30);
         HashMap<String, Integer> temp = new HashMap<>();
         for (Entity entity : entities) {
             for (String sc : seacreatures) if (entity.getName().contains(sc.replaceAll("§.", ""))) temp.put(sc, temp.getOrDefault(sc, 0) + 1);
         }
+        if (temp.containsKey("§fSquid")) temp.put("§fSquid", temp.getOrDefault("§fSquid", 0)/2);
+        if (scCount.keySet().size() == 0 && temp.keySet().size() > 0) timer = time.getCurrentMS();
+        if (scCount.keySet().size() > 0 && temp.keySet().size() == 0) timer = 0;
         scCount = temp;
+
     }
 
 
@@ -50,23 +55,32 @@ public class FishingOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui) {
+        if (configFile.testGui && scCount.entrySet().size() > 0) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
 
-            int counter = 0;
+            int counter = 1;
+            float timeSince = (time.getCurrentMS() - timer) / 60000F;
+            if (timeSince > 0 && timeSince < 5) OverlayUtils.drawString(0, 0, EnumChatFormatting.GOLD + "Time: " + EnumChatFormatting.YELLOW + SplitsOverlay.format(timeSince), textStyle, Alignment.Left);
+            if (timeSince > 5) OverlayUtils.drawString(0, 0, EnumChatFormatting.GOLD + "Time: " + EnumChatFormatting.RED + SplitsOverlay.format(timeSince), textStyle, Alignment.Left);
+
             for (Map.Entry<String, Integer> entry : scCount.entrySet()) {
                 OverlayUtils.drawString(0, 10*counter, entry.getKey() + EnumChatFormatting.RESET + ": " + entry.getValue(), textStyle, Alignment.Left);
                 counter++;
             }
 
-            element.setHeight(10*counter);
+            int total = scCount.values().stream().mapToInt(Integer::intValue).sum();
+
+            if (total > 0) OverlayUtils.drawString(0, 10*counter, EnumChatFormatting.GOLD + "Total SC: " + EnumChatFormatting.YELLOW + total, textStyle, Alignment.Left);
+
+            //element.setHeight(10*counter);
 
             GlStateManager.popMatrix();
 
-        } else if (mc.currentScreen instanceof MoveGui) {
+        }
+        if (mc.currentScreen instanceof MoveGui) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
@@ -75,7 +89,6 @@ public class FishingOverlay {
             int counter = 0;
             for (String sc : seacreatures.subList(0, 10)) {
                 String string = sc + EnumChatFormatting.RESET + ": 1";
-                System.out.println(string);
                 OverlayUtils.drawString(0, 10*counter, string, textStyle, Alignment.Left);
                 max = Math.max(max, renderWidth(string));
                 counter++;

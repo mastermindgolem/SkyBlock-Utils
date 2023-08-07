@@ -5,6 +5,7 @@ import com.golem.skyblockutils.init.KeybindsInit;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -38,9 +39,9 @@ public class ContainerValue {
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
-			if (!(event.gui instanceof GuiChest)) return;
+			if (!(event.gui instanceof GuiContainer)) return;
 			if (!isActive) return;
-			if (!configFile.container_value) return;
+			if (configFile.container_value == 0) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;
@@ -51,17 +52,16 @@ public class ContainerValue {
 			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
 			BigInteger totalValue = new BigInteger("0");
 
-			List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
-			List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
 
+			int xSize = (int) (ContainerOverlay.element.position.getX() - 5);
+			int guiLeft = 0;
+			int guiTop = (int) (ContainerOverlay.element.position.getY() - 5);
 
-
-			int xSize = ((AccessorGuiContainer) gui).getXSize();
-			//int xSize = gui.width;
-			int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
-			//int guiLeft = 10;
-			int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
-			//int guiTop = 10;
+			if (configFile.container_value == 1) {
+				xSize = ((AccessorGuiContainer) gui).getXSize();
+				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+			}
 
 			chestInventory = chestInventory.subList(0, chestInventory.size() - 36);
 			switch (configFile.dataSource) {

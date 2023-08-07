@@ -3,6 +3,7 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -32,6 +33,7 @@ import static com.golem.skyblockutils.models.AttributePrice.*;
 public class KuudraOverlay {
 
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
+	public static int profit = 0;
 
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -65,16 +67,12 @@ public class KuudraOverlay {
 						continue;
 					Matcher matcher = ESSENCE_PATTERN.matcher(slot.getStack().getDisplayName());
 					if (matcher.matches() && configFile.considerEssenceValue) {
-						int buy_price = 1500;
-						int sell_price = 1500;
 						int amount = 1;
 						try {
-							buy_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("sell_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
-							sell_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 							amount = KuudraPetEssenceBonus(Integer.parseInt(matcher.group(2)));
 						} catch (Exception ignored) {}
-						displayStrings.add(EnumChatFormatting.YELLOW + String.valueOf(amount) + "x " + EnumChatFormatting.LIGHT_PURPLE + matcher.group(1) + " Essence" + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(amount * (sell_price + buy_price) / 2F));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(amount * (buy_price + sell_price) / 2)));
+						displayStrings.add(EnumChatFormatting.YELLOW + String.valueOf(amount) + "x " + EnumChatFormatting.LIGHT_PURPLE + matcher.group(1) + " Essence" + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(amount * AuctionHouse.ESSENCE_VALUE));
+						totalValue = totalValue.add(new BigInteger(String.valueOf(amount * AuctionHouse.ESSENCE_VALUE)));
 					}
 					if (Objects.equals(slot.getStack().getItem().getRegistryName(), Items.enchanted_book.getRegistryName())) {
 						NBTTagCompound enchants = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments");
@@ -186,6 +184,8 @@ public class KuudraOverlay {
 			);
 
 			totalProfit = totalValue.subtract(new BigInteger(String.valueOf(keyCost)));
+
+			profit = totalProfit.intValue();
 
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
 					(totalProfit.signum() > 0 ? EnumChatFormatting.DARK_GREEN + "Profit: " + EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED + "Loss: " + EnumChatFormatting.RED) + Main.formatNumber(totalProfit),

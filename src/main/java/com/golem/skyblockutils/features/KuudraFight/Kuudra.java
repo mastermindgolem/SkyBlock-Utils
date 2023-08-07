@@ -3,6 +3,7 @@ package com.golem.skyblockutils.features.KuudraFight;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.AlertOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.ProfitOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -10,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
@@ -17,36 +19,51 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class Kuudra {
     public static HashMap<Vec3, Integer> supplyWaypoints = new HashMap<>(6);
+    public static List<String> partyMembers = new ArrayList<>();
     public static Float[] splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
-    public static int currentPhase = 0;
+    public static int currentPhase = -1;
+    public static EntityMagmaCube boss = null;
     public static boolean stunner = false;
 
     @SubscribeEvent
     public void onWorldLoad(EntityJoinWorldEvent event) {
         if (event.entity != Main.mc.thePlayer) return;
+        Kuudra.currentPhase = -1;
         supplyWaypoints = new HashMap<>(6);
-        CratesOverlay.crates = new HashMap<>();
+        CratesOverlay.phase0 = new HashMap<>();
+        CratesOverlay.phase1 = new HashMap<>();
+        CratesOverlay.phase2 = new HashMap<>();
+        CratesOverlay.phase4 = new ArrayList<>();
         CratesOverlay.playerInfo = new HashMap<>();
+        if(Arrays.asList(new String[]{"FRONT!", "BACK!", "LEFT!", "RIGHT!"}).contains(AlertOverlay.text)) AlertOverlay.text = "";
     }
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
-        String message = event.message.getUnformattedText().replaceAll("\u00a7.", "");
+        String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (message.equals("[NPC] Elle: Talk with me to begin!")) {
             currentPhase = 0;
             supplyWaypoints = new HashMap<>(6);
-            CratesOverlay.crates = new HashMap<>();
+            CratesOverlay.phase0 = new HashMap<>();
+            CratesOverlay.phase1 = new HashMap<>();
+            CratesOverlay.phase2 = new HashMap<>();
+            CratesOverlay.phase4 = new ArrayList<>();
             CratesOverlay.playerInfo = new HashMap<>();
+            if(Arrays.asList(new String[]{"FRONT!", "BACK!", "LEFT!", "RIGHT!"}).contains(AlertOverlay.text)) AlertOverlay.text = "";
             splits[0] = (float) Main.time.getCurrentMS();
+            partyMembers = new ArrayList<>();
+            if (ProfitOverlay.start == 0) ProfitOverlay.start = time.getCurrentMS();
+
+
             stunner = false;
             if (configFile.TapWarning && mc.thePlayer.inventoryContainer.inventorySlots.stream().noneMatch(slot -> slot.getStack().getDisplayName().contains("Toxic Arrow Poison"))) {
                 AlertOverlay.text = EnumChatFormatting.RED + "NO TAP";
@@ -101,7 +118,7 @@ public class Kuudra {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
-
+            ProfitOverlay.end = time.getCurrentMS();
         }
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
             currentPhase = 5;
@@ -110,6 +127,7 @@ public class Kuudra {
             addChatMessage(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[2]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
+            ProfitOverlay.end = time.getCurrentMS();
         }
         if (message.endsWith("has been eaten by Kuudra!") && message.startsWith(Main.mc.getSession().getUsername())) stunner = true;
 

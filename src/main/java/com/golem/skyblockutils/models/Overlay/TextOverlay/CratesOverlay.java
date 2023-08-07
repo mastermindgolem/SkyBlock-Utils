@@ -4,36 +4,43 @@ import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.RenderUtils;
+import com.golem.skyblockutils.utils.TabUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityGiantZombie;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
+import java.text.DecimalFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class CratesOverlay {
     public static GuiElement element = new GuiElement("Crates Overlay", 50, 20);
 
-    public static HashMap<Integer, BlockPos> crates = new HashMap<>();
+    public static HashMap<Integer, BlockPos> phase1 = new HashMap<>();
+    public static HashMap<String, Boolean> phase0 = new HashMap<>();
+    public static HashMap<String, Long> phase2 = new HashMap<>();
+    public static List<Float> phase4 = new ArrayList<>();
+    private static long lastFresh = 0;
     public static HashMap<String, Integer> playerInfo = new HashMap<>();
     private static List<String> heldCrates = new ArrayList<>();
+
+    private static int peakState = 0;
+    private static boolean inPeak = false;
+    private final DecimalFormat formatter = new DecimalFormat("0.00");
 
 
     @SubscribeEvent
@@ -43,6 +50,41 @@ public class CratesOverlay {
             String name = message.split(" recovered")[0];
             playerInfo.put(name, playerInfo.getOrDefault(name, 0) + 1);
         }
+        if (message.equals("Your Fresh Tools Perk bonus doubles your building speed for the next 5 seconds!")) {
+            if (configFile.freshAlert) lastFresh = time.getCurrentMS();
+            if (configFile.freshNotify) mc.thePlayer.sendChatMessage("/pc FRESH! " + configFile.freshMessage);
+        }
+        if (message.startsWith("Party") && message.contains(": FRESH!")) {
+            for (String player : Kuudra.partyMembers) if (message.contains(player)) {
+                phase2.put(player, time.getCurrentMS());
+                return;
+            }
+        }
+        if (message.endsWith("is now ready!")) phase0.put(message.split(" ")[0], true);
+    }
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START || mc.theWorld == null || mc.thePlayer == null || Kuudra.currentPhase >= 5 || Kuudra.currentPhase < 0) return;
+
+        List<String> tabData = TabUtils.getTabList();
+        if (tabData.size() == 0) return;
+        Pattern pattern = Pattern.compile("Players \\((\\d+)\\)");
+        Matcher matcher = pattern.matcher(tabData.get(0).replaceAll("§.", ""));
+
+        if (!matcher.find()) return;
+
+        for (String string : tabData.subList(1, 1 + Integer.parseInt(matcher.group(1)))) {
+            try {
+                String player = string.split(" ")[1].replaceAll("§.", "");
+                if (!Kuudra.partyMembers.contains(player)) Kuudra.partyMembers.add(player);
+            } catch (Exception ignored) {}
+        }
+
+        if (time.getCurrentMS() - lastFresh < 1000) AlertOverlay.text = EnumChatFormatting.DARK_GREEN + "FRESH TOOLS";
+        if (time.getCurrentMS() - lastFresh > 5000 && Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_GREEN + "FRESH TOOLS")) AlertOverlay.text = "";
+
+
     }
 
     @SubscribeEvent
@@ -61,7 +103,7 @@ public class CratesOverlay {
 
         for (Entity entity : entities) {
             if (entity instanceof EntityGiantZombie) {
-                crates.put(entity.getEntityId(), entity.getPosition());
+                phase1.put(entity.getEntityId(), entity.getPosition());
                 RenderUtils.renderBeaconBeam(entity.posX - viewerX -1.5, entity.posY - viewerY, entity.posZ - viewerZ +2, 0xFF0000, 1.0F, event.partialTicks);
             }
             /*
@@ -98,7 +140,7 @@ public class CratesOverlay {
 
          */
 
-        Iterator<Map.Entry<Integer, BlockPos>> iterator = crates.entrySet().iterator();
+        Iterator<Map.Entry<Integer, BlockPos>> iterator = phase1.entrySet().iterator();
 
         while (iterator.hasNext()) {
             Map.Entry<Integer, BlockPos> entry = iterator.next();
@@ -120,32 +162,7 @@ public class CratesOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui && Kuudra.currentPhase == 1) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
-
-
-            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Supplies:", textStyle, Alignment.Left);
-
-            int counter = 1;
-            for (Map.Entry<Integer, BlockPos> entry : crates.entrySet()) {
-                OverlayUtils.drawString(0, counter * 10, EnumChatFormatting.RED + findClosestLabel(entry.getValue()), textStyle, Alignment.Left);
-                counter++;
-            }
-            for (String heldCrate : heldCrates) {
-                OverlayUtils.drawString(0, counter * 10, EnumChatFormatting.YELLOW + heldCrate, textStyle, Alignment.Left);
-                counter++;
-            }
-            for (Map.Entry<String, Integer> entry : playerInfo.entrySet()) {
-                OverlayUtils.drawString(0, counter * 10, entry.getKey() + EnumChatFormatting.WHITE + ": " + EnumChatFormatting.YELLOW + entry.getValue(), textStyle, Alignment.Left);
-                counter++;
-            }
-
-            element.setHeight(60);
-
-            GlStateManager.popMatrix();
-        } else if (mc.currentScreen instanceof MoveGui) {
+        if (mc.currentScreen instanceof MoveGui) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
@@ -160,6 +177,116 @@ public class CratesOverlay {
             OverlayUtils.drawString(0, 60, "Player3: 1", textStyle, Alignment.Left);
 
             element.setHeight(70);
+
+            GlStateManager.popMatrix();
+            return;
+        }
+
+        if (!configFile.testGui) return;
+
+
+        if (Kuudra.currentPhase == 0) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
+            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+
+            int counter = 1;
+            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Ready Up:", textStyle, Alignment.Left);
+            for (String player : Kuudra.partyMembers) {
+                OverlayUtils.drawString(0, 10*counter, player + ": " + (phase0.getOrDefault(player, false) ? EnumChatFormatting.GREEN + "READY" : EnumChatFormatting.RED + "NOT READY"), textStyle, Alignment.Left);
+                counter++;
+            }
+
+
+            GlStateManager.popMatrix();
+        } else if (Kuudra.currentPhase == 1) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
+            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+
+
+            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Supplies:", textStyle, Alignment.Left);
+
+            int counter = 1;
+            for (Map.Entry<Integer, BlockPos> entry : phase1.entrySet()) {
+                OverlayUtils.drawString(0, counter * 10, EnumChatFormatting.RED + findClosestLabel(entry.getValue()), textStyle, Alignment.Left);
+                counter++;
+            }
+            for (String heldCrate : heldCrates) {
+                OverlayUtils.drawString(0, counter * 10, EnumChatFormatting.YELLOW + heldCrate, textStyle, Alignment.Left);
+                counter++;
+            }
+            for (Map.Entry<String, Integer> entry : playerInfo.entrySet()) {
+                OverlayUtils.drawString(0, counter * 10, entry.getKey() + EnumChatFormatting.WHITE + ": " + EnumChatFormatting.YELLOW + entry.getValue(), textStyle, Alignment.Left);
+                counter++;
+            }
+
+            GlStateManager.popMatrix();
+        } else if (Kuudra.currentPhase == 2) {
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
+            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+
+            int counter = 1;
+            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Build:", textStyle, Alignment.Left);
+            for (String player : Kuudra.partyMembers) {
+                if (time.getCurrentMS() - phase2.getOrDefault(player, 0L) < 5000) {
+                    OverlayUtils.drawString(0, 10*counter, player + ": " + EnumChatFormatting.GREEN + SplitsOverlay.format((5000 - time.getCurrentMS() + phase2.getOrDefault(player, 0L))/60000F), textStyle, Alignment.Left);
+                } else {
+                    OverlayUtils.drawString(0, 10*counter, player + ": " + EnumChatFormatting.RED + "No Fresh", textStyle, Alignment.Left);
+                }
+                counter++;
+            }
+            GlStateManager.popMatrix();
+        } else if (Kuudra.currentPhase == 4) {
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
+            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+
+
+            int counter = 1;
+            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Kuudra Kill:", textStyle, Alignment.Left);
+            for (float dmg : phase4) {
+                OverlayUtils.drawString(0, 10 * counter, EnumChatFormatting.YELLOW + "Peak " + counter + ": " + EnumChatFormatting.RESET + Main.formatNumber(dmg), textStyle, Alignment.Left);
+                counter++;
+            }
+
+            EntityMagmaCube kuudra = Kuudra.boss;
+
+            if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24) return;
+
+            int currentState = 0;
+            if (kuudra.posX < -128) {
+                AlertOverlay.text = EnumChatFormatting.BOLD + "RIGHT!";
+                currentState = 1;
+            }
+            if (kuudra.posX > -72) {
+                AlertOverlay.text = EnumChatFormatting.BOLD + "LEFT!";
+                currentState = 2;
+            }
+            if (kuudra.posZ < -132) {
+                AlertOverlay.text = EnumChatFormatting.BOLD + "BACK!";
+                currentState = 3;
+            }
+            if (kuudra.posZ > -84) {
+                AlertOverlay.text = EnumChatFormatting.BOLD + "FRONT!";
+                currentState = 4;
+            }
+            if (currentState != peakState) {
+                peakState = currentState;
+                if (phase4.size() == 0) {
+                    phase4.add(kuudra.getMaxHealth() / 4 - kuudra.getHealth());
+                } else {
+                    phase4.add(phase4.get(phase4.size() - 1) - kuudra.getHealth());
+                }
+                Kuudra.addChatMessage(phase4.toString());
+            }
+
+
+
+
 
             GlStateManager.popMatrix();
         }

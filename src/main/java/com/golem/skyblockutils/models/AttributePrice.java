@@ -6,6 +6,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import logger.Logger;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -150,6 +152,7 @@ public class AttributePrice {
 			int best_tier = 0;
 			int best_value = 0;
 			int added_value = 0;
+			int total_tiers = 0;
 
 			for (String attr_key : nbt.getKeySet()) {
 				if (excludeAttributes.contains(attr_key)) continue;
@@ -168,6 +171,7 @@ public class AttributePrice {
 				items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
 				int value = (int) (items.get(0).get("price_per_tier").getAsInt() * Math.pow(2, nbt.getInteger(attr_key) - 1));
 				added_value += value;
+				total_tiers += Math.pow(2, nbt.getInteger(attr_key) - 1);
 				if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
 					continue;
 				if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(attr_key))
@@ -185,9 +189,26 @@ public class AttributePrice {
 				if (!Main.configFile.valueStarredArmor && (item_id.startsWith("HOT_") || item_id.startsWith("BURNING_") || item_id.startsWith("FIERY_") || item_id.startsWith("INFERNAL"))) {
 					return null;
 				}
+			} else {
+				if ((best_value < LowestBin.getOrDefault(item_id, 0) || configFile.shardEquipmentPricing) && configFile.dataSource == 0) {
+					JsonObject bv = new JsonObject();
+					bv.addProperty("value", 0);
+					for (String eq : new String[]{"MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_CLOAK", "MOLTEN_NECKLACE"}) {
+						JsonObject av = AttributeValue(item, eq);
+						if (av != null && av.has("value")) {
+							if (av.get("value").getAsInt() > bv.get("value").getAsInt() && av.get("value").getAsInt() > LowestBin.getOrDefault(eq, 0)) {
+								av.addProperty("display_string", av.get("display_string").getAsString() + EnumChatFormatting.RED + " * ");
+								bv = av;
+							}
+						}
+					}
+					return bv;
+
+				}
 			}
 
 			int combo_value = (comboitem == null ? 0 : comboitem.get("starting_bid").getAsInt());
+
 
 			added_value += combo_value;
 
@@ -195,7 +216,6 @@ public class AttributePrice {
 
 			String displayName = item.getDisplayName();
 			if (configFile.compactContainerValue) for (String r : new String[]{"Terror ", "Aurora ", "Crimson ", "Fervor ", "Hollow ", "Molten ", "Gauntlet of ", "Attribute "}) displayName = displayName.replace(r, "");
-
 
 			if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1000000) {
 				result.addProperty("top_display", "GR");
@@ -221,11 +241,132 @@ public class AttributePrice {
 				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + displayName);
 				result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
 				return result;
+			} else if (10 * total_tiers * AuctionHouse.ESSENCE_VALUE > LowestBin.getOrDefault(item_id, 0)) {
+				result.addProperty("top_display", "SAL");
+				result.addProperty("bottom_display", 0);
+				result.addProperty("display_string", "SALVAGE " + displayName);
+				result.addProperty("value", 10 * total_tiers * AuctionHouse.ESSENCE_VALUE);
+				return result;
 			} else if (LowestBin.getOrDefault(item_id, 0) > 0 && nbt.getKeySet().size() > 0) {
 				result.addProperty("top_display", "LBIN");
 				result.addProperty("bottom_display", 0);
 				result.addProperty("display_string", "LBIN " + displayName);
 				result.addProperty("value", LowestBin.getOrDefault(item_id, 0));
+				return result;
+			}
+
+
+			return null;
+		}
+		return null;
+	}
+
+	public static JsonObject AttributeValue(ItemStack item, String id) {
+
+		JsonObject result = new JsonObject();
+		result.addProperty("top_display", "");
+		result.addProperty("bottom_display", 0);
+		result.addProperty("display_string", "");
+		result.addProperty("value", 0);
+
+		List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
+		List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
+
+		NBTTagCompound nbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
+		for (String item_key : all_kuudra_categories) {
+			if (!id.contains(item_key)) continue;
+			if ((item_key.equals("HELMET") || item_key.equals("CHESTPLATE") || item_key.equals("LEGGINGS") || item_key.equals("BOOTS")) &&
+					!id.contains("AURORA") && !id.contains("CRIMSON") && !id.contains("TERROR") && !id.contains("FERVOR") && !id.contains("HOLLOW")
+			) continue;
+
+			String best_attribute = "";
+			int best_tier = 0;
+			int best_value = 0;
+			int added_value = 0;
+			int total_tiers = 0;
+
+			for (String attr_key : nbt.getKeySet()) {
+				if (excludeAttributes.contains(attr_key)) continue;
+				ArrayList<JsonObject> items = AttributePrices.get(item_key).get(attr_key);
+				if (items == null || items.size() == 0) {
+					continue;
+				}
+				if ((item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
+					items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= (item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
+				} else {
+					items = items.stream().filter(i -> i.get(attr_key).getAsInt() == nbt.getInteger(attr_key)).collect(Collectors.toCollection(ArrayList::new));
+				}
+				if (items.size() == 0) {
+					continue;
+				}
+				items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
+				int value = (int) (items.get(0).get("price_per_tier").getAsInt() * Math.pow(2, nbt.getInteger(attr_key) - 1));
+				added_value += value;
+				total_tiers += Math.pow(2, nbt.getInteger(attr_key) - 1);
+				if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
+					continue;
+				if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(attr_key))
+					best_value = 0;
+				if (value > best_value) {
+					best_value = value;
+					best_attribute = attr_key;
+					best_tier = nbt.getInteger(attr_key);
+				}
+			}
+
+			JsonObject comboitem = null;
+			if (!id.equals("ATTRIBUTE_SHARD")) {
+				comboitem = getComboValue(id, new ArrayList<>(nbt.getKeySet()));
+				if (!Main.configFile.valueStarredArmor && (id.startsWith("HOT_") || id.startsWith("BURNING_") || id.startsWith("FIERY_") || id.startsWith("INFERNAL"))) {
+					return null;
+				}
+			}
+
+			int combo_value = (comboitem == null ? 0 : comboitem.get("starting_bid").getAsInt());
+
+
+			added_value += combo_value;
+
+			ArrayList<String> attrArray = new ArrayList<>(nbt.getKeySet());
+
+			String displayName = item.getDisplayName();
+			if (configFile.compactContainerValue) for (String r : new String[]{"Terror ", "Aurora ", "Crimson ", "Fervor ", "Hollow ", "Molten ", "Gauntlet of ", "Attribute "}) displayName = displayName.replace(r, "");
+
+			if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1000000) {
+				result.addProperty("top_display", "GR");
+				result.addProperty("bottom_display", 0);
+				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + nbt.getInteger(attrArray.get(1)) + " " + displayName);
+				result.addProperty("value", added_value);
+				return result;
+			} else if (combo_value > configFile.min_godroll_price * 1000000 && combo_value > best_value) {
+				result.addProperty("top_display", "GR");
+				result.addProperty("bottom_display", 0);
+				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + displayName);
+				result.addProperty("value", combo_value);
+				return result;
+			} else if (best_value > LowestBin.getOrDefault(id, 0)) {
+				result.addProperty("top_display", ShortenedAttribute(best_attribute));
+				result.addProperty("bottom_display", best_tier);
+				result.addProperty("display_string", ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName);
+				result.addProperty("value", best_value);
+				return result;
+			} else if (id.equals("ATTRIBUTE_SHARD")) {
+				result.addProperty("top_display", ShortenedAttribute(attrArray.get(0)));
+				result.addProperty("bottom_display", nbt.getInteger(attrArray.get(0)));
+				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + displayName);
+				result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
+				return result;
+			} else if (10 * total_tiers * AuctionHouse.ESSENCE_VALUE > LowestBin.getOrDefault(id, 0)) {
+				result.addProperty("top_display", "SAL");
+				result.addProperty("bottom_display", 0);
+				result.addProperty("display_string", "SALVAGE " + displayName);
+				result.addProperty("value", 10 * total_tiers * AuctionHouse.ESSENCE_VALUE);
+				return result;
+			} else if (LowestBin.getOrDefault(id, 0) > 0 && nbt.getKeySet().size() > 0) {
+				result.addProperty("top_display", "LBIN");
+				result.addProperty("bottom_display", 0);
+				result.addProperty("display_string", "LBIN " + displayName);
+				result.addProperty("value", LowestBin.getOrDefault(id, 0));
 				return result;
 			}
 

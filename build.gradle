@@ -9,7 +9,7 @@ project.setProperty("mainClassName", "com.golem.skyblockutils.Main")
 
 def majorVersion = 1
 def minorVersion = 0
-def patchVersion = 2
+def patchVersion = 3
 
 version = "${majorVersion}.${minorVersion}.${patchVersion}"
 group = "com.golem.skyblockutils"
@@ -65,7 +65,7 @@ dependencies {
 	testImplementation "junit:junit:4.13.2"
 	// Logger
 	implementation "com.github.VlxtIykg:Logger:1.1.0"
-	// Our gui
+
 
 }
 

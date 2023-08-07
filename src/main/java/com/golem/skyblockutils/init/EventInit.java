@@ -7,6 +7,7 @@ import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
+import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -19,7 +20,6 @@ public class EventInit {
 			new KeybindsInit(),
 			new ContainerValue(),
 			new ChatListener(),
-			new GuiEvent(),
 			new KuudraHealth(),
 			new Kuudra(),
 			new Waypoints(),
@@ -27,6 +27,7 @@ public class EventInit {
 			new BrokenHyp(),
 			new CombineHelper(),
 			new EnderPearl(),
+			new LocationUtils(),
 			new DescriptionHandler()
 		};
 
@@ -44,7 +45,11 @@ public class EventInit {
 				new FishingOverlay(),
 				new AlertOverlay(),
 				new SplitsOverlay(),
-				new ReaperOverlay()
+				new ReaperOverlay(),
+				new DamageOverlay(),
+				new FatalTempoOverlay(),
+				new ProfitOverlay(),
+				new ContainerOverlay()
 		};
 
 		for (Object listener : listeners) {

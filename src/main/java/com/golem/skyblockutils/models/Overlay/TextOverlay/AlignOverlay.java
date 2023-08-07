@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
@@ -37,11 +38,11 @@ public class AlignOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !Main.configFile.alignTimer) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui) {
+        if (configFile.testGui && (configFile.alignTimer == 1 || (configFile.alignTimer == 2 && Kuudra.currentPhase > 0) || (configFile.alignTimer == 3 && Kuudra.currentPhase == 4))) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
@@ -65,7 +66,9 @@ public class AlignOverlay {
             element.setHeight(10);
 
             GlStateManager.popMatrix();
-        } else if (mc.currentScreen instanceof MoveGui) {
+            return;
+        }
+        if (mc.currentScreen instanceof MoveGui) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);

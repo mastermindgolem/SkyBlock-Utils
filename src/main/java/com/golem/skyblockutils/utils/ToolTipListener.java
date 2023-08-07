@@ -74,7 +74,6 @@ public class ToolTipListener {
 					if (!shards.getKeySet().contains(attribute)) continue;
 					if (!AttributePrices.get(key).containsKey(attribute)) continue;
 					ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
-					System.out.println(items.get(0));
 					if ((key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
 						String finalKey = key;
 						items = items.stream().filter(i -> i.get(attribute).getAsInt() >= (finalKey.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
