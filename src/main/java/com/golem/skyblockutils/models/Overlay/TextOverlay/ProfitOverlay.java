@@ -53,8 +53,7 @@ public class ProfitOverlay {
             if (!(container instanceof ContainerChest)) return;
             chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
         } catch (Exception ignored) {return;}
-        if (!event.slot.getHasStack() || (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest"))) return;
-        Kuudra.addChatMessage(String.valueOf(KuudraOverlay.profit));
+        if (!event.slot.getHasStack() || !chestName.contains("Paid Chest")) return;
         totalProfit += KuudraOverlay.profit;
         chests++;
     }
@@ -76,7 +75,7 @@ public class ProfitOverlay {
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
             String string5 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
-            String string6 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((totalTime)/3600000 + 1)));
+            String string6 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTime > 0 ? (double) totalProfit / totalTime * 3600000 : 0));
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);

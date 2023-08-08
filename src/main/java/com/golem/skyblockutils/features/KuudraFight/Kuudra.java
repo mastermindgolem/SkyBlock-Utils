@@ -6,8 +6,8 @@ import com.golem.skyblockutils.models.Overlay.TextOverlay.AlertOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ProfitOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
+import com.golem.skyblockutils.utils.Colors;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -29,7 +29,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -61,18 +60,20 @@ public class Kuudra {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (mc.thePlayer == null || mc.theWorld == null || event.phase == TickEvent.Phase.START) return;
+
         Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
 
         ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
 
         List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
 
-        List<String> lines = new ArrayList<>();
         for (int i = scores.size() - 1; i >= 0; i--) {
             Score score = scores.get(i);
             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
             String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
             line = line.replaceAll("§.", "");
+            line = Colors.cleanDuplicateColourCodes(line);
+            line = Colors.cleanColour(line);
             if (line.contains("Kuudra's Hollow")) {
                 if (line.contains("(T1)")) tier = 1;
                 if (line.contains("(T2)")) tier = 2;
@@ -179,12 +180,13 @@ public class Kuudra {
             splits2.add(splits[3] - splits[2]);
             splits2.add(splits[4] - splits[3]);
             splits2.add(splits[5] - splits[4]);
-            splitsData.addProperty("time", time.getCurrentMS());
+            splitsData.addProperty("time", System.currentTimeMillis());
             splitsData.addProperty("tier", tier);
             splitsData.add("party", new Gson().toJsonTree(partyMembers).getAsJsonArray());
             splitsData.add("splits", new Gson().toJsonTree(splits2).getAsJsonArray());
+            splitsData.addProperty("overall", splits[5] - splits[1]);
             PersistentData.splits.add(splitsData);
-            persistentData.save();
+            persistentData.saveSplits();
         }
         if (message.endsWith("has been eaten by Kuudra!") && message.startsWith(Main.mc.getSession().getUsername())) stunner = true;
 

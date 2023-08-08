@@ -54,7 +54,7 @@ public class DescriptionHandler{
     @SubscribeEvent
 
     public void onToolTipEvent(ItemTooltipEvent event) {
-        if (event.toolTip.size() == 0 || Main.configFile.showItemValue) return;
+        if (event.toolTip.size() == 0 || !Main.configFile.showItemValue) return;
         if (!event.itemStack.serializeNBT().getCompoundTag("tag").hasKey("ExtraAttributes")) return;
         JsonObject data = tooltipItemMap.getOrDefault(event.itemStack, null);
         if (data == null) return;

@@ -29,7 +29,8 @@ public class KuudraHealth {
             ArrayList<Entity> entities = Kuudra.getAllEntitiesInRange();
             List<Entity> kuudra = entities.stream().filter(e -> e instanceof EntityMagmaCube && e.width > 14 && ((EntityMagmaCube) e).getMaxHealth() <= 100000).collect(Collectors.toList());
             for (Entity e : kuudra) {
-                RenderUtils.drawEntityBox(e, Color.GREEN, 20, event.partialTicks);
+
+                if (Kuudra.tier == 5 && Kuudra.currentPhase == 4) RenderUtils.drawEntityBox(e, Color.GREEN, 20, event.partialTicks);
                 Kuudra.boss = (EntityMagmaCube) e;
             }
         } catch (Exception ignored) {}

@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 import static com.golem.skyblockutils.Config.configFolder;
@@ -30,12 +29,19 @@ public class PersistentData implements Serializable {
 	}
 
 
-	public void save() {
+	public void savePositions() {
 		JsonObject json = new JsonObject();
 		json.add("Overlays", new Gson().toJsonTree(positions).getAsJsonObject());
 		try {
 			String jsonData = json.toString();
 			Files.write(positionFile.toPath(), jsonData.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			Logger.error("An error occurred while saving the data: " + e.getMessage());
+		}
+	}
+
+	public void saveSplits() {
+		try {
 			Files.write(splitsFile.toPath(), splits.toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 		} catch (IOException e) {
 			Logger.error("An error occurred while saving the data: " + e.getMessage());

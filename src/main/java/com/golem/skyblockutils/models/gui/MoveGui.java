@@ -1,7 +1,6 @@
 package com.golem.skyblockutils.models.gui;
 
 import com.golem.skyblockutils.PersistentData;
-import logger.Logger;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import gg.essential.universal.UResolution;
@@ -10,11 +9,8 @@ import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.persistentData;
-import static com.golem.skyblockutils.init.GuiInit.*;
 
 public class MoveGui extends GuiScreen {
 	private GuiElement currentElement = null;
@@ -114,7 +110,7 @@ public class MoveGui extends GuiScreen {
 	@Override
 	public void onGuiClosed() {
 		PersistentData.positions.put(Element.getName(), Element.position);
-		persistentData.save();
+		persistentData.savePositions();
 	}
 
 }

@@ -81,9 +81,88 @@ public class SbuCommand extends CommandBase {
 		}
 		if (args.length == 2) {
 			if (Objects.equals(args[0], "split") || Objects.equals(args[0], "splits")) {
-				if (Objects.equals(args[1], "best")) mc.thePlayer.sendChatMessage("/sbu splits best 5");
-				if (Objects.equals(args[1], "today")) mc.thePlayer.sendChatMessage("/sbu splits today 5");
-				if (Objects.equals(args[1], "last")) mc.thePlayer.sendChatMessage("/sbu splits today 5");
+				if (Objects.equals(args[1], "best")) {
+					JsonObject bestOverall = null;
+					int bestTheoretical = 0;
+					for (int i = 0; i < 4; i++) {
+						JsonObject best = null;
+						for (JsonElement s : PersistentData.splits) {
+							JsonObject splitData = s.getAsJsonObject();
+							if (!Objects.equals(splitData.get("tier").getAsString(), "5")) continue;
+							if (best == null || splitData.get("splits").getAsJsonArray().get(i).getAsInt() < best.get("splits").getAsJsonArray().get(i).getAsInt()) {
+								best = splitData;
+							}
+						}
+						if (best == null) {
+							mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No data found for Phase " + (i+1)));
+							return;
+						}
+						bestTheoretical += best.get("splits").getAsJsonArray().get(i).getAsInt();
+						mc.thePlayer.addChatMessage( new ChatComponentText(getPhaseName(i+1) + EnumChatFormatting.WHITE + SplitsOverlay.format(best.get("splits").getAsJsonArray().get(i).getAsInt()/60000F))
+								.setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(displaySplit(best))))));
+					}
+					for (JsonElement s : PersistentData.splits) {
+						JsonObject splitData = s.getAsJsonObject();
+						if (!Objects.equals(splitData.get("tier").getAsString(), "5")) continue;
+						if (bestOverall == null || bestOverall.get("overall").getAsInt() > splitData.get("overall").getAsInt()) bestOverall = splitData;
+					}
+					if (bestOverall == null) {
+						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No data found for Overall"));
+						return;
+					}
+					mc.thePlayer.addChatMessage( new ChatComponentText(EnumChatFormatting.GOLD + "Overall: " + EnumChatFormatting.WHITE + SplitsOverlay.format(bestOverall.get("overall").getAsInt()/60000F))
+							.setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(displaySplit(bestOverall))))));
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "Theoretical: " + EnumChatFormatting.WHITE + SplitsOverlay.format(bestTheoretical/60000F)));
+				}
+				if (Objects.equals(args[1], "today")) {
+					JsonObject bestOverall = null;
+					int bestTheoretical = 0;
+					for (int i = 0; i < 4; i++) {
+						JsonObject best = null;
+						for (JsonElement s : PersistentData.splits) {
+							JsonObject splitData = s.getAsJsonObject();
+							if (!Objects.equals(splitData.get("tier").getAsString(), "5")) continue;
+							if (System.currentTimeMillis() - splitData.get("time").getAsLong() > 86400000) continue;
+							if (best == null || splitData.get("splits").getAsJsonArray().get(i).getAsInt() < best.get("splits").getAsJsonArray().get(i).getAsInt()) {
+								best = splitData;
+							}
+						}
+						if (best == null) {
+							mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No data found for Phase " + (i+1)));
+							return;
+						}
+						bestTheoretical += best.get("splits").getAsJsonArray().get(i).getAsInt();
+						mc.thePlayer.addChatMessage( new ChatComponentText(getPhaseName(i+1) + EnumChatFormatting.WHITE + SplitsOverlay.format(best.get("splits").getAsJsonArray().get(i).getAsInt()/60000F))
+								.setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(displaySplit(best))))));
+					}
+					for (JsonElement s : PersistentData.splits) {
+						JsonObject splitData = s.getAsJsonObject();
+						if (!Objects.equals(splitData.get("tier").getAsString(), "5")) continue;
+						if (System.currentTimeMillis() - splitData.get("time").getAsLong() > 86400000) continue;
+						if (bestOverall == null || bestOverall.get("overall").getAsInt() > splitData.get("overall").getAsInt()) bestOverall = splitData;
+					}
+					if (bestOverall == null) {
+						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No data found for Overall"));
+						return;
+					}
+					mc.thePlayer.addChatMessage( new ChatComponentText(EnumChatFormatting.GOLD + "Overall: " + EnumChatFormatting.WHITE + SplitsOverlay.format(bestOverall.get("overall").getAsInt()/60000F))
+							.setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(displaySplit(bestOverall))))));
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "Theoretical: " + EnumChatFormatting.WHITE + SplitsOverlay.format(bestTheoretical/60000F)));
+				}
+				if (Objects.equals(args[1], "last")) {
+					JsonObject best = null;
+					for (JsonElement s : PersistentData.splits) {
+						if (!Objects.equals(s.getAsJsonObject().get("tier").getAsString(), "5")) continue;
+						if (best == null || best.get("time").getAsLong() < s.getAsJsonObject().get("time").getAsLong())
+							best = s.getAsJsonObject();
+					}
+					if (best == null) {
+						mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED + "No data found for last run."));
+						return;
+					}
+					mc.thePlayer.addChatMessage(new ChatComponentText(displaySplit(best)));
+
+				}
 			}
 
 		}
@@ -130,7 +209,7 @@ public class SbuCommand extends CommandBase {
 						for (JsonElement s : PersistentData.splits) {
 							JsonObject splitData = s.getAsJsonObject();
 							if (!Objects.equals(splitData.get("tier").getAsString(), args[2])) continue;
-							if (time.getCurrentMS() - splitData.get("time").getAsLong() > 86400000) continue;
+							if (System.currentTimeMillis() - splitData.get("time").getAsLong() > 86400000) continue;
 							if (best == null || splitData.get("splits").getAsJsonArray().get(i).getAsInt() < best.get("splits").getAsJsonArray().get(i).getAsInt()) {
 								best = splitData;
 							}
@@ -145,6 +224,7 @@ public class SbuCommand extends CommandBase {
 					}
 					for (JsonElement s : PersistentData.splits) {
 						JsonObject splitData = s.getAsJsonObject();
+						if (System.currentTimeMillis() - splitData.get("time").getAsLong() > 86400000) continue;
 						if (!Objects.equals(splitData.get("tier").getAsString(), args[2])) continue;
 						if (bestOverall == null || bestOverall.get("overall").getAsInt() > splitData.get("overall").getAsInt()) bestOverall = splitData;
 					}
@@ -159,6 +239,7 @@ public class SbuCommand extends CommandBase {
 				if (Objects.equals(args[1], "last")) {
 					JsonObject best = null;
 					for (JsonElement s : PersistentData.splits) {
+						if (!Objects.equals(s.getAsJsonObject().get("tier").getAsString(), args[2])) continue;
 						if (best == null || best.get("time").getAsLong() < s.getAsJsonObject().get("time").getAsLong())
 							best = s.getAsJsonObject();
 					}

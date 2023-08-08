@@ -77,7 +77,7 @@ public class CratesOverlay {
         for (String string : tabData.subList(1, 1 + Integer.parseInt(matcher.group(1)))) {
             try {
                 String player = string.split(" ")[1].replaceAll("§.", "");
-                if (!Kuudra.partyMembers.contains(player)) Kuudra.partyMembers.add(player);
+                if (!Kuudra.partyMembers.contains(player) && player.length() > 2) Kuudra.partyMembers.add(player);
             } catch (Exception ignored) {}
         }
 
@@ -257,30 +257,28 @@ public class CratesOverlay {
 
             EntityMagmaCube kuudra = Kuudra.boss;
 
-            if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() > 10) return;
+            if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() / kuudra.getMaxHealth() > 0.01) return;
 
-            int currentState = 0;
             if (kuudra.posX < -128) {
                 AlertOverlay.text = EnumChatFormatting.BOLD + "RIGHT!";
-                currentState = 1;
             }
             if (kuudra.posX > -72) {
                 AlertOverlay.text = EnumChatFormatting.BOLD + "LEFT!";
-                currentState = 2;
             }
             if (kuudra.posZ < -132) {
                 AlertOverlay.text = EnumChatFormatting.BOLD + "BACK!";
-                currentState = 3;
             }
             if (kuudra.posZ > -84) {
                 AlertOverlay.text = EnumChatFormatting.BOLD + "FRONT!";
-                currentState = 4;
             }
-            if (currentState != peakState) {
-                peakState = currentState;
-                if (phase4.size() >= 1 && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
-                phase4.add(kuudra.getHealth());
-                Kuudra.addChatMessage(formatter.format(10 * kuudra.getHealth() / kuudra.getMaxHealth()));
+            boolean currentPeak = kuudra.posY < 25;
+            if (currentPeak != inPeak) {
+                inPeak = currentPeak;
+                if (inPeak) {
+                    if (phase4.size() >= 1 && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
+                    phase4.add(kuudra.getHealth());
+                }
+
             }
             GlStateManager.popMatrix();
         }

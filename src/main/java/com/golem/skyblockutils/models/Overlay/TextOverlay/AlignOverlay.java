@@ -54,7 +54,7 @@ public class AlignOverlay {
                 if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                AlertOverlay.text = EnumChatFormatting.DARK_RED + "ALIGN NOW";
+                if (time.getCurrentMS() - lastAlign >= 10000) AlertOverlay.text = EnumChatFormatting.DARK_RED + "ALIGN NOW";
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
                 if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
