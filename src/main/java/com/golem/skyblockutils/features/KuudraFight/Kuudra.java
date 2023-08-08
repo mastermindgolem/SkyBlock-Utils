@@ -60,7 +60,6 @@ public class Kuudra {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (mc.thePlayer == null || mc.theWorld == null || event.phase == TickEvent.Phase.START) return;
-
         Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
 
         ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
@@ -103,7 +102,7 @@ public class Kuudra {
 
 
             stunner = false;
-            if (configFile.TapWarning && mc.thePlayer.inventoryContainer.inventorySlots.stream().noneMatch(slot -> slot.getStack().getDisplayName().contains("Toxic Arrow Poison"))) {
+            if (configFile.TapWarning && mc.thePlayer.inventoryContainer.inventorySlots.stream().noneMatch(slot -> slot.getHasStack() && slot.getStack().getDisplayName().contains("Toxic Arrow Poison"))) {
                 AlertOverlay.text = EnumChatFormatting.RED + "NO TAP";
             }
         }
