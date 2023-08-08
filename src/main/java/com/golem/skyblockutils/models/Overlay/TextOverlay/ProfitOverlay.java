@@ -39,7 +39,7 @@ public class ProfitOverlay {
     @SubscribeEvent
     public void onMouseClick(SlotClickEvent event) {
         if (event.slotId != 31) return;
-        if (!event.slot.getHasStack() || !event.slot.getStack().getDisplayName().contains("Paid Chest") || !event.slot.getStack().getDisplayName().contains("Free Chest")) return;
+        if (!event.slot.getHasStack() || (!event.slot.getStack().getDisplayName().contains("Paid Chest") && !event.slot.getStack().getDisplayName().contains("Free Chest"))) return;
         totalProfit += KuudraOverlay.profit;
         chests++;
     }
@@ -98,5 +98,12 @@ public class ProfitOverlay {
 
             GlStateManager.popMatrix();
         }
+    }
+
+    public static void reset() {
+        totalProfit = 0;
+        chests = 0;
+        start = 0;
+        end = 0;
     }
 }

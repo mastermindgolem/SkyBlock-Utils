@@ -240,6 +240,17 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
+	@Property(type = PropertyType.BUTTON, name = "Reset Profit Overlay", description = "Test", category = "Overlays", subcategory = "Profit")
+	@SuppressWarnings("unused")
+	public void ResetProfitOverlay() {
+		if (profitOverlay == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Profit Overlay is off."));
+			return;
+		}
+		ProfitOverlay.reset();
+		Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.GREEN + "Profit Overlay Data reset."));
+	}
+
 	@Property(type = PropertyType.SELECTOR, name = "Damage Bonus Indicator", description = "Shows an indicator to show whether dominance / lifeline is active.", category = "Overlays", subcategory = "Damage Bonus", options = {"None", "Dominance", "Lifeline"})
 	public int damageOverlay = 0;
 	@Property(type = PropertyType.BUTTON, name = "Move Damage Overlay", description = "Test", category = "Overlays", subcategory = "Damage Bonus")

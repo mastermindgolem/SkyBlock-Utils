@@ -2,6 +2,7 @@ package com.golem.skyblockutils.injection.mixins.minecraft.client;
 
 import com.golem.skyblockutils.events.SlotClickEvent;
 import com.golem.skyblockutils.features.AttributeOverlay;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;

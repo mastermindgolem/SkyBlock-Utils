@@ -44,13 +44,15 @@ public class Kuudra {
         CratesOverlay.phase2 = new HashMap<>();
         CratesOverlay.phase4 = new ArrayList<>();
         CratesOverlay.playerInfo = new HashMap<>();
-        if(Arrays.asList(new String[]{"FRONT!", "BACK!", "LEFT!", "RIGHT!"}).contains(AlertOverlay.text)) AlertOverlay.text = "";
+        AlertOverlay.text = "";
+        splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
     }
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
         String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (message.equals("[NPC] Elle: Talk with me to begin!")) {
+            splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
             currentPhase = 0;
             supplyWaypoints = new HashMap<>(6);
             CratesOverlay.phase0 = new HashMap<>();
@@ -58,7 +60,7 @@ public class Kuudra {
             CratesOverlay.phase2 = new HashMap<>();
             CratesOverlay.phase4 = new ArrayList<>();
             CratesOverlay.playerInfo = new HashMap<>();
-            if(Arrays.asList(new String[]{"FRONT!", "BACK!", "LEFT!", "RIGHT!"}).contains(AlertOverlay.text)) AlertOverlay.text = "";
+            AlertOverlay.text = "";
             splits[0] = (float) Main.time.getCurrentMS();
             partyMembers = new ArrayList<>();
             if (ProfitOverlay.start == 0) ProfitOverlay.start = time.getCurrentMS();
@@ -117,12 +119,16 @@ public class Kuudra {
         if (message.contains("DEFEAT") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
+            AlertOverlay.text = "";
+            CratesOverlay.phase4.add(0F);
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
             ProfitOverlay.end = time.getCurrentMS();
         }
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
+            AlertOverlay.text = "";
+            CratesOverlay.phase4.add(0F);
             addChatMessage(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[2]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));

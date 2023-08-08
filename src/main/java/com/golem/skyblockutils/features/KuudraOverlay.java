@@ -72,7 +72,7 @@ public class KuudraOverlay {
 							amount = KuudraPetEssenceBonus(Integer.parseInt(matcher.group(2)));
 						} catch (Exception ignored) {}
 						displayStrings.add(EnumChatFormatting.YELLOW + String.valueOf(amount) + "x " + EnumChatFormatting.LIGHT_PURPLE + matcher.group(1) + " Essence" + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(amount * AuctionHouse.ESSENCE_VALUE));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(amount * AuctionHouse.ESSENCE_VALUE)));
+						totalValue = totalValue.add(new BigInteger(String.valueOf((int)(amount * AuctionHouse.ESSENCE_VALUE))));
 					}
 					if (Objects.equals(slot.getStack().getItem().getRegistryName(), Items.enchanted_book.getRegistryName())) {
 						NBTTagCompound enchants = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments");

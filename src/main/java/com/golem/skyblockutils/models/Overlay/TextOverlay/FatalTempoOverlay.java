@@ -40,7 +40,7 @@ public class FatalTempoOverlay {
             try {
                 int FTLvl = heldItem.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments").getInteger("ultimate_fatal_tempo");
                 if (FTLvl <= 0) return;
-                level = FTLvl;
+                level = FTLvl * (heldItem.getDisplayName().contains("Terminator") ? 3 : 1);
                 hits.add(time.getCurrentMS());
                 hits = hits.stream().filter(hit -> time.getCurrentMS() - hit < 3000).collect(Collectors.toList());
 

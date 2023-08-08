@@ -239,7 +239,7 @@ public class CratesOverlay {
                 counter++;
             }
             GlStateManager.popMatrix();
-        } else if (Kuudra.currentPhase == 4) {
+        } else if (Kuudra.currentPhase == 4 || Kuudra.currentPhase == 5) {
 
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
@@ -248,14 +248,16 @@ public class CratesOverlay {
 
             int counter = 1;
             OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Kuudra Kill:", textStyle, Alignment.Left);
-            for (float dmg : phase4) {
+            for (int i = 1; i < phase4.size(); i++) {
+                float dmg = (phase4.get(i-1) - phase4.get(i)) * 12000;
+                if (dmg < 100000 || dmg > 300_000_000) continue;
                 OverlayUtils.drawString(0, 10 * counter, EnumChatFormatting.YELLOW + "Peak " + counter + ": " + EnumChatFormatting.RESET + Main.formatNumber(dmg), textStyle, Alignment.Left);
                 counter++;
             }
 
             EntityMagmaCube kuudra = Kuudra.boss;
 
-            if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24) return;
+            if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() > 10) return;
 
             int currentState = 0;
             if (kuudra.posX < -128) {
@@ -276,18 +278,10 @@ public class CratesOverlay {
             }
             if (currentState != peakState) {
                 peakState = currentState;
-                if (phase4.size() == 0) {
-                    phase4.add(kuudra.getMaxHealth() / 4 - kuudra.getHealth());
-                } else {
-                    phase4.add(phase4.get(phase4.size() - 1) - kuudra.getHealth());
-                }
-                Kuudra.addChatMessage(phase4.toString());
+                if (phase4.size() >= 1 && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
+                phase4.add(kuudra.getHealth());
+                Kuudra.addChatMessage(formatter.format(10 * kuudra.getHealth() / kuudra.getMaxHealth()));
             }
-
-
-
-
-
             GlStateManager.popMatrix();
         }
     }
