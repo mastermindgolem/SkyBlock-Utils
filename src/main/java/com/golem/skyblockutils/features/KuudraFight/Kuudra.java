@@ -1,10 +1,14 @@
 package com.golem.skyblockutils.features.KuudraFight;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.PersistentData;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.AlertOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ProfitOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
@@ -12,12 +16,17 @@ import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMagmaCube;
+import net.minecraft.scoreboard.Score;
+import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +42,7 @@ public class Kuudra {
     public static int currentPhase = -1;
     public static EntityMagmaCube boss = null;
     public static boolean stunner = false;
+    public static int tier = 0;
 
     @SubscribeEvent
     public void onWorldLoad(EntityJoinWorldEvent event) {
@@ -46,6 +56,31 @@ public class Kuudra {
         CratesOverlay.playerInfo = new HashMap<>();
         AlertOverlay.text = "";
         splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
+    }
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (mc.thePlayer == null || mc.theWorld == null || event.phase == TickEvent.Phase.START) return;
+        Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
+
+        ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
+
+        List<Score> scores = new ArrayList<>(scoreboard.getSortedScores(sidebarObjective));
+
+        List<String> lines = new ArrayList<>();
+        for (int i = scores.size() - 1; i >= 0; i--) {
+            Score score = scores.get(i);
+            ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(score.getPlayerName());
+            String line = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score.getPlayerName());
+            line = line.replaceAll("§.", "");
+            if (line.contains("Kuudra's Hollow")) {
+                if (line.contains("(T1)")) tier = 1;
+                if (line.contains("(T2)")) tier = 2;
+                if (line.contains("(T3)")) tier = 3;
+                if (line.contains("(T4)")) tier = 4;
+                if (line.contains("(T5)")) tier = 5;
+            }
+        }
     }
 
     @SubscribeEvent
@@ -123,6 +158,8 @@ public class Kuudra {
             CratesOverlay.phase4.add(0F);
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
             ProfitOverlay.end = time.getCurrentMS();
+            ProfitOverlay.totalTime += splits[5] - splits[0];
+            ProfitOverlay.totalRuns++;
         }
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
             currentPhase = 5;
@@ -134,6 +171,20 @@ public class Kuudra {
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
             ProfitOverlay.end = time.getCurrentMS();
+            ProfitOverlay.totalTime += splits[5] - splits[0];
+            ProfitOverlay.totalRuns++;
+            JsonObject splitsData = new JsonObject();
+            List<Float> splits2 = new ArrayList<>();
+            splits2.add(splits[2] - splits[1]);
+            splits2.add(splits[3] - splits[2]);
+            splits2.add(splits[4] - splits[3]);
+            splits2.add(splits[5] - splits[4]);
+            splitsData.addProperty("time", time.getCurrentMS());
+            splitsData.addProperty("tier", tier);
+            splitsData.add("party", new Gson().toJsonTree(partyMembers).getAsJsonArray());
+            splitsData.add("splits", new Gson().toJsonTree(splits2).getAsJsonArray());
+            PersistentData.splits.add(splitsData);
+            persistentData.save();
         }
         if (message.endsWith("has been eaten by Kuudra!") && message.startsWith(Main.mc.getSession().getUsername())) stunner = true;
 

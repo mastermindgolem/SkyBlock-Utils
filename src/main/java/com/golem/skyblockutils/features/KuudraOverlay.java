@@ -49,12 +49,7 @@ public class KuudraOverlay {
 			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 			List<String> displayStrings = new ArrayList<>();
 			BigInteger totalValue = new BigInteger("0");
-			new BigInteger("0");
 			BigInteger totalProfit;
-
-
-			List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
-			List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
 
 			int xSize = ((AccessorGuiContainer) gui).getXSize();
 			int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
@@ -67,12 +62,16 @@ public class KuudraOverlay {
 						continue;
 					Matcher matcher = ESSENCE_PATTERN.matcher(slot.getStack().getDisplayName());
 					if (matcher.matches() && configFile.considerEssenceValue) {
+						int buy_price = 1000;
+						int sell_price = 1000;
 						int amount = 1;
 						try {
+							buy_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("sell_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+							sell_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 							amount = KuudraPetEssenceBonus(Integer.parseInt(matcher.group(2)));
 						} catch (Exception ignored) {}
-						displayStrings.add(EnumChatFormatting.YELLOW + String.valueOf(amount) + "x " + EnumChatFormatting.LIGHT_PURPLE + matcher.group(1) + " Essence" + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(amount * AuctionHouse.ESSENCE_VALUE));
-						totalValue = totalValue.add(new BigInteger(String.valueOf((int)(amount * AuctionHouse.ESSENCE_VALUE))));
+						displayStrings.add(EnumChatFormatting.YELLOW + String.valueOf(amount) + "x " + EnumChatFormatting.LIGHT_PURPLE + matcher.group(1) + " Essence" + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(amount * (sell_price + buy_price) / 2F));
+						totalValue = totalValue.add(new BigInteger(String.valueOf(amount * (buy_price + sell_price) / 2)));
 					}
 					if (Objects.equals(slot.getStack().getItem().getRegistryName(), Items.enchanted_book.getRegistryName())) {
 						NBTTagCompound enchants = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments");

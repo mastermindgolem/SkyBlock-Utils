@@ -4,6 +4,7 @@ import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.utils.RequestUtil;
+import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -11,6 +12,7 @@ import com.google.gson.JsonParser;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -19,14 +21,17 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class DescriptionHandler{
@@ -41,20 +46,28 @@ public class DescriptionHandler{
     private static String previousData = "";
     public static HashMap<ItemStack, JsonObject> tooltipItemMap = new HashMap<>();
     public static LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
-
+    private static final DecimalFormat formatter = new DecimalFormat("#,###,###,###");
     public static final NBTTagCompound EMPTY_COMPOUND = new NBTTagCompound();
 
 
 
+    @SubscribeEvent
 
+    public void onToolTipEvent(ItemTooltipEvent event) {
+        if (event.toolTip.size() == 0 || Main.configFile.showItemValue) return;
+        if (!event.itemStack.serializeNBT().getCompoundTag("tag").hasKey("ExtraAttributes")) return;
+        JsonObject data = tooltipItemMap.getOrDefault(event.itemStack, null);
+        if (data == null) return;
+        event.toolTip.add(EnumChatFormatting.GOLD + "Item Value: " + EnumChatFormatting.GREEN + formatter.format(data.get("median").getAsDouble()));
+
+
+    }
     @SubscribeEvent
     public void loadDescriptionAndListenForChanges(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (Main.configFile.dataSource == 0 || Main.configFile.container_value == 0 || !ContainerValue.isActive) return;
         if (!(event.gui instanceof GuiContainer)) return;
         GuiContainer gc = (GuiContainer) event.gui;
         if (!hasAnyStackChanged(gc)) return;
         new Thread(() -> loadDescriptionForInventory(event, gc)).start();
-
     }
 
     private static boolean hasAnyStackChanged(GuiContainer gc) {
@@ -110,16 +123,17 @@ public class DescriptionHandler{
 
 
             JsonArray info = new RequestUtil().sendPostRequest("https://sky.coflnet.com/api/price/nbt", data).getJson().getAsJsonArray();
-            System.out.println(info);
-            displayStrings = new LinkedHashMap<>();
+            if (Main.configFile.dataSource == 1 && Main.configFile.container_value > 0 && ContainerValue.isActive) displayStrings = new LinkedHashMap<>();
             for (int i = 0; i < info.size(); i++) {
                 ItemStack stack = stacks.get(i);
                 if (!(info.get(i) instanceof JsonObject)) continue;
                 tooltipItemMap.put(stack, info.get(i).getAsJsonObject());
                 if (isAttributeItem(stack)) {
                     JsonObject itemdata = info.get(i).getAsJsonObject();
-                    String displayString = Objects.requireNonNull(AttributePrice.AttributeValue(stack)).get("display_string").getAsString();
-                    displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, itemdata.get("lbin").getAsLong(), itemdata.get("median").getAsLong()));
+                    if (Main.configFile.dataSource == 1 && Main.configFile.container_value > 0 && ContainerValue.isActive) {
+                        String displayString = Objects.requireNonNull(AttributePrice.AttributeValue(stack)).get("display_string").getAsString();
+                        displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, itemdata.get("lbin").getAsLong(), itemdata.get("median").getAsLong()));
+                    }
                 }
 
             }

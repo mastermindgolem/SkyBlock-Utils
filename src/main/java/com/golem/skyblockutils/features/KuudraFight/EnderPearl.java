@@ -163,8 +163,8 @@ public class EnderPearl {
                     Double[] roots = solveCubic(0.00015, 0.015 - 0.005 * u, -u, height);
                     double t = (roots == null ? 0 : roots[0]);
                     u = Math.cos(Math.toRadians(i)) * 1.338;
-                    //double d = Math.abs(distance - t * u);
-                    double d = Math.abs(distance - (100 * u * Math.log1p(t/100)));
+                    double d = Math.abs(distance - t * u);
+                    //double d = Math.abs(distance - (100 * u * Math.log(1 + t/100)));
                     if (d < 1) {
                         double y = supply.yCoord + distance * Math.tan(Math.toRadians(i));
                         RenderUtils.drawBlockBox(new BlockPos(x, y, z), Main.configFile.enderPearlColor, 5, event.partialTicks);

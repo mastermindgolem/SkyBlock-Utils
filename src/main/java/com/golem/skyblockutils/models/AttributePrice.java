@@ -203,8 +203,15 @@ public class AttributePrice {
 							}
 						}
 					}
+					if (bv.get("value").getAsInt() == 0) {
+						ArrayList<String> attrArray = new ArrayList<>(nbt.getKeySet());
+						result.addProperty("top_display", ShortenedAttribute(attrArray.get(0)));
+						result.addProperty("bottom_display", nbt.getInteger(attrArray.get(0)));
+						result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + item.getDisplayName());
+						result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
+						return result;
+					}
 					return bv;
-
 				}
 			}
 

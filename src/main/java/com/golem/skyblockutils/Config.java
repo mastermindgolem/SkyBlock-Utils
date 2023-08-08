@@ -43,6 +43,15 @@ public class Config extends Vigilant
 	)
 	public int time_between_checks = 5;
 
+	@Property(
+			type = PropertyType.SWITCH,
+			name = "Show Item Value",
+			description = "Show's approximate item value in lore, based on Cofl data.",
+			category = "General",
+			subcategory = "General"
+	)
+	public boolean showItemValue = true;
+
 	@Property(type = PropertyType.SLIDER, name = "Armor/Equipment Minimum Tier", description = "Minimum tier to consider for valuing armor/equipment and showing them in /ap and /ep. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 5)
 	public int minArmorTier = 0;
 	@Property(type = PropertyType.SLIDER, name = "Shard Minimum Tier", description = "Minimum tier to consider for valuing shards and showing them in /ap. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 3)
@@ -64,6 +73,7 @@ public class Config extends Vigilant
 		type = PropertyType.SLIDER,
 		name = "Minimum Armour Tier",
 		description = "Minimum tier ARMOUR or EQUIPMENT to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
+		category = "General",
 		category = "General",
 		subcategory = "Kuudra Pricing",
 		min = 1,

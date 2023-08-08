@@ -7,7 +7,11 @@ import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraOverlay;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.util.EnumChatFormatting;
@@ -29,6 +33,8 @@ public class ProfitOverlay {
     private static final TimeHelper time = new TimeHelper();
     private static long totalProfit = 0;
     private static int chests = 0;
+    public static long totalTime = 0;
+    public static int totalRuns = 0;
     public static long start = 0;
     public static long end = 0;
 
@@ -39,7 +45,16 @@ public class ProfitOverlay {
     @SubscribeEvent
     public void onMouseClick(SlotClickEvent event) {
         if (event.slotId != 31) return;
-        if (!event.slot.getHasStack() || (!event.slot.getStack().getDisplayName().contains("Paid Chest") && !event.slot.getStack().getDisplayName().contains("Free Chest"))) return;
+        String chestName;
+        try {
+            GuiScreen gui = Main.mc.currentScreen;
+            if (!(gui instanceof GuiChest)) return;
+            Container container = ((GuiChest) gui).inventorySlots;
+            if (!(container instanceof ContainerChest)) return;
+            chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+        } catch (Exception ignored) {return;}
+        if (!event.slot.getHasStack() || (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest"))) return;
+        Kuudra.addChatMessage(String.valueOf(KuudraOverlay.profit));
         totalProfit += KuudraOverlay.profit;
         chests++;
     }
@@ -57,16 +72,18 @@ public class ProfitOverlay {
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
-            String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((end - start) / 60000F);
+            String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
-            String string4 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
-            String string5 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((end - start)/3600000 + 1)));
+            String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
+            String string5 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
+            String string6 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((totalTime)/3600000 + 1)));
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 20, string3, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 30, string4, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 40, string5, textStyle, Alignment.Left);
+            OverlayUtils.drawString(0, 50, string6, textStyle, Alignment.Left);
 
             GlStateManager.popMatrix();
         }
@@ -78,14 +95,16 @@ public class ProfitOverlay {
             int max = 0;
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
             max = Math.max(renderWidth(string1), max);
-            String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((end - start) / 60000F);
+            String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             max = Math.max(renderWidth(string2), max);
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             max = Math.max(renderWidth(string3), max);
-            String string4 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
+            String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
             max = Math.max(renderWidth(string4), max);
-            String string5 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((end - start)/3600000 + 1)));
+            String string5 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
             max = Math.max(renderWidth(string5), max);
+            String string6 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((totalTime)/3600000 + 1)));
+            max = Math.max(renderWidth(string6), max);
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
@@ -94,7 +113,7 @@ public class ProfitOverlay {
             OverlayUtils.drawString(0, 40, string5, textStyle, Alignment.Left);
 
             element.setWidth(max);
-            element.setHeight(50);
+            element.setHeight(60);
 
             GlStateManager.popMatrix();
         }
@@ -105,5 +124,7 @@ public class ProfitOverlay {
         chests = 0;
         start = 0;
         end = 0;
+        totalTime = 0;
+        totalRuns = 0;
     }
 }
