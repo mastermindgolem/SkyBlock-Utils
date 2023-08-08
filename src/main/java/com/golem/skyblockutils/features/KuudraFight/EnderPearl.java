@@ -145,7 +145,7 @@ public class EnderPearl {
         if (Main.mc.theWorld == null || Main.mc.thePlayer == null || Kuudra.currentPhase != 1 || !Main.configFile.enderPearl) return;
         ItemStack heldItem = Main.mc.thePlayer.getHeldItem();
         if (heldItem == null) return;
-        if (!heldItem.getDisplayName().contains("Ender Pearl")) return;
+        if (!heldItem.getDisplayName().contains("Ender Pearl") && !heldItem.getDisplayName().contains("Elle's Supplies")) return;
 
         double viewerX = Main.mc.thePlayer.posX;
         double viewerY = Main.mc.thePlayer.posY + Main.mc.thePlayer.getEyeHeight();
@@ -156,24 +156,20 @@ public class EnderPearl {
                 Vec3 supply = entry.getKey();
                 double distance = Math.sqrt((viewerX - supply.xCoord) * (viewerX - supply.xCoord) + (viewerZ - supply.zCoord) * (viewerZ - supply.zCoord));
                 double height = supply.yCoord - viewerY;
-                int closestAngle = 0;
-                double closestDistance = Double.MAX_VALUE;
                 double x = supply.xCoord;
-                double y = supply.yCoord;
                 double z = supply.zCoord;
-                for (int i = 0; i < 90; i++) {
+                for (int i = -10; i < 90; i++) {
                     double u = Math.sin(Math.toRadians(i)) * 1.338;
                     Double[] roots = solveCubic(0.00015, 0.015 - 0.005 * u, -u, height);
                     double t = (roots == null ? 0 : roots[0]);
                     u = Math.cos(Math.toRadians(i)) * 1.338;
                     double d = Math.abs(distance - t * u);
-                    if (d < closestDistance) {
-                        closestAngle = i;
-                        closestDistance = d;
-                        y = supply.yCoord + distance * Math.tan(Math.toRadians(i));
+                    //double d = Math.abs(distance - (100 * u * Math.log(1 + t/100)));
+                    if (d < 1) {
+                        double y = supply.yCoord + distance * Math.tan(Math.toRadians(i));
+                        RenderUtils.drawBlockBox(new BlockPos(x, y, z), Main.configFile.enderPearlColor, 5, event.partialTicks);
                     }
                 }
-                RenderUtils.drawBlockBox(new BlockPos((int) x, (int) y, (int) z), Color.RED, 5, event.partialTicks);
             }
         }
 

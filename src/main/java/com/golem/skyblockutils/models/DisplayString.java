@@ -1,27 +1,18 @@
 package com.golem.skyblockutils.models;
 
 public class DisplayString {
-    private int quantity;
-    private long price;
+    public int quantity;
+    public long price;
+    public long median;
 
     public DisplayString(int quantity, long price) {
         this.quantity = quantity;
         this.price = price;
+        this.median = 0;
     }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
+    public DisplayString(int quantity, long price, long median) {
         this.quantity = quantity;
-    }
-
-    public long getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
         this.price = price;
+        this.median = median;
     }
 }

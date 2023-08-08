@@ -1,10 +1,8 @@
 package com.golem.skyblockutils.command.commands;
 
-import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.utils.*;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -231,7 +229,7 @@ public class AttributeCommand extends CommandBase implements Help {
 			if (items == null) continue;
 			if (level == 0) {
 				items = items.stream()
-					.filter(item -> item.get(attribute).getAsInt() >= configFile.min_tier)
+					.filter(item -> item.get(attribute).getAsInt() >= (key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier))
 					.collect(Collectors.toCollection(ArrayList::new));
 			} else {
 				items = items.stream()

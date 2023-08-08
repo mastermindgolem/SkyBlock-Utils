@@ -3,6 +3,7 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -32,6 +33,7 @@ import static com.golem.skyblockutils.models.AttributePrice.*;
 public class KuudraOverlay {
 
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
+	public static int profit = 0;
 
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -47,12 +49,7 @@ public class KuudraOverlay {
 			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 			List<String> displayStrings = new ArrayList<>();
 			BigInteger totalValue = new BigInteger("0");
-			new BigInteger("0");
 			BigInteger totalProfit;
-
-
-			List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
-			List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
 
 			int xSize = ((AccessorGuiContainer) gui).getXSize();
 			int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
@@ -65,8 +62,8 @@ public class KuudraOverlay {
 						continue;
 					Matcher matcher = ESSENCE_PATTERN.matcher(slot.getStack().getDisplayName());
 					if (matcher.matches() && configFile.considerEssenceValue) {
-						int buy_price = 1500;
-						int sell_price = 1500;
+						int buy_price = 1000;
+						int sell_price = 1000;
 						int amount = 1;
 						try {
 							buy_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("sell_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
@@ -186,6 +183,8 @@ public class KuudraOverlay {
 			);
 
 			totalProfit = totalValue.subtract(new BigInteger(String.valueOf(keyCost)));
+
+			profit = totalProfit.intValue();
 
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
 					(totalProfit.signum() > 0 ? EnumChatFormatting.DARK_GREEN + "Profit: " + EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED + "Loss: " + EnumChatFormatting.RED) + Main.formatNumber(totalProfit),

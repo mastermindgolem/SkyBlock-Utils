@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
@@ -10,6 +11,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.golem.skyblockutils.Main.configFile;
@@ -36,11 +38,11 @@ public class AlignOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !Main.configFile.alignTimer) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui) {
+        if (configFile.testGui && (configFile.alignTimer == 1 || (configFile.alignTimer == 2 && Kuudra.currentPhase > 0) || (configFile.alignTimer == 3 && Kuudra.currentPhase == 4))) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
@@ -49,11 +51,13 @@ public class AlignOverlay {
             String timeString;
             if (timeLeft < 0) {
                 timeString = EnumChatFormatting.DARK_RED + "NO ALIGN";
+                if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                //OverlayUtils.drawTitle(EnumChatFormatting.RED + "ALIGN NOW", event.resolution);
+                if (time.getCurrentMS() - lastAlign >= 10000) AlertOverlay.text = EnumChatFormatting.DARK_RED + "ALIGN NOW";
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
+                if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             }
 
             OverlayUtils.drawString(0, 0, timeString, textStyle, Alignment.Left);
@@ -62,7 +66,9 @@ public class AlignOverlay {
             element.setHeight(10);
 
             GlStateManager.popMatrix();
-        } else if (mc.currentScreen instanceof MoveGui) {
+            return;
+        }
+        if (mc.currentScreen instanceof MoveGui) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);

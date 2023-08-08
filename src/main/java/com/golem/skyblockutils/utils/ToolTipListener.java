@@ -11,7 +11,6 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,7 @@ public class ToolTipListener {
 		}
 		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && event.toolTip.size() > 0 && shards.getKeySet().size() > 0) {
 			String[] s = shards.getKeySet().toArray(new String[0]);
-			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched)) {
+			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched) && shards.getKeySet().size() > 1) {
 				JsonObject comboitem = AttributePrice.getComboValue(name, new ArrayList<>(shards.getKeySet()));
 				if (comboitem == null) {
 					comboprice = 0;
@@ -75,10 +74,12 @@ public class ToolTipListener {
 					if (!shards.getKeySet().contains(attribute)) continue;
 					if (!AttributePrices.get(key).containsKey(attribute)) continue;
 					ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
-					System.out.println(items.get(0));
-					items = items.stream()
-							.filter(i -> i.get(attribute).getAsInt() >= configFile.min_tier)
-							.collect(Collectors.toCollection(ArrayList::new));
+					if ((key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
+						String finalKey = key;
+						items = items.stream().filter(i -> i.get(attribute).getAsInt() >= (finalKey.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
+					} else {
+						items = items.stream().filter(i -> i.get(attribute).getAsInt() == shards.getInteger(attribute)).collect(Collectors.toCollection(ArrayList::new));
+					}
 					items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
 					if (items.size() == 0) {
 						attributeprice = 0;

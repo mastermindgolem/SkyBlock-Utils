@@ -8,7 +8,6 @@ import logger.Logger;
 import net.minecraft.client.renderer.GlStateManager;
 
 import java.awt.Color;
-import java.util.Map;
 
 import static com.golem.skyblockutils.Main.StaticPosition;
 
@@ -37,7 +36,7 @@ public class GuiElement {
 			Logger.debug(this.name);
 			position = new GuiPosition(rndWidth, rndHeight, 1.0);
 			PersistentData.positions.put(name, position);
-			Main.persistentData.save();
+			Main.persistentData.savePositions();
 
 		}
 

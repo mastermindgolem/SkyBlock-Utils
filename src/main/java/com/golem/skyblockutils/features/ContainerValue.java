@@ -1,13 +1,18 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.init.KeybindsInit;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -15,8 +20,11 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Keyboard;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -31,9 +39,9 @@ public class ContainerValue {
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
-			if (!(event.gui instanceof GuiChest)) return;
+			if (!(event.gui instanceof GuiContainer)) return;
 			if (!isActive) return;
-			if (!configFile.container_value) return;
+			if (configFile.container_value == 0) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;
@@ -44,31 +52,45 @@ public class ContainerValue {
 			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
 			BigInteger totalValue = new BigInteger("0");
 
-			List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
-			List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
 
-			int xSize = ((AccessorGuiContainer) gui).getXSize();
-			int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
-			int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+			int xSize = (int) (ContainerOverlay.element.position.getX() - 5);
+			int guiLeft = 0;
+			int guiTop = (int) (ContainerOverlay.element.position.getY() - 5);
+
+			if (configFile.container_value == 1) {
+				xSize = ((AccessorGuiContainer) gui).getXSize();
+				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+			}
 
 			chestInventory = chestInventory.subList(0, chestInventory.size() - 36);
-			for (Slot slot : chestInventory) {
-				try {
-					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
-						continue;
-					JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
-					if (valueData == null) continue;
-					String displayString = valueData.get("display_string").getAsString();
-					totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
-					displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).getQuantity() + 1, valueData.get("value").getAsLong()));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			switch (configFile.dataSource) {
+				case 0:
+					for (Slot slot : chestInventory) {
+						try {
+							if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
+								continue;
+							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
+							if (valueData == null) continue;
+							String displayString = valueData.get("display_string").getAsString();
+							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
+							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					break;
+				case 1:
+					displayStrings = DescriptionHandler.displayStrings;
+					break;
 			}
 
 			displayStrings = sort(displayStrings);
 
-			if (totalValue.compareTo(BigInteger.ONE) < 0) return;
+			if (configFile.dataSource == 0 && totalValue.compareTo(BigInteger.ONE) < 0) return;
+			long totalLbin = displayStrings.values().stream().mapToLong(displayString -> displayString.price * displayString.quantity).sum();
+			long totalMedian = displayStrings.values().stream().mapToLong(displayString -> displayString.median * displayString.quantity).sum();
+			if (configFile.dataSource == 1 && (totalLbin == 0 || totalMedian == 0)) return;
 
 			GlStateManager.disableLighting();
 			GlStateManager.translate(0, 0, 200);
@@ -77,19 +99,26 @@ public class ContainerValue {
 
 
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
-					EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalValue),
+					(configFile.dataSource == 0 || !GameSettings.isKeyDown(KeybindsInit.getComboValue) ?
+							EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalLbin)
+							: EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalMedian)),
 					guiLeft + xSize + 5,
 					guiTop + 5,
 					0xffffffff
 			);
 
 			for (String displayString : displayStrings.keySet()) {
-				int amount = displayStrings.get(displayString).getQuantity();
-				long value = displayStrings.get(displayString).getPrice();
+				int amount = displayStrings.get(displayString).quantity;
+				long value = displayStrings.get(displayString).price;
+				long median = displayStrings.get(displayString).median;
 				if (amount > 1) {
 					displayString = amount + "x " + displayString;
 				}
-				displayString = displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(value * amount);
+
+				displayString = displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(GameSettings.isKeyDown(KeybindsInit.getComboValue) ? median * amount : value * amount);
+
+				//displayString = displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(value * amount);
+				//if (median > 0) displayString = displayString + EnumChatFormatting.GOLD + " (" + Main.formatNumber(median * amount) + ")";
 				Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
 						displayString,
 						guiLeft + xSize + 5,
@@ -116,16 +145,16 @@ public class ContainerValue {
 		switch (configFile.containerSorting) {
 			case 0:
 				valueComparator = (entry1, entry2) -> {
-					long product1 = entry1.getValue().getQuantity() * entry1.getValue().getPrice();
-					long product2 = entry2.getValue().getQuantity() * entry2.getValue().getPrice();
+					long product1 = entry1.getValue().quantity * entry1.getValue().price;
+					long product2 = entry2.getValue().quantity * entry2.getValue().price;
 					return Long.compare(product2, product1); // Sorting in descending order
 				};
 				list.sort(valueComparator);
 				break;
 			case 1:
 				valueComparator = (entry1, entry2) -> {
-					long product1 = entry1.getValue().getQuantity() * entry1.getValue().getPrice();
-					long product2 = entry2.getValue().getQuantity() * entry2.getValue().getPrice();
+					long product1 = entry1.getValue().quantity * entry1.getValue().price;
+					long product2 = entry2.getValue().quantity * entry2.getValue().price;
 					return Long.compare(product1, product2); // Sorting in ascending order
 				};
 				list.sort(valueComparator);
