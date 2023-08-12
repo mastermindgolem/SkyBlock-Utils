@@ -15,6 +15,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -99,21 +101,24 @@ public class AutoUpdater {
     }
 
     private boolean isNewerVersion(String version1, String version2) {
-        String[] splitVersion1 = version1.split("\\.");
-        String[] splitVersion2 = version2.split("\\.");
+        List<String> splitVersion1 = Arrays.asList(version1.split("\\."));
+        List<String> splitVersion2 = Arrays.asList(version2.split("\\."));
+        int beta1 = splitVersion1.indexOf("Beta");
+        int beta2 = splitVersion2.indexOf("Beta");
 
-        for (int i = 0; i < Math.min(splitVersion1.length, splitVersion2.length); i++) {
-            int v1 = Integer.parseInt(splitVersion1[i]);
-            int v2 = Integer.parseInt(splitVersion2[i]);
+        boolean majorVersion = Integer.parseInt(splitVersion1.get(0)) > Integer.parseInt(splitVersion2.get(0));
+        boolean minorVersion = Integer.parseInt(splitVersion1.get(1)) > Integer.parseInt(splitVersion2.get(1));
+        boolean patchVersion = Integer.parseInt(splitVersion1.get(2)) > Integer.parseInt(splitVersion2.get(2));
 
-            if (v1 > v2) {
-                return true;
-            } else if (v1 < v2) {
-                return false;
-            }
+        if (majorVersion || minorVersion || patchVersion) return true;
+
+        if (beta2 > -1 && beta1 == -1) return true;
+
+        if (beta2 > -1) {
+            return Integer.parseInt(splitVersion1.get(4)) > Integer.parseInt(splitVersion2.get(4));
         }
 
-        return splitVersion1.length > splitVersion2.length;
+        return false;
     }
 
     public static void downloadAndExtractUpdate(EntityPlayer player) {
