@@ -14,7 +14,8 @@ public class CommandInit {
 			new EquipmentCommand(),
 			new StatCommand(),
 			new UpgradeCommand(),
-			new SbuCommand()
+			new SbuCommand(),
+			new UpdateCommand()
 		};
 		for (ICommand command : commands) {
 			ClientCommandHandler.instance.registerCommand(command);
