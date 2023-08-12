@@ -705,7 +705,7 @@ public class RenderUtils {
 		GL11.glPopMatrix();
 	}
 
-	public static void renderNameTag(final String string, final double x, final double y, final double z) {
+	public static void renderNameTag(final String string, final double x, final double y, final double z, final float scale) {
 		final RenderManager renderManager = mc.getRenderManager();
 
 		glPushMatrix();
@@ -713,7 +713,7 @@ public class RenderUtils {
 		glNormal3f(0F, 1F, 0F);
 		glRotatef(-mc.getRenderManager().playerViewY, 0F, 1F, 0F);
 		glRotatef(mc.getRenderManager().playerViewX, 1F, 0F, 0F);
-		glScalef(-0.05F, -0.05F, 0.05F);
+		glScalef(-0.05F * scale, -0.05F * scale, 0.05F * scale); // Apply the scale factor
 		setGlCap(GL_LIGHTING, false);
 		setGlCap(GL_DEPTH_TEST, false);
 		setGlCap(GL_BLEND, true);
