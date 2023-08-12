@@ -16,11 +16,13 @@ import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMagmaCube;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -38,6 +40,7 @@ public class Kuudra {
     public static HashMap<Vec3, Integer> supplyWaypoints = new HashMap<>(6);
     public static List<String> partyMembers = new ArrayList<>();
     public static Float[] splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
+    public static List<String> overview = new ArrayList<>();
     public static int currentPhase = -1;
     public static EntityMagmaCube boss = null;
     public static boolean stunner = false;
@@ -53,8 +56,10 @@ public class Kuudra {
         CratesOverlay.phase2 = new HashMap<>();
         CratesOverlay.phase4 = new ArrayList<>();
         CratesOverlay.playerInfo = new HashMap<>();
-        AlertOverlay.text = "";
+        //AlertOverlay.text = "";
+        boss = null;
         splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
+        overview = new ArrayList<>();
     }
 
     @SubscribeEvent
@@ -88,6 +93,7 @@ public class Kuudra {
         String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (message.equals("[NPC] Elle: Talk with me to begin!")) {
             splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
+            overview = new ArrayList<>();
             currentPhase = 0;
             supplyWaypoints = new HashMap<>(6);
             CratesOverlay.phase0 = new HashMap<>();
@@ -95,21 +101,19 @@ public class Kuudra {
             CratesOverlay.phase2 = new HashMap<>();
             CratesOverlay.phase4 = new ArrayList<>();
             CratesOverlay.playerInfo = new HashMap<>();
-            AlertOverlay.text = "";
+            //AlertOverlay.text = "";
             splits[0] = (float) Main.time.getCurrentMS();
             partyMembers = new ArrayList<>();
             if (ProfitOverlay.start == 0) ProfitOverlay.start = time.getCurrentMS();
 
 
             stunner = false;
-            if (configFile.TapWarning && mc.thePlayer.inventoryContainer.inventorySlots.stream().noneMatch(slot -> slot.getHasStack() && slot.getStack().getDisplayName().contains("Toxic Arrow Poison"))) {
-                AlertOverlay.text = EnumChatFormatting.RED + "NO TAP";
-            }
         }
         if (message.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             currentPhase = 1;
             splits[1] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
+            overview.add(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
 
             supplyWaypoints.put(Waypoints.supply1, 101);
             supplyWaypoints.put(Waypoints.supply2, 101);
@@ -117,12 +121,19 @@ public class Kuudra {
             supplyWaypoints.put(Waypoints.supply4, 101);
             supplyWaypoints.put(Waypoints.supply5, 101);
             supplyWaypoints.put(Waypoints.supply6, 101);
+
+            if (configFile.TapWarning && mc.thePlayer.inventoryContainer.inventorySlots.stream().noneMatch(slot -> slot.getHasStack() && slot.getStack().getDisplayName().contains("Toxic Arrow Poison"))) {
+                //AlertOverlay.text = EnumChatFormatting.RED + "NO TAP";
+                AlertOverlay.newAlert(EnumChatFormatting.RED + "NO TAP", 20);
+            }
+
         }
         if (message.equals("[NPC] Elle: OMG! Great work collecting my supplies!")) {
             currentPhase = 2;
             splits[2] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
-            
+            overview.add(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
+
             supplyWaypoints.put(Waypoints.supply1, -1);
             supplyWaypoints.put(Waypoints.supply2, -1);
             supplyWaypoints.put(Waypoints.supply3, -1);
@@ -135,7 +146,7 @@ public class Kuudra {
             currentPhase = 3;
             splits[3] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[2]/60000F));
-
+            overview.add(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[1]/60000F));
 
             supplyWaypoints.put(Waypoints.supply1, -1);
             supplyWaypoints.put(Waypoints.supply2, -1);
@@ -149,14 +160,18 @@ public class Kuudra {
             stunner = false;
             splits[4] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
-
+            overview.add(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[1]/60000F));
         }
         if (message.contains("DEFEAT") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
-            AlertOverlay.text = "";
+            //AlertOverlay.text = "";
             CratesOverlay.phase4.add(0F);
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
+            overview.add(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[1]/60000F));
+            overview.add(EnumChatFormatting.DARK_RED + "BOSS FAILED");
+            mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
+            overview = new ArrayList<>();
             ProfitOverlay.end = time.getCurrentMS();
             ProfitOverlay.totalTime += splits[5] - splits[0];
             ProfitOverlay.totalRuns++;
@@ -164,12 +179,15 @@ public class Kuudra {
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
-            AlertOverlay.text = "";
+            //AlertOverlay.text = "";
             CratesOverlay.phase4.add(0F);
             addChatMessage(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[2]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
             addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
+            overview.add(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[1]/60000F));
+            mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
+            overview = new ArrayList<>();
             ProfitOverlay.end = time.getCurrentMS();
             ProfitOverlay.totalTime += splits[5] - splits[0];
             ProfitOverlay.totalRuns++;
@@ -188,7 +206,8 @@ public class Kuudra {
             persistentData.saveSplits();
         }
         if (message.endsWith("has been eaten by Kuudra!") && message.startsWith(Main.mc.getSession().getUsername())) stunner = true;
-
+        if (message.endsWith("has been eaten by Kuudra!") && !message.contains("Elle")) overview.add(EnumChatFormatting.BLUE + "Stunner eaten: " + SplitsOverlay.format(Main.time.getCurrentMS()/60000F - splits[1]/60000F));
+        if (message.endsWith("destroyed one of Kuudra's pods!")) overview.add(EnumChatFormatting.BLUE + "Stun at: " + SplitsOverlay.format(Main.time.getCurrentMS()/60000F - splits[1]/60000F));
     }
 
 
