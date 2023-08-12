@@ -52,6 +52,11 @@ public class Config extends Vigilant
 	)
 	public boolean showItemValue = true;
 
+	@Property(type = PropertyType.SLIDER, name = "Show Chat Waypoints", description = "Select delay before waypoints when coordinates sent in chat disappear. 0 = off", category = "General", subcategory = "General", max = 60)
+	public int showWaypoints = 0;
+	@Property(type = PropertyType.SWITCH, name = "Remove Selfie Mode", description = "Remove Selfie mode when toggling perspective", category = "General", subcategory = "General")
+	public boolean removeSelfie = false;
+
 	@Property(type = PropertyType.SLIDER, name = "Armor/Equipment Minimum Tier", description = "Minimum tier to consider for valuing armor/equipment and showing them in /ap and /ep. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 5)
 	public int minArmorTier = 0;
 	@Property(type = PropertyType.SLIDER, name = "Shard Minimum Tier", description = "Minimum tier to consider for valuing shards and showing them in /ap. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 3)
@@ -138,6 +143,11 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Show Instastun Block", description = "Highlights the block to etherwarp to and the block to mine to instastun easily. Thanks to @Magma_Cao for this.", category = "General", subcategory = "Kuudra")
 	public boolean showStunLocation = false;
 
+	@Property(type = PropertyType.SWITCH, name = "Display Kuudra HP on Boss", description = "Shows Kuudra's HP on the magma cube entity.", category = "Kuudra", subcategory = "Boss")
+	public boolean showKuudraHP = false;
+	@Property(type = PropertyType.SWITCH, name = "Display Kuudra HP in Boss Bar", description = "Shows Kuudra's HP in the boss bar.", category = "Kuudra", subcategory = "Boss")
+	public boolean showKuudraBossBar = false;
+
 	@Property(type = PropertyType.BUTTON, name = "Move Main Alerts", description = "Press this button to decide where big alerts like Hype Broken show", category = "Overlays", subcategory = "Main Alerts")
 	@SuppressWarnings("unused")
 	public void MoveAlertLocation() {
@@ -192,11 +202,11 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SWITCH, name = "Show Supply Info", description = "Show where supplies are and who got how many supplies", category = "Overlays", subcategory = "Supply Info")
-	public boolean supplyInfo = false;
+	@Property(type = PropertyType.SWITCH, name = "Show Run Info", description = "Shows information for every phase (Except 3 because idk what to put there)", category = "Overlays", subcategory = "Run Overview")
+	public boolean runInfo = false;
 	@Property(type = PropertyType.COLOR, name = "Supply Waypoints Color", description = "Choose the color for supply waypoints", category = "Overlays", subcategory = "Supply Info")
 	public Color supplyColor = Color.BLUE;
-	@Property(type = PropertyType.BUTTON, name = "Move Supply Info", description = "Test", category = "Overlays", subcategory = "Supply Info")
+	@Property(type = PropertyType.BUTTON, name = "Move Run info", description = "Test", category = "Overlays", subcategory = "Run Overview")
 	@SuppressWarnings("unused")
 	public void MoveSupplyInfo() {
 		Main.mc.displayGuiScreen(new MoveGui(CratesOverlay.element));
@@ -207,6 +217,9 @@ public class Config extends Vigilant
 	public boolean enderPearl = false;
 	@Property(type = PropertyType.COLOR, name = "Pearl Waypoint Color", description = "Choose the color of pearl waypoints", category = "Overlays", subcategory = "Supply Info")
 	public Color enderPearlColor = Color.RED;
+
+	@Property(type = PropertyType.SWITCH, name = "Supply Safe Spots", description = "Show safe spots", category = "Kuudra", subcategory = "Supplies")
+	public boolean safeSpots = false;
 
 	@Property(type = PropertyType.SWITCH, name = "Broken Wither Impact Notification", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Broken Wither Impact")
 	public boolean brokenHyp = false;
@@ -408,6 +421,6 @@ public class Config extends Vigilant
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Overlays", "Updater"); //
+		private final List<String> categories = Arrays.asList("General", "Kuudra", "Overlays", "Updater"); //
 	}
 }
