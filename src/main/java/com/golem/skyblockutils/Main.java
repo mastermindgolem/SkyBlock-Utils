@@ -49,7 +49,6 @@ public class Main
 		time.setLastMS();
 		jarFile = event.getSourceFile();
 		modDir = event.getModConfigurationDirectory().getAbsolutePath().replace("/config", "");
-		System.out.println(modDir);
 	}
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {

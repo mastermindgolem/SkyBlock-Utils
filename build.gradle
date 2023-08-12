@@ -97,8 +97,8 @@ shadowJar {
 		include(dependency("com.github.VlxtIykg:Logger:1.1.0"))
 	}
 
-	println(project.archivesBaseName + "-${majorVersion}.${minorVersion}.${patchVersion}.jar")
-	archiveFileName = project.archivesBaseName + "-${majorVersion}.${minorVersion}.${patchVersion}.jar"
+	archiveFileName = project.archivesBaseName + project.version + ".jar"
+	println(archiveFileName)
 }
 
 
@@ -110,7 +110,6 @@ reobf {
 }
 
 processResources {
-	inputs.property "${majorVersion}.${minorVersion}.${patchVersion}", project.version
 	inputs.property "mcversion", project.minecraft.version
 	from(sourceSets.main.resources.srcDirs) {
 		include 'mcmod.info'

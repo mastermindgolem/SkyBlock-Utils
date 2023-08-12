@@ -25,7 +25,7 @@ import static com.golem.skyblockutils.Main.modDir;
 
 public class AutoUpdater {
 
-    private static final String UPDATE_CHECK_URL = "https://api.github.com/repos/mastermindgolem/Skyblock-Utils/releases/latest";
+    private static final String UPDATE_CHECK_URL = "https://api.github.com/repos/mastermindgolem/Skyblock-Utils/releases";
     private boolean updateChecked = false;
     private static String latestVersion = "1.0.0";
 
@@ -67,7 +67,7 @@ public class AutoUpdater {
 
                 String jsonResponse = response.toString();
                 JsonParser jsonParser = new JsonParser();
-                JsonObject releaseJson = jsonParser.parse(jsonResponse).getAsJsonObject();
+                JsonObject releaseJson = jsonParser.parse(jsonResponse).getAsJsonArray().get(0).getAsJsonObject();
                 latestVersion = releaseJson.get("tag_name").getAsString();
                 latestVersion = latestVersion.startsWith("v") ? latestVersion.substring(1) : latestVersion;
 
@@ -100,6 +100,7 @@ public class AutoUpdater {
     }
 
     private boolean isNewerVersion(String version1, String version2) {
+        System.out.println(version1 + " " + version2);
         List<String> splitVersion1 = Arrays.asList(version1.split("\\."));
         List<String> splitVersion2 = Arrays.asList(version2.split("\\."));
         int beta1 = splitVersion1.indexOf("Beta");
@@ -122,9 +123,8 @@ public class AutoUpdater {
 
     public static void downloadAndExtractUpdate(EntityPlayer player) {
         try {
-            String releasesUrl = "https://api.github.com/repos/mastermindgolem/SkyBlock-Utils/releases/latest";
 
-            URL url = new URL(releasesUrl);
+            URL url = new URL(UPDATE_CHECK_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
