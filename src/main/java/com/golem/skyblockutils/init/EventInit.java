@@ -3,6 +3,7 @@ package com.golem.skyblockutils.init;
 import com.golem.skyblockutils.ChatListener;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.*;
+import com.golem.skyblockutils.features.General.Perspective;
 import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
@@ -28,7 +29,10 @@ public class EventInit {
 			new CombineHelper(),
 			new EnderPearl(),
 			new LocationUtils(),
-			new DescriptionHandler()
+			new DescriptionHandler(),
+			new ChatWaypoints(),
+			new AutoUpdater(),
+			new Perspective()
 		};
 
 		for (Object listener : listeners) {

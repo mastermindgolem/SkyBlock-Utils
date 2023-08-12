@@ -7,11 +7,8 @@ plugins {
 }
 project.setProperty("mainClassName", "com.golem.skyblockutils.Main")
 
-def majorVersion = 1
-def minorVersion = 0
-def patchVersion = 3
 
-version = "${majorVersion}.${minorVersion}.${patchVersion}"
+version = "1.0.4.Beta.1"
 group = "com.golem.skyblockutils"
 archivesBaseName = "SkyblockUtils"
 

@@ -158,6 +158,8 @@ public class EnderPearl {
                 double height = supply.yCoord - viewerY;
                 double x = supply.xCoord;
                 double z = supply.zCoord;
+                double mindist = Double.MAX_VALUE;
+                double bestAngle = 0;
                 for (int i = -10; i < 90; i++) {
                     double u = Math.sin(Math.toRadians(i)) * 1.338;
                     Double[] roots = solveCubic(0.00015, 0.015 - 0.005 * u, -u, height);
@@ -165,10 +167,19 @@ public class EnderPearl {
                     u = Math.cos(Math.toRadians(i)) * 1.338;
                     double d = Math.abs(distance - t * u);
                     //double d = Math.abs(distance - (100 * u * Math.log(1 + t/100)));
-                    if (d < 1) {
+                    if ((heldItem.getDisplayName().contains("Elle's Supplies") && d < 1)) {
                         double y = supply.yCoord + distance * Math.tan(Math.toRadians(i));
-                        RenderUtils.drawBlockBox(new BlockPos(x, y, z), Main.configFile.enderPearlColor, 5, event.partialTicks);
+                        RenderUtils.drawPixelBox(new Vec3(x, y, z), Main.configFile.enderPearlColor, 0.5, event.partialTicks);
                     }
+
+                    if (heldItem.getDisplayName().contains("Ender Pearl") && d < mindist) {
+                        mindist = d;
+                        bestAngle = i;
+                    }
+                }
+                if (heldItem.getDisplayName().contains("Ender Pearl")) {
+                    double y = supply.yCoord + distance * Math.tan(Math.toRadians(bestAngle));
+                    RenderUtils.drawPixelBox(new Vec3(x, y, z), Main.configFile.enderPearlColor, 0.5, event.partialTicks);
                 }
             }
         }

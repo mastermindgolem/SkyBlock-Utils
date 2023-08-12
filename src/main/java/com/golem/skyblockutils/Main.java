@@ -18,6 +18,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
@@ -30,18 +32,24 @@ public class Main
 	private AuctionHouse all_auctions;
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
-	public static final String VERSION = "1.0.3";
+	public static final String VERSION = "1.0.4.Beta.1";
 	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
 	public static final TimeHelper time = new TimeHelper();
 	public static List<GuiElement> StaticPosition;
+	public static File jarFile = null;
 
 	public static PersistentData persistentData = new PersistentData();
+
+	public static String modDir = "";
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
 		time.setLastMS();
+		jarFile = event.getSourceFile();
+		modDir = event.getModConfigurationDirectory().getAbsolutePath().replace("/config", "");
+		System.out.println(modDir);
 	}
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {

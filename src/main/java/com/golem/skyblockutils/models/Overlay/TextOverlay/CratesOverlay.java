@@ -34,11 +34,8 @@ public class CratesOverlay {
     public static HashMap<String, Boolean> phase0 = new HashMap<>();
     public static HashMap<String, Long> phase2 = new HashMap<>();
     public static List<Float> phase4 = new ArrayList<>();
-    private static long lastFresh = 0;
     public static HashMap<String, Integer> playerInfo = new HashMap<>();
     private static List<String> heldCrates = new ArrayList<>();
-
-    private static int peakState = 0;
     private static boolean inPeak = false;
     private final DecimalFormat formatter = new DecimalFormat("0.00");
 
@@ -47,16 +44,22 @@ public class CratesOverlay {
     public void onChat(ClientChatReceivedEvent event) {
         String message = event.message.getFormattedText().replaceAll("§.", "");
         if (message.contains(" recovered one of Elle's supplies! (")) {
-            String name = message.split(" recovered")[0];
-            playerInfo.put(name, playerInfo.getOrDefault(name, 0) + 1);
+            for (String name : Kuudra.partyMembers) if (message.contains(name)) {
+                playerInfo.put(name, playerInfo.getOrDefault(name, 0) + 1);
+                Kuudra.overview.add(EnumChatFormatting.BLUE + name + EnumChatFormatting.AQUA + " picked up supply at: " + SplitsOverlay.format(time.getCurrentMS()/60000F - Kuudra.splits[1]/60000F));
+            }
+
         }
         if (message.equals("Your Fresh Tools Perk bonus doubles your building speed for the next 5 seconds!")) {
-            if (configFile.freshAlert) lastFresh = time.getCurrentMS();
+            if (configFile.freshAlert) {
+                AlertOverlay.newAlert(EnumChatFormatting.DARK_GREEN + "FRESH TOOLS", 20);
+            }
             if (configFile.freshNotify) mc.thePlayer.sendChatMessage("/pc FRESH! " + configFile.freshMessage);
         }
         if (message.startsWith("Party") && message.contains(": FRESH!")) {
             for (String player : Kuudra.partyMembers) if (message.contains(player)) {
                 phase2.put(player, time.getCurrentMS());
+                Kuudra.overview.add(EnumChatFormatting.BLUE + player + EnumChatFormatting.AQUA + " procced fresh tools at: " + SplitsOverlay.format(time.getCurrentMS()/60000F - Kuudra.splits[1]/60000F));
                 return;
             }
         }
@@ -80,9 +83,7 @@ public class CratesOverlay {
                 if (!Kuudra.partyMembers.contains(player) && player.length() > 2) Kuudra.partyMembers.add(player);
             } catch (Exception ignored) {}
         }
-
-        if (time.getCurrentMS() - lastFresh < 1000) AlertOverlay.text = EnumChatFormatting.DARK_GREEN + "FRESH TOOLS";
-        if (time.getCurrentMS() - lastFresh > 5000 && Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_GREEN + "FRESH TOOLS")) AlertOverlay.text = "";
+        //if (time.getCurrentMS() - lastFresh > 5000 && Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_GREEN + "FRESH TOOLS")) AlertOverlay.text = "";
 
 
     }
@@ -158,7 +159,7 @@ public class CratesOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !configFile.supplyInfo) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !configFile.runInfo) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
@@ -252,6 +253,8 @@ public class CratesOverlay {
                 float dmg = (phase4.get(i-1) - phase4.get(i)) * 12000;
                 if (dmg < 100000 || dmg > 300_000_000) continue;
                 OverlayUtils.drawString(0, 10 * counter, EnumChatFormatting.YELLOW + "Peak " + counter + ": " + EnumChatFormatting.RESET + Main.formatNumber(dmg), textStyle, Alignment.Left);
+                String string = EnumChatFormatting.BLUE + "Peak " + counter + " damage: " + EnumChatFormatting.RESET + Main.formatNumber(dmg);
+                if (!Kuudra.overview.contains(string)) Kuudra.overview.add(string);
                 counter++;
             }
 
@@ -260,16 +263,20 @@ public class CratesOverlay {
             if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() / kuudra.getMaxHealth() > 0.01) return;
 
             if (kuudra.posX < -128) {
-                AlertOverlay.text = EnumChatFormatting.BOLD + "RIGHT!";
+                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
+                //AlertOverlay.text = EnumChatFormatting.BOLD + "RIGHT!";
             }
             if (kuudra.posX > -72) {
-                AlertOverlay.text = EnumChatFormatting.BOLD + "LEFT!";
+                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
+                //AlertOverlay.text = EnumChatFormatting.BOLD + "LEFT!";
             }
             if (kuudra.posZ < -132) {
-                AlertOverlay.text = EnumChatFormatting.BOLD + "BACK!";
+                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
+                //AlertOverlay.text = EnumChatFormatting.BOLD + "BACK!";
             }
             if (kuudra.posZ > -84) {
-                AlertOverlay.text = EnumChatFormatting.BOLD + "FRONT!";
+                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
+                //AlertOverlay.text = EnumChatFormatting.BOLD + "FRONT!";
             }
             boolean currentPeak = kuudra.posY < 25;
             if (currentPeak != inPeak) {

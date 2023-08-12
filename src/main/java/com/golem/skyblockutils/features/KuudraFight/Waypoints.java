@@ -8,6 +8,7 @@ import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -15,8 +16,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Waypoints {
+
 
     public static Vec3 supply1 = new Vec3(-94, 78.125, -106.0);
     public static Vec3 supply2 = new Vec3(-98, 78.125, -112.9375);
@@ -71,6 +74,31 @@ public class Waypoints {
         if (Kuudra.currentPhase == 3 && Kuudra.stunner && Main.configFile.showStunLocation) {
             RenderUtils.drawBlockBox(new BlockPos(-168, 29, -166), Color.GREEN, 5, event.partialTicks);
             RenderUtils.drawBlockBox(new BlockPos(-169 , 31, -166), Color.GREEN, 5, event.partialTicks);
+        }
+
+        if (((Kuudra.currentPhase == 3 && (Kuudra.tier == 1 || Kuudra.tier == 2)) || Kuudra.currentPhase == 1) && Main.configFile.safeSpots) {
+            RenderUtils.drawBlockBox(new BlockPos(-86, 77, -129), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-90, 77, -128), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-71, 78, -135), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-74, 75, -117), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-69, 77, -105), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-79, 77, -90), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-111, 75, -69), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-123, 78, -89), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-141, 77, -91), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-131, 77, -115), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-136, 77, -129), Color.GREEN, 5, event.partialTicks);
+        }
+        if (Kuudra.currentPhase == 1 && Main.configFile.safeSpots) {
+            RenderUtils.drawBlockBox(new BlockPos(-68, 76, -123), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-66, 75, -87), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-111, 75, -69), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.drawBlockBox(new BlockPos(-135, 76, -139), Color.GREEN, 5, event.partialTicks);
+            RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-68, 76, -123, event.partialTicks);
+            RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-66, 75, -87, event.partialTicks);
+            RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-111, 75, -69, event.partialTicks);
+            RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-135, 76, -139, event.partialTicks);
+
         }
 
 

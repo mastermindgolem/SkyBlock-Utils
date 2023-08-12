@@ -23,6 +23,7 @@ public class AlignOverlay {
     private static final TimeHelper time = new TimeHelper();
     private final DecimalFormat formatter = new DecimalFormat("0.00");
     private static long lastAlign = 0;
+    private static long lastSelfAlign = 0;
     public static int renderWidth(String text) {
         return mc.fontRendererObj.getStringWidth(text);
     }
@@ -33,7 +34,9 @@ public class AlignOverlay {
         String message = event.message.getUnformattedText().replaceAll("§.", "");
         if ((message.startsWith("You aligned") && (message.contains("other player")) || message.endsWith("yourself!")) || (message.endsWith("casted Cells Alignment on you!") && message.split(" ").length == 6)) {
             lastAlign = time.getCurrentMS();
+            if (message.startsWith("You aligned")) lastSelfAlign = time.getCurrentMS();
         }
+
     }
 
     @SubscribeEvent
@@ -51,13 +54,13 @@ public class AlignOverlay {
             String timeString;
             if (timeLeft < 0) {
                 timeString = EnumChatFormatting.DARK_RED + "NO ALIGN";
-                if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
+                //if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                if (time.getCurrentMS() - lastAlign >= 10000) AlertOverlay.text = EnumChatFormatting.DARK_RED + "ALIGN NOW";
+                if (time.getCurrentMS() - lastSelfAlign >= 10000) AlertOverlay.newAlert(EnumChatFormatting.DARK_RED + "ALIGN NOW", 1);
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
-                if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
+                //if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             }
 
             OverlayUtils.drawString(0, 0, timeString, textStyle, Alignment.Left);
