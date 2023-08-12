@@ -27,7 +27,6 @@ public class AutoUpdater {
 
     private static final String UPDATE_CHECK_URL = "https://api.github.com/repos/mastermindgolem/Skyblock-Utils/releases/latest";
     private boolean updateChecked = false;
-    private static String changelogs = "";
     private static String latestVersion = "1.0.0";
 
     @SubscribeEvent
@@ -146,7 +145,7 @@ public class AutoUpdater {
                 String jsonResponse = response.toString();
                 JsonParser parser = new JsonParser();
                 JsonObject releaseJson = parser.parse(jsonResponse).getAsJsonObject();
-                changelogs = releaseJson.get("body").getAsString();
+                String changelogs = releaseJson.get("body").getAsString();
                 String downloadUrl = releaseJson.getAsJsonArray("assets")
                         .get(0).getAsJsonObject()
                         .get("browser_download_url").getAsString();
