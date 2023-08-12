@@ -79,9 +79,9 @@ public class AutoUpdater {
                                     EnumChatFormatting.WHITE + EnumChatFormatting.BOLD + "v" + latestVersion
                     ));
                     player.addChatMessage(new ChatComponentText(
-                            EnumChatFormatting.GREEN + "Click here or run '" +
+                            EnumChatFormatting.GREEN + "Click here or run " +
                                     EnumChatFormatting.WHITE + "/updatesbu" +
-                                    EnumChatFormatting.GREEN + "' to update!\n"
+                                    EnumChatFormatting.GREEN + " to update!\n"
                     ).setChatStyle(new ChatStyle().setChatClickEvent(
                             new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/updatesbu") {
                                 @Override
