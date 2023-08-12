@@ -21,6 +21,7 @@ import static com.golem.skyblockutils.features.BrokenHyp.gainedXP;
 public class AlertOverlay {
     public static GuiElement element = new GuiElement("Alert Overlay", 50, 10);
     private static final TimeHelper time = new TimeHelper();
+    private static long endTime = 0;
 
     public static String text = "";
 
@@ -30,11 +31,21 @@ public class AlertOverlay {
 
 
 
+    public static void newAlert(String string, int ticks) {
+        text = string;
+        endTime = time.getCurrentMS() + 50L*ticks;
+    }
+
+
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT || Objects.equals(text, "")) return;
 
         TextStyle textStyle = TextStyle.fromInt(1);
+
+        if (time.getCurrentMS() >= endTime) text = "";
+        System.out.println(text);
+
 
         if (configFile.testGui) {
             GlStateManager.pushMatrix();
@@ -60,6 +71,8 @@ public class AlertOverlay {
 
             GlStateManager.popMatrix();
         }
+
+
     }
 
 }
