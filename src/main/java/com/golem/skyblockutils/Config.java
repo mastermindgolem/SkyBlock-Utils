@@ -57,6 +57,9 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Remove Selfie Mode", description = "Remove Selfie mode when toggling perspective", category = "General", subcategory = "General")
 	public boolean removeSelfie = false;
 
+	@Property(type = PropertyType.SWITCH, name = "Allow Custom Emotes", description = "Allow you to use MVP++/Gifting emotes without the requirement", category = "General", subcategory = "General")
+	public boolean customEmotes = false;
+
 	@Property(type = PropertyType.SLIDER, name = "Armor/Equipment Minimum Tier", description = "Minimum tier to consider for valuing armor/equipment and showing them in /ap and /ep. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 5)
 	public int minArmorTier = 0;
 	@Property(type = PropertyType.SLIDER, name = "Shard Minimum Tier", description = "Minimum tier to consider for valuing shards and showing them in /ap. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 3)
@@ -421,6 +424,6 @@ public class Config extends Vigilant
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Kuudra", "Overlays", "Updater"); //
+		private final List<String> categories = Arrays.asList("General", "Kuudra", "Crimson Isles", "Overlays", "Updater"); //
 	}
 }

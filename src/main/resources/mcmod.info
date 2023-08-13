@@ -1,0 +1,19 @@
+[
+  {
+    "modid": "SkyblockUtils",
+    "name": "Skyblock Utils",
+    "description": "A Skyblock Utility mod for Forge 1.8.9!",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/mastermindgolem/SkyBlock-Utils/",
+    "updateUrl": "https://github.com/mastermindgolem/SkyBlock-Utils/releases/tag/${version}",
+    "authorList": [
+      "golem",
+      "Kami"
+    ],
+    "credits": "Nil",
+    "logoFile": "asset/SkyblockUtils/textures/SBULogo.webp",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

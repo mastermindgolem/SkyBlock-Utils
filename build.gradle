@@ -97,7 +97,7 @@ shadowJar {
 		include(dependency("com.github.VlxtIykg:Logger:1.1.0"))
 	}
 
-	archiveFileName = project.archivesBaseName + project.version + ".jar"
+	archiveFileName = project.archivesBaseName + "-" + project.version + ".jar"
 	println(archiveFileName)
 }
 

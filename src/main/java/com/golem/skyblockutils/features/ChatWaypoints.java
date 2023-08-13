@@ -28,7 +28,9 @@ public class ChatWaypoints {
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
         if (Main.configFile.showWaypoints == 0) return;
-        Matcher matcher = pattern.matcher(event.message.getUnformattedText().replaceAll("\u00a7.", ""));
+        String message = event.message.getUnformattedText().replaceAll("\u00a7.", "");
+        if (!message.startsWith("Party > ") || !message.contains("x: ") || !message.contains(", y:") || !message.contains(", z:")) return;
+        Matcher matcher = pattern.matcher(message);
         if (matcher.find()) {
             System.out.println("1");
             String text = matcher.group(1);
