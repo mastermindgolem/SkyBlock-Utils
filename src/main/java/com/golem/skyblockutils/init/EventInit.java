@@ -16,25 +16,25 @@ import net.minecraftforge.common.MinecraftForge;
 public class EventInit {
 	public static void registerEvents() {
 		Object[] listeners = {
-			new Main(),
-			new ToolTipListener(),
-			new KuudraOverlay(),
-			new KeybindsInit(),
-			new ContainerValue(),
-			new ChatListener(),
-			new KuudraHealth(),
-			new Kuudra(),
-			new Waypoints(),
-			new GuiEvent(),
-			new BrokenHyp(),
-			new CombineHelper(),
-			new EnderPearl(),
-			new LocationUtils(),
-			new DescriptionHandler(),
-			new ChatWaypoints(),
-			new AutoUpdater(),
-			new Perspective(),
-			new CustomEmotes()
+				new Main(),
+				new ToolTipListener(),
+				new KuudraOverlay(),
+				new KeybindsInit(),
+				new ContainerValue(),
+				new ChatListener(),
+				new KuudraHealth(),
+				new Kuudra(),
+				new Waypoints(),
+				new GuiEvent(),
+				new BrokenHyp(),
+				new CombineHelper(),
+				new EnderPearl(),
+				new LocationUtils(),
+				new DescriptionHandler(),
+				new ChatWaypoints(),
+				new AutoUpdater(),
+				new Perspective(),
+				new CustomEmotes()
 		};
 
 		for (Object listener : listeners) {
@@ -55,7 +55,10 @@ public class EventInit {
 				new DamageOverlay(),
 				new FatalTempoOverlay(),
 				new ProfitOverlay(),
-				new ContainerOverlay()
+				new ContainerOverlay(),
+				new TPSOverlay(),
+				new FPSOverlay(),
+				new PingOverlay()
 		};
 
 		for (Object listener : listeners) {
