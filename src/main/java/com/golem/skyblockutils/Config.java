@@ -320,10 +320,10 @@ public class Config extends Vigilant
 	}
 
 	@Property(type = PropertyType.SELECTOR,
-			name = "Ragnarock Axe Cooldown",
+			name = "Ragnarok Axe Cooldown",
 			description = "Show ragnarok buff timer and cooldown timer",
 			category = "Overlays",
-			subcategory = "Ragnarock Axe",
+			subcategory = "Ragnarok Axe",
 			options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int ragnarokTimer = 0;
 	@Property(type = PropertyType.BUTTON, name = "Edit Ragnarok Timer Overlay",

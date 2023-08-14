@@ -4,6 +4,7 @@ package com.golem.skyblockutils.models.gui;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.PersistentData;
 import gg.essential.universal.UResolution;
+import logger.Logger;
 import net.minecraft.client.renderer.GlStateManager;
 
 import java.awt.Color;
@@ -28,8 +29,11 @@ public class GuiElement {
 		this.position = PersistentData.positions.get(name);
 
 		if (position == null) {
+			Logger.info("Position entered?");
 			double rndWidth = Math.random() * UResolution.getScaledWidth();
 			double rndHeight = Math.random() * UResolution.getScaledHeight();
+			Logger.debug(rndWidth, " ", rndHeight);
+			Logger.debug(this.name);
 			position = new GuiPosition(rndWidth, rndHeight, 1.0);
 			PersistentData.positions.put(name, position);
 			Main.persistentData.savePositions();
@@ -69,7 +73,6 @@ public class GuiElement {
 		double renderHeight = height * position.getScale();
 		GlStateManager.translate(position.getX() - padding * renderWidth, position.getY() - padding * renderHeight, 400.0);
 		Color color = new Color(255, 255, 255);
-
 		try {
 			color = (StaticPosition.stream().filter(element -> element.isInsideElement(mouseX, mouseY)).findFirst().orElse(null) == this) ?
 					new Color(255, 255, 255, 128) : new Color(128, 128, 128, 128);
@@ -77,7 +80,6 @@ public class GuiElement {
 		OverlayUtils.renderRect(0.0, 0.0, renderWidth, renderHeight, color);
 		GlStateManager.popMatrix();
 	}
-
 
 
 }
