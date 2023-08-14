@@ -47,7 +47,6 @@ public class KuudraHealth {
     @SubscribeEvent
     public void renderWorld(RenderWorldLastEvent event) {
         try {
-
             ArrayList<Entity> entities = Kuudra.getAllEntitiesInRange();
             List<Entity> kuudra = entities.stream().filter(e -> e instanceof EntityMagmaCube && e.width > 14 && ((EntityMagmaCube) e).getHealth() <= 100000).collect(Collectors.toList());
             for (Entity e : kuudra) {
@@ -115,7 +114,7 @@ public class KuudraHealth {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || Kuudra.currentPhase <= 0) return;
 
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         int screenWidth = scaledResolution.getScaledWidth();
@@ -134,7 +133,5 @@ public class KuudraHealth {
         OverlayUtils.drawString(0, 0, BossHPmessage, TextStyle.Default, Alignment.Center);
         GlStateManager.popMatrix();
     }
-
-    private long lastTickTime;
 
 }
