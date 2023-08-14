@@ -28,13 +28,11 @@ public class Config extends Vigilant
 
 
 	public File CONFIG_FILE;
-	@Property(
-		type = PropertyType.SWITCH,
-		name = "Test move overlay",
-		description = "Dw abt this",
-		category = "General",
-		subcategory = "General"
-	)
+
+	@Property(type = PropertyType.SWITCH,
+			name = "Enable GUI Elements",
+			description = "Switch to disable/enable all GUI related elements",
+			category = "Overlays", subcategory = "Locations")
 	public boolean testGui = true;
 
 	@Property(
@@ -83,7 +81,7 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH,
 			name = "Show LBIN Overlay",
 			description = "Whether or not to show the LBIN overlay for items whose attributes are not worth more than LBIN.",
-			category = "Overlays",
+			category = "Kuudra",
 			subcategory = "Attributes")
 	public boolean showLbinOverlay = true;
 
@@ -91,89 +89,89 @@ public class Config extends Vigilant
 			name = "Attributes to Prioritize",
 			description = "If the item is not a godroll and one attribute is from this list," +
 					      " it will value it over the other attribute no matter what. Separate multiple by _",
-			category = "Attributes",
-			subcategory = "Pricing")
+			category = "Kuudra",
+			subcategory = "Attributes")
 	public String priorityAttributes = "";
 
 	@Property(type = PropertyType.TEXT,
 			name = "Excluded Attributes",
 			description = "Attributes here will not be valued in any circumstance. Seperate each attribute with a comma (,)",
-			category = "Attributes",
-			subcategory = "Pricing")
+			category = "Kuudra",
+			subcategory = "Attributes")
 	public String attributesToExclude = "";
 
 	@Property(type = PropertyType.SWITCH,
 			name = "Show Player Info",
 			description = "Gives a summary on players joining kuudra parties.",
-			category = "Party Finder",
-			subcategory = "Player Stats")
+			category = "Kuudra",
+			subcategory = "Party Finder")
 	public boolean showKuudraPlayerInfo = false;
 
 	@Property(type = PropertyType.SWITCH,
 			name = "Show Own Player Info",
 			description = "Shows your own player info when you join a party finder party.",
-			category = "Party Finder",
-			subcategory = "Player Stats")
+			category = "Kuudra",
+			subcategory = "Party Finder")
 	public boolean showOwnPlayerInfo = true;
 
 	@Property(type = PropertyType.TEXT,
 			name = "Minimum Kuudra Level",
 			description = "Set a minimum kuudra level to allow people into party, players below this will be instakicked.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick")
+			category = "Kuudra",
+			subcategory = "Party Finder")
 	public String minKuudraLevel = "";
 
 	@Property(type = PropertyType.TEXT,
 			name = "Minimum Magical Power",
 			description = "Set a minimum magical power to allow people into party, players below this will be instakicked.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick")
+			category = "Kuudra",
+			subcategory = "Party Finder")
 	public String minMagicalPower = "";
 
 	@Property(type = PropertyType.SELECTOR,
 			name = "Minimum Comps (Tier)",
 			description = "Choose what tier Minimum Comps config value should check for.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick",
+			category = "Kuudra",
+			subcategory = "Party Finder",
 			options = {"Basic", "Hot", "Burning", "Fiery", "Infernal"})
 	public int minCompsTier = 0;
 
 	@Property(type = PropertyType.TEXT,
 			name = "Minimum Comps",
 			description = "Set a minimum number of completions to allow people into party, players below this will be instakicked.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick")
+			category = "Kuudra",
+			subcategory = "Party Finder")
 	public String minComps = "";
 
 	@Property(type = PropertyType.SELECTOR,
 			name = "Minimum Terror Tier",
 			description = "Choose how upgraded the player's terror must be, players will be instakicked if req is not met.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick",
+			category = "Kuudra",
+			subcategory = "Party Finder",
 			options = {"None", "Hot", "Burning", "Fiery", "Infernal"})
 	public int minTerrorTier = 0;
 
 	@Property(type = PropertyType.SELECTOR,
 			name = "Minimum Aurora Tier",
 			description = "Choose how upgraded the player's aurora must be, players will be instakicked if req is not met.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick",
+			category = "Kuudra",
+			subcategory = "Party Finder",
 			options = {"None", "Hot", "Burning", "Fiery", "Infernal"})
 	public int minAuroraTier = 0;
 
 	@Property(type = PropertyType.SLIDER,
 			name = "Minimum Dominance Level",
 			description = "Set the minimum number of dominance levels a player must have, players below this will be instakicked.",
-			category = "Party Finder",
-			subcategory = "Insta-Kick",
+			category = "Kuudra",
+			subcategory = "Party Finder",
 			max = 80)
 	public int minDomLevel = 0;
 
 	@Property(type = PropertyType.SWITCH,
 			name = "Possibly kick API off players",
 			description = "Kick players who have their API off even if they meet the armor/atribute requirements",
-			category = "Party Finder",
-			subcategory = "Insta-Kick")
+			category = "Kuudra",
+			subcategory = "Party Finder")
 	public boolean kickAPIoff = false;
 
 	@Property(type = PropertyType.SWITCH,
@@ -223,7 +221,7 @@ public class Config extends Vigilant
 			name = "FPS Overlay",
 			description = "Enable Frames Per Second Overlay",
 			category = "Overlays",
-			subcategory = "Game Interaction")
+			subcategory = "Game Settings")
 	public boolean fps = false;
 
 
@@ -231,7 +229,7 @@ public class Config extends Vigilant
 			name = "Edit FPS Overlay",
 			description = "Edit GUI Location for FPS Overlay",
 			category = "Overlays",
-			subcategory = "Game Interaction", placeholder = "Edit")
+			subcategory = "Game Settings", placeholder = "Edit")
 	public void MoveFPSOverlay() {
 		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{FPSOverlay.element}));
 		Main.display = null;
@@ -241,13 +239,13 @@ public class Config extends Vigilant
 			name = "TPS Overlay",
 			description = "Enable Server TPS overlay",
 			category = "Overlays",
-			subcategory = "Game Interaction")
+			subcategory = "Game Settings")
 	public boolean tps = false;
 	@Property(type = PropertyType.BUTTON,
 			name = "Edit TPS Overlay",
 			description = "Edit GUI Location for TPS Overlay",
 			category = "Overlays",
-			subcategory = "Game Interaction", placeholder = "Edit")
+			subcategory = "Game Settings", placeholder = "Edit")
 	public void MoveTPSOverlay() {
 		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{TPSOverlay.element}));
 		Main.display = null;
@@ -260,13 +258,13 @@ public class Config extends Vigilant
 			name = "Ping Overlay",
 			description = "Enable Ping overlay",
 			category = "Overlays",
-			subcategory = "Game Interaction")
+			subcategory = "Game Settings")
 	public boolean ping = false;
 	@Property(type = PropertyType.BUTTON,
 			name = "Edit Ping Overlay",
 			description = "Edit GUI Location for Ping Overlay",
 			category = "Overlays",
-			subcategory = "Game Interaction", placeholder = "Edit")
+			subcategory = "Game Settings", placeholder = "Edit")
 	public void MovePingOverlay() {
 		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{PingOverlay.element}));
 		Main.display = null;
@@ -504,8 +502,8 @@ public class Config extends Vigilant
 			type = PropertyType.SLIDER,
 			name = "Required Godroll Price",
 			description = "Set the minimum price for an armor/equipment to be considered a god roll (in millions).",
-			category = "Attributes",
-			subcategory = "Pricing",
+			category = "Kuudra",
+			subcategory = "Attributes",
 			min = 1,
 			max = 300
 	)
@@ -651,6 +649,12 @@ public class Config extends Vigilant
 	public boolean safeSpots = false;
 	@Property(type = PropertyType.SWITCH, name = "Allow Custom Emotes", description = "Allow you to use MVP++/Gifting emotes without the requirement", category = "General", subcategory = "General")
 	public boolean customEmotes = false;
+
+	@Property(type = PropertyType.SWITCH,
+			name = "Auto Kick Players",
+			description = "Auto kick players based on their armor, kuudra related stats, etc.",
+			category = "Kuudra", subcategory = "Party Finder")
+	public boolean autoKick = false;
 	private void checkFolderExists() {
 		Path directory = Paths.get(configFolder);
 		if (!Files.exists(directory)) {
@@ -680,6 +684,16 @@ public class Config extends Vigilant
 			addDependency("MoveTPSOverlay", "tps");
 			addDependency("MovePingOverlay", "ping");
 
+			addDependency("minKuudraLevel", "autoKick");
+			addDependency("minMagicalPower", "autoKick");
+			addDependency("minCompsTier", "autoKick");
+			addDependency("minComps", "autoKick");
+			addDependency("minTerrorTier", "autoKick");
+			addDependency("minAuroraTier", "autoKick");
+			addDependency("minDomLevel", "autoKick");
+			addDependency("kickAPIoff", "autoKick");;
+
+
 		} catch (Exception e) {
 			Logger.error(e);
 		}
@@ -695,14 +709,22 @@ public class Config extends Vigilant
 		@Override
 		public Comparator<Category> getCategoryComparator() {
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
+
 		}
 
 		@NotNull
-		@Override //Sort sub categories alphabetically, but if it's editing all GUI locations, put it first
+		@Override
 		public Comparator<? super Map.Entry<String, ? extends List<PropertyData>>> getSubcategoryComparator() {
 			return Comparator.comparing(entry -> ("Locations".equals(entry.getKey()) || "Player Stats".equals(entry.getKey())) ? "" : entry.getKey());
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Attributes", "Kuudra", "Party Finder", "Overlays");
+		@NotNull
+		@Override
+		public Comparator<PropertyData> getPropertyComparator() {
+			return Comparator.comparing(o -> o.getAttributesExt().getName());
+		}
+
+		private final List<String> categories = Arrays.asList("General", "Crimson Isles", "Kuudra", "Overlays")	;
+
 	}
 }
