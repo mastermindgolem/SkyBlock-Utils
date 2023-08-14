@@ -34,6 +34,7 @@ public class KuudraOverlay {
 
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 	public static int profit = 0;
+	public static int keyCost = 0;
 
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -128,7 +129,7 @@ public class KuudraOverlay {
 				}
 			}
 
-			int keyCost = 0;
+			keyCost = 0;
 			int itemCost = 0;
 			String item = (configFile.faction == 0 ? "ENCHANTED_MYCELIUM" : "ENCHANTED_RED_SAND");
 			try {

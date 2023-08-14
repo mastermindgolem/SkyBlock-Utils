@@ -5,8 +5,12 @@ import com.golem.skyblockutils.events.SlotClickEvent;
 import com.golem.skyblockutils.features.GuiEvent;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraOverlay;
+import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.gui.*;
+import com.golem.skyblockutils.utils.RequestUtil;
 import com.golem.skyblockutils.utils.TimeHelper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -45,17 +49,32 @@ public class ProfitOverlay {
     @SubscribeEvent
     public void onMouseClick(SlotClickEvent event) {
         if (event.slotId != 31) return;
-        String chestName;
+        String chestName = "";
+        Container container = null;
         try {
             GuiScreen gui = Main.mc.currentScreen;
             if (!(gui instanceof GuiChest)) return;
-            Container container = ((GuiChest) gui).inventorySlots;
+            container = ((GuiChest) gui).inventorySlots;
             if (!(container instanceof ContainerChest)) return;
             chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-        } catch (Exception ignored) {return;}
+        } catch (Exception ignored) {}
         if (!event.slot.getHasStack() || !chestName.contains("Paid Chest")) return;
         totalProfit += KuudraOverlay.profit;
         chests++;
+        if (!configFile.sendProfitData) return;
+        try {
+            JsonObject data = new JsonObject();
+            data.addProperty("tier", Kuudra.tier);
+            data.add("primary", new JsonParser().parse(container.getInventory().get(11).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
+            data.add("secondary", new JsonParser().parse(container.getInventory().get(12).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
+            data.add("primaryData", AttributePrice.AttributeValue(container.getInventory().get(11)));
+            data.add("secondaryData", AttributePrice.AttributeValue(container.getInventory().get(12)));
+            data.addProperty("profit", KuudraOverlay.profit);
+            data.addProperty("keyCost", KuudraOverlay.keyCost);
+            new RequestUtil().sendPostRequest("https://mastermindgolem.pythonanywhere.com/?profit=a", data);
+        } catch (Exception ignored) {}
+
+
     }
 
 
