@@ -154,12 +154,6 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Display Kuudra HP in Boss Bar", description = "Shows Kuudra's HP in the boss bar.", category = "Kuudra", subcategory = "Boss")
 	public boolean showKuudraBossBar = false;
 
-	@Property(type = PropertyType.BUTTON, name = "Move Main Alerts", description = "Press this button to decide where big alerts like Hype Broken show", category = "Overlays", subcategory = "Main Alerts")
-	@SuppressWarnings("unused")
-	public void MoveAlertLocation() {
-		Main.mc.displayGuiScreen(new MoveGui(AlertOverlay.element));
-		Main.display = null;
-	}
 	@Property(type = PropertyType.SELECTOR, name = "Show Align Timer", description = "Show time till cells alignment runs out", category = "Overlays", subcategory = "Align Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int alignTimer = 0;
 	@Property(type = PropertyType.BUTTON, name = "Move Align Timer", description = "Test", category = "Overlays", subcategory = "Align Timer")

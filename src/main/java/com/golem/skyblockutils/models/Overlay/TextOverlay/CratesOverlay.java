@@ -198,7 +198,6 @@ public class CratesOverlay {
                 counter++;
             }
 
-
             GlStateManager.popMatrix();
         } else if (Kuudra.currentPhase == 1) {
             GlStateManager.pushMatrix();
