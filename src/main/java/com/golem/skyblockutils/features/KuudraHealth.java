@@ -54,31 +54,56 @@ public class KuudraHealth {
                 Kuudra.boss = (EntityMagmaCube) e;
                 if (Main.configFile.showKuudraHP) {
                     String string = EnumChatFormatting.RED + formatter.format(Kuudra.boss.getHealth()) + "/100,000";
+                    if (Kuudra.tier == 5) string = EnumChatFormatting.RED + formatter.format((Kuudra.boss.getHealth() - 25000)/3*4) + "/100,000";
                     if (Kuudra.currentPhase >= 4) string = EnumChatFormatting.YELLOW + Main.formatNumber(Kuudra.boss.getHealth() * 12000).toUpperCase() + "/300M";
                     RenderUtils.renderNameTag(string, e.posX, e.posY + e.height / 2, e.posZ, 4.0f);
                 }
                 if (Main.configFile.showKuudraBossBar) {
                     String string = EnumChatFormatting.RED + formatter2.format(Kuudra.boss.getHealth()/1000) + "%";
-                    if (Kuudra.currentPhase >= 4) {
-                        string = EnumChatFormatting.YELLOW + formatter2.format(Kuudra.boss.getHealth() / 250) + "%";
-                        BossStatus.setBossStatus(new IBossDisplayData() {
-                            @Override
-                            public float getMaxHealth() {
-                                return 300_000_000;
-                            }
+                    if (Kuudra.tier == 5) {
+                        if (Kuudra.currentPhase < 4) {
+                            string = EnumChatFormatting.RED + formatter2.format((Kuudra.boss.getHealth() - 25000) / 750) + "%";
+                            BossStatus.setBossStatus(new IBossDisplayData() {
+                                @Override
+                                public float getMaxHealth() {
+                                    return 75000;
+                                }
 
-                            @Override
-                            public float getHealth() {
-                                return Kuudra.boss.getHealth() * 12000;
-                            }
+                                @Override
+                                public float getHealth() {
+                                    return (Kuudra.boss.getHealth()-25000);
+                                }
 
-                            @Override
-                            public IChatComponent getDisplayName() {
-                                ChatComponentText bossText = new ChatComponentText(EnumChatFormatting.BOLD + "Kuudra");
-                                bossText.getChatStyle().setColor(EnumChatFormatting.RED);
-                                return bossText;
-                            }
-                        }, true);
+                                @Override
+                                public IChatComponent getDisplayName() {
+                                    ChatComponentText bossText = new ChatComponentText(EnumChatFormatting.BOLD + "Kuudra");
+                                    bossText.getChatStyle().setColor(EnumChatFormatting.RED);
+                                    return bossText;
+                                }
+                            }, true);
+                        }
+
+                        if (Kuudra.currentPhase >= 4) {
+                            string = EnumChatFormatting.YELLOW + formatter2.format(Kuudra.boss.getHealth() / 250) + "%";
+                            BossStatus.setBossStatus(new IBossDisplayData() {
+                                @Override
+                                public float getMaxHealth() {
+                                    return 300_000_000;
+                                }
+
+                                @Override
+                                public float getHealth() {
+                                    return Kuudra.boss.getHealth() * 12000;
+                                }
+
+                                @Override
+                                public IChatComponent getDisplayName() {
+                                    ChatComponentText bossText = new ChatComponentText(EnumChatFormatting.BOLD + "Kuudra");
+                                    bossText.getChatStyle().setColor(EnumChatFormatting.RED);
+                                    return bossText;
+                                }
+                            }, true);
+                        }
                     }
 
                     BossHPmessage = string;
