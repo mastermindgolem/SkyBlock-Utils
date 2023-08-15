@@ -225,10 +225,10 @@ public class Config extends Vigilant
 			subcategory = "Game Settings")
 	public boolean fps = false;
 
-	@Property(type = PropertyType.SWITCH, name = "Custom Kuudra Profit Overlay",
-			description = "Set the Kuudra Profit overlay to be set to the position of container value since the default position is on top of the NEU overlay. NOTE: if enabled, this will take the same position as 'Container Value",
-			category = "Kuudra", subcategory = "Profit")
-	public boolean customProfitOverlay = false;
+	@Property(type = PropertyType.SELECTOR, name = "Custom Kuudra Profit Overlay",
+			description = "Set the Kuudra Profit overlay to be set to a custom position. Note: Custom will take the position of the Container overlay",
+			category = "Kuudra", subcategory = "Profit", options = {"Off", "Next to GUI", "Custom"})
+	public int customProfitOverlay = 1;
 
 
 	@Property(type = PropertyType.BUTTON,

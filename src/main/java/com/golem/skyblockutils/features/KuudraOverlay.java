@@ -45,6 +45,7 @@ public class KuudraOverlay {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
 			if (!configFile.kuudra_overlay) return;
+			if (configFile.customProfitOverlay == 0) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;
@@ -58,12 +59,12 @@ public class KuudraOverlay {
 
 
 
-			if (!(configFile.customProfitOverlay)) {
+			if (configFile.customProfitOverlay == 1) {
 				xSize = ((AccessorGuiContainer) gui).getXSize();
 				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
 			}
-			else {
+			else if (configFile.customProfitOverlay == 2) {
 				xSize = (int) (ContainerOverlay.element.position.getX());
 				guiLeft = 0;
 				guiTop = (int) (ContainerOverlay.element.position.getY());
