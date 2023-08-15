@@ -144,7 +144,7 @@ public class AutoUpdater {
 
                 String jsonResponse = response.toString();
                 JsonParser parser = new JsonParser();
-                JsonObject releaseJson = parser.parse(jsonResponse).getAsJsonObject();
+                JsonObject releaseJson = parser.parse(jsonResponse).getAsJsonArray().get(0).getAsJsonObject();
                 String changelogs = releaseJson.get("body").getAsString();
                 String downloadUrl = releaseJson.getAsJsonArray("assets")
                         .get(0).getAsJsonObject()
