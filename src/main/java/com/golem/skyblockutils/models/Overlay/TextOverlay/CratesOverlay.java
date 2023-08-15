@@ -261,23 +261,24 @@ public class CratesOverlay {
 
             if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() / kuudra.getMaxHealth() > 0.01) return;
 
+            boolean currentPeak = kuudra.posY < 25;
+
             if (kuudra.posX < -128) {
-                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
+                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
                 //AlertOverlay.text = EnumChatFormatting.BOLD + "RIGHT!";
             }
             if (kuudra.posX > -72) {
-                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
+                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
                 //AlertOverlay.text = EnumChatFormatting.BOLD + "LEFT!";
             }
             if (kuudra.posZ < -132) {
-                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
+                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
                 //AlertOverlay.text = EnumChatFormatting.BOLD + "BACK!";
             }
             if (kuudra.posZ > -84) {
-                AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
+                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
                 //AlertOverlay.text = EnumChatFormatting.BOLD + "FRONT!";
             }
-            boolean currentPeak = kuudra.posY < 25;
             if (currentPeak != inPeak) {
                 inPeak = currentPeak;
                 if (inPeak) {
