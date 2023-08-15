@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
 
-public class AlignOverlay {
+public class    AlignOverlay {
     public static GuiElement element = new GuiElement("Align Overlay", 50, 20);
 
     private static final TimeHelper time = new TimeHelper();
@@ -57,7 +57,7 @@ public class AlignOverlay {
                 //if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-//                if (time.getCurrentMS() - lastSelfAlign >= 10000) AlertOverlay.newAlert(EnumChatFormatting.DARK_RED + "ALIGN NOW", 1); This doesnt work as intended
+                if (time.getCurrentMS() - lastSelfAlign >= 10000 && Kuudra.currentPhase == 4) AlertOverlay.newAlert(EnumChatFormatting.DARK_RED + "ALIGN NOW", 1);
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
                 //if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
