@@ -29,11 +29,8 @@ public class GuiElement {
 		this.position = PersistentData.positions.get(name);
 
 		if (position == null) {
-			Logger.info("Position entered?");
 			double rndWidth = Math.random() * UResolution.getScaledWidth();
 			double rndHeight = Math.random() * UResolution.getScaledHeight();
-			Logger.debug(rndWidth, " ", rndHeight);
-			Logger.debug(this.name);
 			position = new GuiPosition(rndWidth, rndHeight, 1.0);
 			PersistentData.positions.put(name, position);
 			Main.persistentData.savePositions();
@@ -72,7 +69,7 @@ public class GuiElement {
 		double renderWidth = width * position.getScale();
 		double renderHeight = height * position.getScale();
 		GlStateManager.translate(position.getX() - padding * renderWidth, position.getY() - padding * renderHeight, 400.0);
-		Color color = new Color(255, 255, 255);
+		Color color = new Color(255, 255, 255, 128);
 		try {
 			color = (StaticPosition.stream().filter(element -> element.isInsideElement(mouseX, mouseY)).findFirst().orElse(null) == this) ?
 					new Color(255, 255, 255, 128) : new Color(128, 128, 128, 128);

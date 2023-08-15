@@ -1,5 +1,6 @@
 package com.golem.skyblockutils;
 
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.init.GuiInit;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
 import com.golem.skyblockutils.models.gui.GuiElement;
@@ -223,6 +224,11 @@ public class Config extends Vigilant
 			category = "Overlays",
 			subcategory = "Game Settings")
 	public boolean fps = false;
+
+	@Property(type = PropertyType.SWITCH, name = "Custom Kuudra Profit Overlay",
+			description = "Set the Kuudra Profit overlay to be set to the position of container value since the default position is on top of the NEU overlay. NOTE: if enabled, this will take the same position as 'Container Value",
+			category = "Kuudra", subcategory = "Profit")
+	public boolean customProfitOverlay = false;
 
 
 	@Property(type = PropertyType.BUTTON,
@@ -532,6 +538,8 @@ public class Config extends Vigilant
 			subcategory = "Profit"
 	)
 	public boolean kuudra_overlay = true;
+
+
 
 	@Property(type = PropertyType.SELECTOR,
 			name = "Container Value Overlay",

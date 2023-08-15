@@ -55,17 +55,8 @@ public class PingOverlay {
 
         if (configFile.testGui && configFile.ping) {
             int currentPing = getPing();
-            EnumChatFormatting pingColor = EnumChatFormatting.GREEN;
-            if (currentPing >= 100) {
-                pingColor = EnumChatFormatting.YELLOW;
-            }
-            else if (currentPing >= 200) {
-                pingColor = EnumChatFormatting.GOLD;
-            }
-            else if (currentPing >= 300) {
-                pingColor = EnumChatFormatting.RED;
-            }
-            String pingString = EnumChatFormatting.GOLD + "Ping: " + pingColor + pingFormat.format(currentPing) + " ms";
+            EnumChatFormatting pingColor = EnumChatFormatting.WHITE;
+            String pingString = EnumChatFormatting.GOLD + "Ping: " + pingColor + pingFormat.format(currentPing);
 
             net.minecraft.client.renderer.GlStateManager.pushMatrix();
             net.minecraft.client.renderer.GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
@@ -84,7 +75,7 @@ public class PingOverlay {
             net.minecraft.client.renderer.GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             net.minecraft.client.renderer.GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
-            String string = EnumChatFormatting.YELLOW + "Ping: " + EnumChatFormatting.WHITE + "0 ms";
+            String string = EnumChatFormatting.GOLD + "Ping: " + EnumChatFormatting.WHITE + "0";
             OverlayUtils.drawString(0, 0, string, textStyle, Alignment.Left);
 
             element.setWidth(renderWidth(string));

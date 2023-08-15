@@ -3,6 +3,7 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
@@ -35,6 +36,9 @@ public class KuudraOverlay {
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 	public static int profit = 0;
 	public static int keyCost = 0;
+	public int xSize = 0;
+	public int guiLeft = 0;
+	public int guiTop = 0;
 
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
@@ -52,9 +56,21 @@ public class KuudraOverlay {
 			BigInteger totalValue = new BigInteger("0");
 			BigInteger totalProfit;
 
-			int xSize = ((AccessorGuiContainer) gui).getXSize();
-			int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
-			int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+
+
+			if (!(configFile.customProfitOverlay)) {
+				xSize = ((AccessorGuiContainer) gui).getXSize();
+				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+			}
+			else {
+				xSize = (int) (ContainerOverlay.element.position.getX());
+				guiLeft = 0;
+				guiTop = (int) (ContainerOverlay.element.position.getY());
+			}
+
+
+
 
 			chestInventory = chestInventory.subList(0, 33);
 			for (Slot slot : chestInventory) {
@@ -159,12 +175,14 @@ public class KuudraOverlay {
 
 
 			GlStateManager.disableLighting();
+
 			GlStateManager.translate(0, 0, 200);
+
 			for (int i = 0; i < displayStrings.size(); i++) {
 				Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
 						displayStrings.get(i),
 						guiLeft + xSize + 5,
-						guiTop + 5 + 10*i,
+						guiTop + 5 + 10 * i,
 						0xffffffff
 				);
 			}
@@ -194,8 +212,7 @@ public class KuudraOverlay {
 					0xffffffff
 			);
 
-
-			GlStateManager.translate(0, 0, -200);
+			GlStateManager.translate(0,0,-200);
 
 		} catch (Exception e) {
 			e.printStackTrace();

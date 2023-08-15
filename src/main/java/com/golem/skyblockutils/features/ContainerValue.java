@@ -7,6 +7,8 @@ import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.google.gson.JsonObject;
+import jline.internal.Log;
+import logger.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -39,6 +41,7 @@ public class ContainerValue {
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
+
 			if (!(event.gui instanceof GuiContainer)) return;
 			if (!isActive) return;
 			if (configFile.container_value == 0) return;
@@ -47,7 +50,7 @@ public class ContainerValue {
 			Container container = gui.inventorySlots;
 			if (!(container instanceof ContainerChest)) return;
 			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (chestName.contains("Paid Chest") || chestName.contains("Free Chest")) return;
+				if (chestName.contains("Paid Chest") || chestName.contains("Free Chest"))  return;
 			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
 			BigInteger totalValue = new BigInteger("0");
@@ -87,10 +90,10 @@ public class ContainerValue {
 
 			displayStrings = sort(displayStrings);
 
-			if (configFile.dataSource == 0 && totalValue.compareTo(BigInteger.ONE) < 0) return;
+			if (configFile.dataSource == 0 && totalValue.compareTo(BigInteger.ONE) < 0)  return;
 			long totalLbin = displayStrings.values().stream().mapToLong(displayString -> displayString.price * displayString.quantity).sum();
 			long totalMedian = displayStrings.values().stream().mapToLong(displayString -> displayString.median * displayString.quantity).sum();
-			if (configFile.dataSource == 1 && (totalLbin == 0 || totalMedian == 0)) return;
+			if (configFile.dataSource == 1 && (totalLbin == 0 || totalMedian == 0))return;
 
 			GlStateManager.disableLighting();
 			GlStateManager.translate(0, 0, 200);

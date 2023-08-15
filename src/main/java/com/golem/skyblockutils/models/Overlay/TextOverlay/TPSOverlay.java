@@ -74,7 +74,7 @@ public class TPSOverlay {
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
-            String string = EnumChatFormatting.YELLOW + "TPS: " + EnumChatFormatting.WHITE + "20.0";
+            String string = EnumChatFormatting.GOLD + "TPS: " + EnumChatFormatting.WHITE + "20";
             OverlayUtils.drawString(0, 0, string, textStyle, Alignment.Left);
 
             element.setWidth(renderWidth(string));

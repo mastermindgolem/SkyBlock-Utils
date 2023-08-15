@@ -57,7 +57,7 @@ public class AlignOverlay {
                 //if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
             } else if (timeLeft <= 1000) {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.RED + formatter.format(timeLeft/1000) + "s";
-                if (time.getCurrentMS() - lastSelfAlign >= 10000) AlertOverlay.newAlert(EnumChatFormatting.DARK_RED + "ALIGN NOW", 1);
+//                if (time.getCurrentMS() - lastSelfAlign >= 10000) AlertOverlay.newAlert(EnumChatFormatting.DARK_RED + "ALIGN NOW", 1); This doesnt work as intended
             } else {
                 timeString = EnumChatFormatting.YELLOW + "ALIGN: " + EnumChatFormatting.GREEN + formatter.format(timeLeft/1000) + "s";
                 //if (Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_RED + "ALIGN NOW")) AlertOverlay.text = "";
