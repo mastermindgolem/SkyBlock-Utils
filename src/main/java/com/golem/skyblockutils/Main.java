@@ -83,7 +83,6 @@ public class Main
 
 	@SubscribeEvent
 	public void leave(final PlayerEvent.PlayerLoggedOutEvent e) {
-
 	}
 
 	@SubscribeEvent

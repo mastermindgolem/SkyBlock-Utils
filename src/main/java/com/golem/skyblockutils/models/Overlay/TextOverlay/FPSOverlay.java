@@ -20,27 +20,12 @@ public class FPSOverlay {
 
     public static GuiElement element = new GuiElement("FPS Overlay", 50, 10);
 
-    private static final int FPS_TRACKING_DURATION = 500; // ms
-    private final Queue<Long> fpsTimestamps = new LinkedList<>();
     private final Queue<Integer> fpsValues = new LinkedList<>();
 
     public static int renderWidth(String text) {
         return mc.fontRendererObj.getStringWidth(text);
     }
 
-    private void trackFPS(int fps) {
-        long currentTime = System.currentTimeMillis();
-
-        // Add the current FPS and timestamp
-        fpsTimestamps.add(currentTime);
-        fpsValues.add(fps);
-
-        // Remove old FPS values and timestamps
-        while (!fpsTimestamps.isEmpty() && currentTime - fpsTimestamps.peek() > FPS_TRACKING_DURATION) {
-            fpsTimestamps.poll();
-            fpsValues.poll();
-        }
-    }
 
 
 
@@ -50,14 +35,9 @@ public class FPSOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
         if (configFile.testGui && configFile.fps) {
-            int currentFPS = Minecraft.getDebugFPS();
-            trackFPS(currentFPS);
 
-            int minFPS = fpsValues.stream().min(Integer::compareTo).orElse(currentFPS);
-            int maxFPS = fpsValues.stream().max(Integer::compareTo).orElse(currentFPS);
 
-            String fpsString = EnumChatFormatting.GOLD + "FPS: " + EnumChatFormatting.WHITE + currentFPS + " "
-                    + EnumChatFormatting.GRAY + "[" + minFPS + " " + maxFPS + "]";
+            String fpsString = EnumChatFormatting.GOLD + "FPS: " + EnumChatFormatting.WHITE + Minecraft.getDebugFPS();
 
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
