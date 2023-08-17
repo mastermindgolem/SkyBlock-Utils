@@ -375,7 +375,7 @@ public class Config extends Vigilant
 	)
 	public boolean considerEssenceValue = true;
 
-	@Property(type = PropertyType.SELECTOR, name = "Faction", description = "Needed to calculate key cost for kuudra.", category = "General", options = {"Mage", "Barbarian"}, subcategory = "Kuudra Profit Overlay")
+	@Property(type = PropertyType.SELECTOR, name = "Faction", description = "Needed to calculate key cost for kuudra.", category = "General", options = {"Mage", "Barbarian", "Cheapest"}, subcategory = "Kuudra Profit Overlay")
 	public int faction = 0;
 
 	@Property(type = PropertyType.SELECTOR, name = "Auto-Updater", description = "Notifies when a new mod version is available.", category = "Updater", options = {"Off", "Full Release Only", "Full & Beta Release"}, subcategory = "Updater")
