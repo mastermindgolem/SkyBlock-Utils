@@ -47,6 +47,7 @@ public class PingOverlay {
         }
     }
 
+
     private void calculatePing() {
         if (lastPing != 0) {
             ping = Math.abs(time.getCurrentMS() - lastPing);
@@ -63,9 +64,12 @@ public class PingOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
+        if (!Minecraft.getMinecraft().isSingleplayer()) {
+            if (Minecraft.getMinecraft().getCurrentServerData() == null) return;
+        }
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
         if (!configFile.ping && scheledurStatus == 1) stopScheduler();
-        if (configFile.ping && scheledurStatus == 0) startScheduler();
+        if (configFile.ping && scheledurStatus == 0 ) startScheduler();
         TextStyle textStyle = TextStyle.fromInt(1);
 
         if (configFile.testGui && configFile.ping) {
@@ -114,8 +118,9 @@ public class PingOverlay {
             try {
                 sendPing();
             } catch (NullPointerException ignored) {
-                Logger.error("No clue why this is null", ignored.getMessage());
+                Logger.error("No clue why this is null", ignored);
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, 250, TimeUnit.MILLISECONDS); //hopefully server can handle sending 1 packet every 250ms
+
     }
 }

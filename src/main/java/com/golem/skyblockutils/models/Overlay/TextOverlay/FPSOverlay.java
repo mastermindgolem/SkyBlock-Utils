@@ -54,8 +54,7 @@ public class FPSOverlay {
         }
         if (mc.currentScreen instanceof MoveGui) {
 
-            String fpsString = EnumChatFormatting.GOLD + "FPS: " + EnumChatFormatting.WHITE + 60 + " "
-                    + EnumChatFormatting.GRAY + "[" + 60 + " " + 60 + "]";
+            String fpsString = EnumChatFormatting.GOLD + "FPS: " + EnumChatFormatting.WHITE + "60";
 
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
