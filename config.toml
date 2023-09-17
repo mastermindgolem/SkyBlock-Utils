@@ -1,0 +1,11 @@
+defaultEnabled = true
+
+# choose which account to use when devauth.account property is not specified
+defaultAccount = "main"
+
+# a mojang account
+[accounts.main]
+type = "microsoft"
+
+[accounts.dilfstone]
+type = "microsoft"
