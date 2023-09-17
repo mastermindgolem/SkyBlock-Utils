@@ -28,9 +28,10 @@ public class ChatListener {
 			if (matcher.find()) {
 				if (Main.configFile.showOwnPlayerInfo && Objects.equals(matcher.group(1), Main.mc.thePlayer.getDisplayNameString())) return;
 				StatCommand.showPlayerStats(matcher.group(1), true);
-
 				}
-
+		}
+		if (Main.configFile.hideSackMessage) {
+			if (unformatted.startsWith("[Sacks]")) event.setCanceled(true);
 		}
 	}
 }

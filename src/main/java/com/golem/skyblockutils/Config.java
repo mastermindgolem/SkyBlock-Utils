@@ -59,6 +59,23 @@ public class Config extends Vigilant
 
 	@Property(type = PropertyType.SWITCH, name = "Allow Custom Emotes", description = "Allow you to use MVP++/Gifting emotes without the requirement", category = "General", subcategory = "General")
 	public boolean customEmotes = false;
+	@Property(type = PropertyType.SWITCH, name = "Hide Sack Message", description = "Hides the message that shows how many items were added/removed from sack", category = "General", subcategory = "General")
+	public boolean hideSackMessage = false;
+	@Property(type = PropertyType.SWITCH, name = "Elite 500", description = "Shows ranking of player if they are in the Elite 500 (Top 500 SB Level)", category = "General", subcategory = "General")
+	public boolean showElite500 = false;
+	@Property(type = PropertyType.SLIDER, name = "Timer", description = "0 = off, timer in seconds to alert you", category = "General", subcategory = "General", max = 1200)
+	public int timerAmount = 0;
+
+	@Property(type = PropertyType.BUTTON, name = "Move Timer", description = "Test", category = "General", subcategory = "General")
+	@SuppressWarnings("unused")
+	public void MoveTimerOverlay() {
+		if (timerAmount == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Timer is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(TimerOverlay.element));
+		Main.display = null;
+	}
 
 	@Property(type = PropertyType.SWITCH, name = "Send Kuudra Chest Data", description = "Sends data for any kuudra chest you buy with a key for future features such as better pricing system and notifying when to sell for best value.", category = "General", subcategory = "General")
 	public boolean sendProfitData = true;
@@ -153,6 +170,22 @@ public class Config extends Vigilant
 	public boolean showKuudraHP = false;
 	@Property(type = PropertyType.SWITCH, name = "Display Kuudra HP in Boss Bar", description = "Shows Kuudra's HP in the boss bar.", category = "Kuudra", subcategory = "Boss")
 	public boolean showKuudraBossBar = false;
+	@Property(type = PropertyType.SWITCH, name = "Display Kuudra Outline", description = "Creates a box around Kuudra in Phase 4.", category = "Kuudra", subcategory = "Boss")
+	public boolean showKuudraOutline = false;
+	@Property(type = PropertyType.SWITCH, name = "Draw Line to Kuudra", description = "Draws a line to Kuudra in Phase 4.", category = "Kuudra", subcategory = "Boss")
+	public boolean showKuudraLine = false;
+
+	@Property(type = PropertyType.SWITCH, name = "Display Kuudra Location", description = "Says whether Kuudra is FRONT!, BACK!, RIGHT!, or LEFT! in Phase 4.", category = "Kuudra", subcategory = "Boss")
+	public boolean showKuudraLocation = false;
+
+	@Property(type = PropertyType.SWITCH, name = "Custom Main Alert Location", description = "If off, main alerts will show in the middle of screen.", category = "Overlays", subcategory = "Main Alerts")
+	public boolean mainAlert = false;
+	@Property(type = PropertyType.BUTTON, name = "Move Main Alert", description = "Test", category = "Overlays", subcategory = "Main Alerts")
+	@SuppressWarnings("unused")
+	public void MoveMainAlert() {
+		Main.mc.displayGuiScreen(new MoveGui(AlertOverlay.element));
+		Main.display = null;
+	}
 
 	@Property(type = PropertyType.SELECTOR, name = "Show Align Timer", description = "Show time till cells alignment runs out", category = "Overlays", subcategory = "Align Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int alignTimer = 0;
@@ -189,6 +222,19 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
+	@Property(type = PropertyType.SELECTOR, name = "Show End Stone Sword Timer", description = "Show end stone sword buff timer", category = "Overlays", subcategory = "End Stone Sword Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	public int endstoneTimer = 0;
+	@Property(type = PropertyType.BUTTON, name = "Move End Stone Sword Timer", description = "Test", category = "Overlays", subcategory = "End Stone Sword Timer")
+	@SuppressWarnings("unused")
+	public void MoveEndstoneTimer() {
+		if (endstoneTimer == 0) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show End Stone Sword Timer is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(EndstoneOverlay.element));
+		Main.display = null;
+	}
+
 	@Property(type = PropertyType.SELECTOR, name = "Show Reaper Timer", description = "Show reaper buff timer and cooldown timer", category = "Overlays", subcategory = "Reaper Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int reaperTimer = 0;
 	@Property(type = PropertyType.BUTTON, name = "Move Reaper Timer", description = "Test", category = "Overlays", subcategory = "Reaper Timer")
@@ -220,6 +266,10 @@ public class Config extends Vigilant
 
 	@Property(type = PropertyType.SWITCH, name = "Supply Safe Spots", description = "Show safe spots", category = "Kuudra", subcategory = "Supplies")
 	public boolean safeSpots = false;
+	@Property(type = PropertyType.SWITCH, name = "Kuudra Player Alert", description = "Alerts when all 4 players are not in run.", category = "Kuudra", subcategory = "General")
+	public boolean kuudraPlayerAlert = false;
+	@Property(type = PropertyType.SWITCH, name = "Dungeon Player Alert", description = "Alerts when all 4 players are not in run.", category = "Dungeons", subcategory = "General")
+	public boolean dungeonPlayerAlert = false;
 
 	@Property(type = PropertyType.SWITCH, name = "Broken Wither Impact Notification", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Broken Wither Impact")
 	public boolean brokenHyp = false;
@@ -407,6 +457,7 @@ public class Config extends Vigilant
 			addDependency("MoveSupplyInfo", "supplyInfo");
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
+			addDependency("MoveMainAlert", "mainAlert");
 		} catch (Exception ignored) {}
 	}
 
@@ -421,6 +472,6 @@ public class Config extends Vigilant
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Kuudra", "Crimson Isles", "Overlays", "Updater"); //
+		private final List<String> categories = Arrays.asList("General", "Kuudra", "Dungeons", "Crimson Isles", "Overlays", "Updater"); //
 	}
 }

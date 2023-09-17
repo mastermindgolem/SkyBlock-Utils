@@ -3,10 +3,15 @@ package com.golem.skyblockutils.init;
 import com.golem.skyblockutils.ChatListener;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.*;
+import com.golem.skyblockutils.features.Bestiary.Bestiary;
+import com.golem.skyblockutils.features.Bestiary.TrackKills;
+import com.golem.skyblockutils.features.Dungeons.PlayerAlert;
 import com.golem.skyblockutils.features.General.CustomEmotes;
+import com.golem.skyblockutils.features.General.Elite500;
 import com.golem.skyblockutils.features.General.Perspective;
 import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
+import com.golem.skyblockutils.features.KuudraFight.TokenHelper;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
 import com.golem.skyblockutils.utils.LocationUtils;
@@ -34,7 +39,11 @@ public class EventInit {
 			new ChatWaypoints(),
 			new AutoUpdater(),
 			new Perspective(),
-			new CustomEmotes()
+			new CustomEmotes(),
+			new Elite500(),
+			new PlayerAlert(),
+			new TokenHelper()
+			//new TrackKills()
 		};
 
 		for (Object listener : listeners) {
@@ -46,6 +55,7 @@ public class EventInit {
 		Object[] listeners = {
 				new AlignOverlay(),
 				new RagnarokOverlay(),
+				new EndstoneOverlay(),
 				new CratesOverlay(),
 				new ChampionOverlay(),
 				new FishingOverlay(),
@@ -55,7 +65,8 @@ public class EventInit {
 				new DamageOverlay(),
 				new FatalTempoOverlay(),
 				new ProfitOverlay(),
-				new ContainerOverlay()
+				new ContainerOverlay(),
+				new TimerOverlay()
 		};
 
 		for (Object listener : listeners) {

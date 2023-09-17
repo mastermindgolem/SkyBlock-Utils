@@ -12,6 +12,8 @@ public class CommandName {
 				return ("attributeprice");
 			case "EquipmentCommand":
 				return ("equipmentprice");
+			case "VanquishedCommand":
+				return ("vanquishedprice");
 			case "StatCommand":
 				return "kuudrastats";
 			case "UpgradeCommand":

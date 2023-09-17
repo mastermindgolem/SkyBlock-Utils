@@ -1,9 +1,13 @@
 package com.golem.skyblockutils.utils;
 
-import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.NoteForDecompilers;
+import com.golem.skyblockutils.features.General.Elite500;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import logger.Logger;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
@@ -11,7 +15,8 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
@@ -59,6 +64,14 @@ public class AuctionHouse {
 							}
 						}
 						auctions = result.get("auctions").getAsJsonArray();
+						if (result.has("elite")) {
+							JsonArray temp = result.get("elite").getAsJsonArray();
+
+							List<String> newElite = new ArrayList<>();
+							for (JsonElement e : temp) newElite.add(e.getAsString());
+							Elite500.elite500 = newElite;
+						}
+
 						AttributePrice.checkAuctions(auctions);
 						bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
 						int buy_price = 1000;

@@ -62,17 +62,21 @@ public class ProfitOverlay {
         totalProfit += KuudraOverlay.profit;
         chests++;
         if (!configFile.sendProfitData) return;
-        try {
-            JsonObject data = new JsonObject();
-            data.addProperty("tier", Kuudra.tier);
-            data.add("primary", new JsonParser().parse(container.getInventory().get(11).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
-            data.add("secondary", new JsonParser().parse(container.getInventory().get(12).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
-            data.add("primaryData", AttributePrice.AttributeValue(container.getInventory().get(11)));
-            data.add("secondaryData", AttributePrice.AttributeValue(container.getInventory().get(12)));
-            data.addProperty("profit", KuudraOverlay.profit);
-            data.addProperty("keyCost", KuudraOverlay.keyCost);
-            new RequestUtil().sendPostRequest("https://mastermindgolem.pythonanywhere.com/?profit=a", data);
-        } catch (Exception ignored) {}
+        Container finalContainer = container;
+        new Thread(() -> {
+            try {
+                JsonObject data = new JsonObject();
+                data.addProperty("tier", Kuudra.tier);
+                data.add("primary", new JsonParser().parse(finalContainer.getInventory().get(11).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
+                data.add("secondary", new JsonParser().parse(finalContainer.getInventory().get(12).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
+                data.add("primaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(11)));
+                data.add("secondaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(12)));
+                data.addProperty("profit", KuudraOverlay.profit);
+                data.addProperty("keyCost", KuudraOverlay.keyCost);
+                new RequestUtil().sendPostRequest("https://mastermindgolem.pythonanywhere.com/?profit=a", data);
+            } catch (Exception ignored) {}
+        }).start();
+
 
 
     }

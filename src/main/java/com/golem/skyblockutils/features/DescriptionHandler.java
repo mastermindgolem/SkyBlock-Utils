@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.utils.RequestUtil;
@@ -48,41 +49,115 @@ public class DescriptionHandler{
     public static LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
     private static final DecimalFormat formatter = new DecimalFormat("#,###,###,###");
     public static final NBTTagCompound EMPTY_COMPOUND = new NBTTagCompound();
+    private static long lastUpdate = 0;
 
+    private boolean IsOpen = true;
+    private boolean shouldUpdate = false;
+
+
+    public void Close() {
+        IsOpen = false;
+    }
+
+    public static String ExtractStackableIdFromItemStack(ItemStack stack) {
+        if (stack != null) {
+            try {
+                NBTTagCompound serialized = stack.serializeNBT();
+                String itemTag = serialized.getCompoundTag("tag").getCompoundTag("ExtraAttributes")
+                        .getString("id");
+                if (itemTag != null && itemTag.length() > 1)
+                    return itemTag + ":" + stack.stackSize;
+                return serialized.getCompoundTag("tag").getCompoundTag("display")
+                        .getString("Name");
+            } catch (Exception e) {
+            }
+        }
+        return "";
+    }
+
+    public static String ExtractIdFromItemStack(ItemStack stack) {
+        if (stack != null) {
+            try {
+                String uuid = stack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes")
+                        .getString("uuid");
+                if (uuid.length() == 0) {
+                    throw new Exception();
+                }
+                return uuid;
+            } catch (Exception e) {
+            }
+        }
+        return ExtractStackableIdFromItemStack(stack);
+    }
 
 
     @SubscribeEvent
-
     public void onToolTipEvent(ItemTooltipEvent event) {
         if (event.toolTip.size() == 0 || !Main.configFile.showItemValue) return;
-        if (!event.itemStack.serializeNBT().getCompoundTag("tag").hasKey("ExtraAttributes")) return;
         JsonObject data = tooltipItemMap.getOrDefault(event.itemStack, null);
         if (data == null) return;
         event.toolTip.add(EnumChatFormatting.GOLD + "Item Value: " + EnumChatFormatting.GREEN + formatter.format(data.get("median").getAsDouble()));
-
-
     }
-    @SubscribeEvent
-    public void loadDescriptionAndListenForChanges(GuiScreenEvent.BackgroundDrawnEvent event) {
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onGuiOpen(GuiOpenEvent event) {
+        if (event.gui == null) {
+            Close();
+            return;
+        }
+
         if (!(event.gui instanceof GuiContainer)) return;
+        new Thread(() -> {
+            try {
+                loadDescriptionAndListenForChanges(event);
+            } catch (Exception e) {
+                System.out.println("failed to update description " + e);
+            }
+        }).start();
+    }
+
+    public void loadDescriptionAndListenForChanges(GuiOpenEvent event) {
+        if (event.gui == null) return;
+        if (!(event.gui instanceof GuiContainer)) return;
+        if (!Main.configFile.showItemValue) return;
         GuiContainer gc = (GuiContainer) event.gui;
-        if (!hasAnyStackChanged(gc)) return;
-        new Thread(() -> loadDescriptionForInventory(event, gc)).start();
+
+        loadDescriptionForInventory(event, gc, false);
+        int iteration = 1;
+        while (IsOpen) {
+            try {
+                Thread.sleep(300 + iteration++);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (shouldUpdate || hasAnyStackChanged(gc)) {
+                shouldUpdate = false;
+                loadDescriptionForInventory(event, gc, true);
+                // reduce update time since its more likely that more changes occure after one
+                iteration = 5;
+            }
+            if (iteration >= 30)
+                iteration = 29; // cap at 9 second update interval
+        }
     }
 
     private static boolean hasAnyStackChanged(GuiContainer gc) {
         for (Slot obj : gc.inventorySlots.inventorySlots) {
             ItemStack stack = obj.getStack();
-            if (stack != null && !tooltipItemMap.containsKey(stack)) {
+            if (stack != null && stack.serializeNBT().hasKey("tag") && stack.serializeNBT().getCompoundTag("tag").hasKey("ExtraAttributes") && !tooltipItemMap.containsKey(stack)) {
+                Kuudra.addChatMessage(stack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id"));
                 return true;
             }
         }
         return false;
     }
 
-    private static void loadDescriptionForInventory(GuiScreenEvent.BackgroundDrawnEvent event, GuiContainer gc) {
+    private static void loadDescriptionForInventory(GuiOpenEvent event, GuiContainer gc, boolean skipLoadCheck) {
+        if (!Main.configFile.showItemValue && Main.configFile.dataSource == 0) return;
         InventoryWrapper wrapper = new InventoryWrapper();
         if (event.gui instanceof GuiChest) {
+            if (!skipLoadCheck)
+                waitForChestContentLoad(event, gc);
 
             ContainerChest chest = (ContainerChest) ((GuiChest) event.gui).inventorySlots;
             IInventory inv = chest.getLowerChestInventory();
@@ -104,43 +179,45 @@ public class DescriptionHandler{
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            compound.setTag("i", tl);
-            CompressedStreamTools.writeCompressed(compound, baos);
+        new Thread(() -> {
+            try {
+                compound.setTag("i", tl);
+                CompressedStreamTools.writeCompressed(compound, baos);
 
 
 
-            wrapper.fullInventoryNbt = Base64.getEncoder().encodeToString(baos.toByteArray());
-            if (Objects.equals(wrapper.fullInventoryNbt, previousData)) return;
-            previousData = wrapper.fullInventoryNbt;
+                wrapper.fullInventoryNbt = Base64.getEncoder().encodeToString(baos.toByteArray());
+                if (Objects.equals(wrapper.fullInventoryNbt, previousData)) return;
+                previousData = wrapper.fullInventoryNbt;
 
-            List<ItemStack> stacks = new ArrayList<>();
-            for (Slot obj : gc.inventorySlots.inventorySlots) {
-                stacks.add(obj.getStack());
-            }
-
-            JsonObject data = (JsonObject) new JsonParser().parse(new Gson().toJson(wrapper));
-
-
-            JsonArray info = new RequestUtil().sendPostRequest("https://sky.coflnet.com/api/price/nbt", data).getJson().getAsJsonArray();
-            if (Main.configFile.dataSource == 1 && Main.configFile.container_value > 0 && ContainerValue.isActive) displayStrings = new LinkedHashMap<>();
-            for (int i = 0; i < info.size(); i++) {
-                ItemStack stack = stacks.get(i);
-                if (!(info.get(i) instanceof JsonObject)) continue;
-                tooltipItemMap.put(stack, info.get(i).getAsJsonObject());
-                if (isAttributeItem(stack)) {
-                    JsonObject itemdata = info.get(i).getAsJsonObject();
-                    if (Main.configFile.dataSource == 1 && Main.configFile.container_value > 0 && ContainerValue.isActive) {
-                        String displayString = Objects.requireNonNull(AttributePrice.AttributeValue(stack)).get("display_string").getAsString();
-                        displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, itemdata.get("lbin").getAsLong(), itemdata.get("median").getAsLong()));
-                    }
+                List<ItemStack> stacks = new ArrayList<>();
+                for (Slot obj : gc.inventorySlots.inventorySlots) {
+                    stacks.add(obj.getStack());
                 }
 
-            }
+                JsonObject data = (JsonObject) new JsonParser().parse(new Gson().toJson(wrapper));
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+                JsonArray info = new RequestUtil().sendPostRequest("https://sky.coflnet.com/api/price/nbt", data).getJson().getAsJsonArray();
+                if (Main.configFile.dataSource == 1 && Main.configFile.container_value > 0 && ContainerValue.isActive) displayStrings = new LinkedHashMap<>();
+                for (int i = 0; i < info.size(); i++) {
+                    ItemStack stack = stacks.get(i);
+                    if (!(info.get(i) instanceof JsonObject)) continue;
+                    tooltipItemMap.put(stack, info.get(i).getAsJsonObject());
+                    JsonObject itemdata = info.get(i).getAsJsonObject();
+                    if (Main.configFile.dataSource == 1 && Main.configFile.container_value > 0 && ContainerValue.isActive) {
+                        String displayString = (isAttributeItem(stack) ? Objects.requireNonNull(AttributePrice.AttributeValue(stack)).get("display_string").getAsString() : stack.serializeNBT().getCompoundTag("tag").getCompoundTag("display").getString("Name"));
+                        displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, itemdata.get("lbin").getAsLong(), itemdata.get("median").getAsLong()));
+                    }
+
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
     }
 
     private static boolean isAttributeItem(ItemStack item) {

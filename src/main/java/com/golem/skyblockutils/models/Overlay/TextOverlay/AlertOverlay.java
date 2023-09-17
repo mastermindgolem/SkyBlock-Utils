@@ -63,8 +63,13 @@ public class AlertOverlay {
         int y = offsetY + gameHeight / 2;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, 500.0);
-        GlStateManager.scale(4.0, 4.0, 1.0);
+        if (configFile.mainAlert) {
+            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
+            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+        } else {
+            GlStateManager.translate(x, y, 500.0);
+            GlStateManager.scale(4.0, 4.0, 1.0);
+        }
         OverlayUtils.drawString(0, 0, text, textStyle, Alignment.Center);
 
         element.setHeight(10);

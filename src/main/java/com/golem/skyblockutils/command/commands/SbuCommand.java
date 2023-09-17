@@ -4,6 +4,9 @@ import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.PersistentData;
 import com.golem.skyblockutils.command.Help;
 import com.golem.skyblockutils.command.HelpInvocation;
+import com.golem.skyblockutils.features.Bestiary.Bestiary;
+import com.golem.skyblockutils.features.Bestiary.Mob;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
 import com.golem.skyblockutils.utils.AuctionHouse;
@@ -16,10 +19,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -76,7 +76,16 @@ public class SbuCommand extends CommandBase {
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Auctions updated"));
 				}).start();
 				AuctionHouse.lastKnownLastUpdated = System.currentTimeMillis();
-
+			}
+			if (Objects.equals(args[0], "bestiary")) {
+				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Getting Bestiary Data"));
+				new Thread(() ->{
+					String url = "https://mastermindgolem.pythonanywhere.com/?bestiary=" + Main.mc.getSession().getPlayerID();
+					JsonObject be = new RequestUtil().sendGetRequest(url).getJsonAsObject();
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Got " + be.entrySet().size() + " bestiary mobs data."));
+					for (Mob mob : Bestiary.bestiary.values()) mob.updateKills(be);
+					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Bestiary updated"));
+				}).start();
 			}
 		}
 		if (args.length == 2) {
@@ -164,7 +173,6 @@ public class SbuCommand extends CommandBase {
 
 				}
 			}
-
 		}
 		if (args.length == 3) {
 			if (Objects.equals(args[0], "split") || Objects.equals(args[0], "splits")) {

@@ -4,6 +4,7 @@ plugins {
 	id "org.spongepowered.mixin" version "0.6-SNAPSHOT"
 	id "java"
 	id "application"
+	id "signing"
 }
 project.setProperty("mainClassName", "com.golem.skyblockutils.Main")
 
@@ -16,7 +17,7 @@ sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 sourceSets {
-	main { output.resourcesDir = java.outputDir }
+	main({ output.resourcesDir = java.outputDir })
 }
 
 minecraft {
@@ -123,4 +124,4 @@ processResources {
 
 
 tasks.reobfJar.dependsOn(shadowJar)
-sourceSets { main { output.resourcesDir = java.classesDirectory } }
+sourceSets { main({ output.resourcesDir = java.classesDirectory }) }

@@ -83,6 +83,7 @@ public class CratesOverlay {
                 if (!Kuudra.partyMembers.contains(player) && player.length() > 2) Kuudra.partyMembers.add(player);
             } catch (Exception ignored) {}
         }
+
         //if (time.getCurrentMS() - lastFresh > 5000 && Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_GREEN + "FRESH TOOLS")) AlertOverlay.text = "";
 
 
@@ -263,23 +264,14 @@ public class CratesOverlay {
 
             boolean currentPeak = kuudra.posY < 25;
 
-            if (kuudra.posX < -128) {
-                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
-                //AlertOverlay.text = EnumChatFormatting.BOLD + "RIGHT!";
-            }
-            if (kuudra.posX > -72) {
-                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
-                //AlertOverlay.text = EnumChatFormatting.BOLD + "LEFT!";
-            }
-            if (kuudra.posZ < -132) {
-                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
-                //AlertOverlay.text = EnumChatFormatting.BOLD + "BACK!";
-            }
-            if (kuudra.posZ > -84) {
-                if (currentPeak != inPeak) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
-                //AlertOverlay.text = EnumChatFormatting.BOLD + "FRONT!";
-            }
+
             if (currentPeak != inPeak) {
+                if (configFile.showKuudraLocation) {
+                    if (kuudra.posX < -128) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
+                    if (kuudra.posX > -72) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
+                    if (kuudra.posZ < -132) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
+                    if (kuudra.posZ > -84) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
+                }
                 inPeak = currentPeak;
                 if (inPeak) {
                     if (phase4.size() >= 1 && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;

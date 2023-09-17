@@ -11,7 +11,7 @@ import java.util.HashMap;
 @ChannelHandler.Sharable
 public class CustomEmotes extends ChannelOutboundHandlerAdapter {
 
-    private final HashMap<String, String> replacements  = new HashMap<String, String>() {{
+    private final HashMap<String, String> replacements = new HashMap<String, String>() {{
         put("<3", "❤");
         put(":star:", "✮");
         put(":yes:", "✔");

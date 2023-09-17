@@ -12,6 +12,7 @@ public class CommandInit {
 			new Alias(),
 			new AttributeCommand(),
 			new EquipmentCommand(),
+			new VanquishedCommand(),
 			new StatCommand(),
 			new UpgradeCommand(),
 			new SbuCommand(),
