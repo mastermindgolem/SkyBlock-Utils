@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
 
-public class AlignOverlay {
+public class    AlignOverlay {
     public static GuiElement element = new GuiElement("Align Overlay", 50, 20);
 
     private static final TimeHelper time = new TimeHelper();
