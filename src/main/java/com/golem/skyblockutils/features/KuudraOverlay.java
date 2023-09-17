@@ -148,10 +148,24 @@ public class KuudraOverlay {
 
 			keyCost = 0;
 			int itemCost = 0;
-			String item = (configFile.faction == 0 ? "ENCHANTED_MYCELIUM" : "ENCHANTED_RED_SAND");
+
 			try {
-				itemCost = bazaar.get("products").getAsJsonObject().get(item).getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+				int myceliumCost = itemCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_MYCELIUM").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+				int redSandCost = itemCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_RED_SAND").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+
+				switch (configFile.faction) {
+					case 0: // Mage
+						itemCost = myceliumCost;
+						break;
+					case 1: // Barbarian
+						itemCost = redSandCost;
+						break;
+					case 2: // Cheapest
+						itemCost = Math.min(myceliumCost, redSandCost);
+						break;
+				}
 			} catch (Exception ignored) {}
+
 			if (chestName.contains("Paid")) {
 				try {
 					String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();

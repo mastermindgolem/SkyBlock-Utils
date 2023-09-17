@@ -628,7 +628,8 @@ public class Config extends Vigilant
 	)
 	public boolean considerEssenceValue = true;
 
-	@Property(type = PropertyType.SELECTOR,
+
+  @Property(type = PropertyType.SELECTOR,
 			name = "Faction",
 			description = "Needed to calculate key cost for kuudra.",
 			category = "Kuudra",
