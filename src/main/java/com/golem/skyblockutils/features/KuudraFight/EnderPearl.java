@@ -155,7 +155,7 @@ public class EnderPearl {
             if (entry.getValue() == 101) {
                 Vec3 supply = entry.getKey();
                 double distance = Math.sqrt((viewerX - supply.xCoord) * (viewerX - supply.xCoord) + (viewerZ - supply.zCoord) * (viewerZ - supply.zCoord));
-                double height = supply.yCoord - viewerY;
+                double height = supply.yCoord + 1 - viewerY;
                 double x = supply.xCoord;
                 double z = supply.zCoord;
                 double mindist = Double.MAX_VALUE;
@@ -183,6 +183,5 @@ public class EnderPearl {
                 }
             }
         }
-
     }
 }

@@ -271,7 +271,7 @@ public class RenderUtils {
 	}
 
 	public static void drawEntityBox(final Entity entity, final Color color, final int width, float partialTicks) {
-		if(width == 0) return;
+		if (width == 0) return;
 		final RenderManager renderManager = mc.getRenderManager();
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

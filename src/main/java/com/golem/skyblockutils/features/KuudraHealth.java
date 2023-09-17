@@ -51,13 +51,13 @@ public class KuudraHealth {
             List<Entity> kuudra = entities.stream().filter(e -> e instanceof EntityMagmaCube && e.width > 14 && ((EntityMagmaCube) e).getHealth() <= 100000).collect(Collectors.toList());
             for (Entity e : kuudra) {
                 Kuudra.boss = (EntityMagmaCube) e;
-                if (Main.configFile.showKuudraHP) {
+                if (configFile.showKuudraHP) {
                     String string = EnumChatFormatting.RED + formatter.format(Kuudra.boss.getHealth()) + "/100,000";
                     if (Kuudra.tier == 5) string = EnumChatFormatting.RED + formatter.format((Kuudra.boss.getHealth() - 25000)/3*4) + "/100,000";
                     if (Kuudra.currentPhase >= 4) string = EnumChatFormatting.YELLOW + Main.formatNumber(Kuudra.boss.getHealth() * 12000).toUpperCase() + "/300M";
                     RenderUtils.renderNameTag(string, e.posX, e.posY + e.height / 2, e.posZ, 4.0f);
                 }
-                if (Main.configFile.showKuudraBossBar) {
+                if (configFile.showKuudraBossBar) {
                     String string = EnumChatFormatting.RED + formatter2.format(Kuudra.boss.getHealth()/1000) + "%";
                     if (Kuudra.tier == 5) {
                         if (Kuudra.currentPhase < 4) {
@@ -107,6 +107,9 @@ public class KuudraHealth {
 
                     BossHPmessage = string;
                     }
+                if (configFile.showKuudraOutline) {
+                    RenderUtils.drawEntityBox(e, Color.GREEN, 5, event.partialTicks);
+                }
             }
         } catch (Exception ignored) {}
     }

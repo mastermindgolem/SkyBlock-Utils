@@ -1,5 +1,6 @@
-key.combo_value=Get Combo Value
+key.attribute_value=Show Attribute Value
 key.container_value=Get Container Value
-key.open_gui=Open Config GUI
+key.sbu_gui=Open Config GUI
 key.get_party_info=Get Party Info
+key.timer=Timer Button
 key.categories.sbu=Skyblock Utils

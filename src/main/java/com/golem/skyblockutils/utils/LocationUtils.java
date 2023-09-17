@@ -24,7 +24,7 @@ public class LocationUtils {
 
     private static long lastManualLocRaw = -1;
     private long lastLocRaw = -1;
-    public String mode = null;
+    public static String mode = null;
 
     private JsonObject locraw = null;
     public long joinedWorld = -1;
@@ -77,7 +77,7 @@ public class LocationUtils {
         }
     }
 
-    public String getLocation() {
+    public static String getLocation() {
         return mode;
     }
 
