@@ -550,7 +550,7 @@ public class Config extends Vigilant
 			description = "Needed to calculate key cost for kuudra.",
 			category = "Kuudra",
 			subcategory = "Profit",
-			options = {"Mage", "Barbarian"})
+			options = {"Mage", "Barbarian", "Cheapest"})
 	public int faction = 0;
 
 	@Property(type = PropertyType.SLIDER, name = "Show Chat Waypoints", description = "Select delay before waypoints when coordinates sent in chat disappear. 0 = off", category = "General", subcategory = "General", max = 60)
