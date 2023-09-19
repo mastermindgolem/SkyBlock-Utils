@@ -25,6 +25,8 @@ import static com.golem.skyblockutils.Main.modDir;
 
 public class AutoUpdater {
 
+    //Adapted from VolcAddons
+
     private static final String UPDATE_CHECK_URL = "https://api.github.com/repos/mastermindgolem/Skyblock-Utils/releases";
     private boolean updateChecked = false;
     private static String latestVersion = "1.0.0";

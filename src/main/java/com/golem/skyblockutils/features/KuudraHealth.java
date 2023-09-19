@@ -39,6 +39,8 @@ import static com.golem.skyblockutils.init.KeybindsInit.mc;
 
 public class KuudraHealth {
 
+    //Adapted from VolcAddons
+
     private static final DecimalFormat formatter = new DecimalFormat("###,###");
     private static final DecimalFormat formatter2 = new DecimalFormat("##.##");
     private static String BossHPmessage = "";

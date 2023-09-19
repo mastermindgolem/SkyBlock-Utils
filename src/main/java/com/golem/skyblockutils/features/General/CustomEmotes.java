@@ -11,6 +11,8 @@ import java.util.HashMap;
 @ChannelHandler.Sharable
 public class CustomEmotes extends ChannelOutboundHandlerAdapter {
 
+    //Adapted from VolcAddons
+
     private final HashMap<String, String> replacements = new HashMap<String, String>() {{
         put("<3", "❤");
         put(":star:", "✮");

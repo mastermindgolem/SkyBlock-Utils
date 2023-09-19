@@ -21,6 +21,7 @@ import static com.golem.skyblockutils.Main.mc;
 
 public class FatalTempoOverlay {
 
+    //Adapted from nwjnaddons
 
     public static GuiElement element = new GuiElement("Fatal Tempo Overlay", 50, 10);
     private static final TimeHelper time = new TimeHelper();

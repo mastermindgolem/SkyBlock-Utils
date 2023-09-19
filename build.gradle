@@ -9,7 +9,7 @@ plugins {
 project.setProperty("mainClassName", "com.golem.skyblockutils.Main")
 
 
-version = "1.0.4.Beta.2"
+version = "1.0.4"
 group = "com.golem.skyblockutils"
 archivesBaseName = "SkyblockUtils"
 

@@ -37,6 +37,7 @@ import java.util.*;
 
 public class DescriptionHandler{
 
+    //Adapted from Cofl
 
     private static class InventoryWrapper {
         public String chestName;
