@@ -11,7 +11,5 @@ public class GuiInit {
 		return OverlayLoaded;
 	}
 
-	private static final List<GuiElement> OverlayLoaded = Arrays.asList(
-		AlignOverlay.element, RagnarokOverlay.element, CratesOverlay.element, ChampionOverlay.element, AlertOverlay.element, ReaperOverlay.element, SplitsOverlay.element, FishingOverlay.element, DamageOverlay.element, FatalTempoOverlay.element, ProfitOverlay.element, ContainerOverlay.element, EndstoneOverlay.element, TimerOverlay.element
-	);
+	private static final List<GuiElement> OverlayLoaded = Arrays.asList(PingOverlay.element, TPSOverlay.element, FPSOverlay.element, AlignOverlay.element, RagnarokOverlay.element, CratesOverlay.element, AlertOverlay.element, ReaperOverlay.element, SplitsOverlay.element, FishingOverlay.element, DamageOverlay.element, FatalTempoOverlay.element, ProfitOverlay.element, ContainerOverlay.element, EndstoneOverlay.element, TimerOverlay.element);
 }

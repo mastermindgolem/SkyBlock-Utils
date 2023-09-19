@@ -1,26 +1,18 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.BrokenHyp;
-import com.golem.skyblockutils.init.KeybindsInit;
 import com.golem.skyblockutils.models.gui.*;
-import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.text.DecimalFormat;
 import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
-import static com.golem.skyblockutils.features.BrokenHyp.currentXP;
-import static com.golem.skyblockutils.features.BrokenHyp.gainedXP;
 
 public class AlertOverlay {
     public static GuiElement element = new GuiElement("Alert Overlay", 50, 10);

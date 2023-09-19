@@ -61,6 +61,7 @@ public class ProfitOverlay {
         if (!event.slot.getHasStack() || !chestName.contains("Paid Chest")) return;
         totalProfit += KuudraOverlay.profit;
         chests++;
+
         if (!configFile.sendProfitData) return;
         Container finalContainer = container;
         new Thread(() -> {
@@ -76,8 +77,6 @@ public class ProfitOverlay {
                 new RequestUtil().sendPostRequest("https://mastermindgolem.pythonanywhere.com/?profit=a", data);
             } catch (Exception ignored) {}
         }).start();
-
-
 
     }
 

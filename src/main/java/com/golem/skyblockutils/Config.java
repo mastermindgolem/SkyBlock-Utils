@@ -1,6 +1,8 @@
 package com.golem.skyblockutils;
 
+import com.golem.skyblockutils.init.GuiInit;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
+import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.models.gui.MoveGui;
 import gg.essential.vigilance.Vigilant;
 import gg.essential.vigilance.data.*;
@@ -18,18 +20,19 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 public class Config extends Vigilant
 {
 	public static String configFolder;
+
+
 	public File CONFIG_FILE;
-	@Property(
-		type = PropertyType.SWITCH,
-		name = "Test move overlay",
-		description = "Dw abt this",
-		category = "General",
-		subcategory = "General"
-	)
+
+	@Property(type = PropertyType.SWITCH,
+			name = "Enable GUI Elements",
+			description = "Switch to disable/enable all GUI related elements",
+			category = "Overlays", subcategory = "Locations")
 	public boolean testGui = true;
 
 	@Property(
@@ -37,7 +40,7 @@ public class Config extends Vigilant
 			name = "Time between AH Checks",
 			description = "Time to wait between updating AH data. (0 turns it off)",
 			category = "General",
-			subcategory = "General",
+			subcategory = "Auction House",
 			min = 5,
 			max = 30
 	)
@@ -48,17 +51,9 @@ public class Config extends Vigilant
 			name = "Show Item Value",
 			description = "Show's approximate item value in lore, based on Cofl data.",
 			category = "General",
-			subcategory = "General"
+			subcategory = "Auction House"
 	)
 	public boolean showItemValue = true;
-
-	@Property(type = PropertyType.SLIDER, name = "Show Chat Waypoints", description = "Select delay before waypoints when coordinates sent in chat disappear. 0 = off", category = "General", subcategory = "General", max = 60)
-	public int showWaypoints = 0;
-	@Property(type = PropertyType.SWITCH, name = "Remove Selfie Mode", description = "Remove Selfie mode when toggling perspective", category = "General", subcategory = "General")
-	public boolean removeSelfie = false;
-
-	@Property(type = PropertyType.SWITCH, name = "Allow Custom Emotes", description = "Allow you to use MVP++/Gifting emotes without the requirement", category = "General", subcategory = "General")
-	public boolean customEmotes = false;
 	@Property(type = PropertyType.SWITCH, name = "Hide Sack Message", description = "Hides the message that shows how many items were added/removed from sack", category = "General", subcategory = "General")
 	public boolean hideSackMessage = false;
 	@Property(type = PropertyType.SWITCH, name = "Elite 500", description = "Shows ranking of player if they are in the Elite 500 (Top 500 SB Level)", category = "General", subcategory = "General")
@@ -73,7 +68,43 @@ public class Config extends Vigilant
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Timer is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(TimerOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{TimerOverlay.element}));
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "FPS Overlay", description = "Enable Frames Per Second Overlay", category = "Overlays", subcategory = "Game Settings")
+	public boolean fps = false;
+
+	@Property(type = PropertyType.SELECTOR, name = "Custom Kuudra Profit Overlay",
+			description = "Set the Kuudra Profit overlay to be set to a custom position. Note: Custom will take the position of the Container overlay",
+			category = "Kuudra", subcategory = "Profit", options = {"Off", "Next to GUI", "Custom"})
+	public int customProfitOverlay = 1;
+
+
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit FPS Overlay",
+			description = "Edit GUI Location for FPS Overlay",
+			category = "Overlays",
+			subcategory = "Game Settings", placeholder = "Edit")
+	@SuppressWarnings("unused")
+	public void MoveFPSOverlay() {
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{FPSOverlay.element}));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH,
+			name = "TPS Overlay",
+			description = "Enable Server TPS overlay",
+			category = "Overlays",
+			subcategory = "Game Settings")
+	public boolean tps = false;
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit TPS Overlay",
+			description = "Edit GUI Location for TPS Overlay",
+			category = "Overlays",
+			subcategory = "Game Settings", placeholder = "Edit")
+	@SuppressWarnings("unused")
+	public void MoveTPSOverlay() {
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{TPSOverlay.element}));
 		Main.display = null;
 	}
 
@@ -85,32 +116,10 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SLIDER, name = "Shard Minimum Tier", description = "Minimum tier to consider for valuing shards and showing them in /ap. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 3)
 	public int minShardTier = 0;
 
-
-/*	@Property(
-			type = PropertyType.SLIDER,
-			name = "Minimum Shard Tier",
-			description = "Minimum tier SHARD to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
-			category = "General",
-			subcategory = "Kuudra Pricing",
-			min = 1,
-			max = 3
-	)
-	public int min_armor_tier = 1;
-
-	@Property(
-		type = PropertyType.SLIDER,
-		name = "Minimum Armour Tier",
-		description = "Minimum tier ARMOUR or EQUIPMENT to consider for finding cheapest price per tier in /ap and /ep when tier is not specified.",
-		category = "General",
-		category = "General",
-		subcategory = "Kuudra Pricing",
-		min = 1,
-		max = 10
-	)
-	public int min_shard_tier = 1;*/
-
 	@Property(type = PropertyType.SWITCH, name = "Value Soulbound ARMOR", description = "Whether or not to value starred/soulbound kuudra armor.", category = "General", subcategory = "Kuudra Pricing")
 	public boolean valueStarredArmor = true;
+	@Property(type = PropertyType.SWITCH, name = "Value Attribute Shards", description = "Whether or not to value shards in Kuudra chests.", category = "General", subcategory = "Kuudra Pricing")
+	public boolean valueShards = true;
 
 	@Property(type = PropertyType.SWITCH, name = "Show LBIN Overlay", description = "Whether or not to show the LBIN overlay for items whose attributes are not worth more than LBIN.", category = "General", subcategory = "Attribute Overlay")
 	public boolean showLbinOverlay = true;
@@ -183,7 +192,7 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.BUTTON, name = "Move Main Alert", description = "Test", category = "Overlays", subcategory = "Main Alerts")
 	@SuppressWarnings("unused")
 	public void MoveMainAlert() {
-		Main.mc.displayGuiScreen(new MoveGui(AlertOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{AlertOverlay.element}));
 		Main.display = null;
 	}
 
@@ -196,29 +205,62 @@ public class Config extends Vigilant
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Align Timer is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(AlignOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{AlignOverlay.element}));
+	}
+
+	@Property(type = PropertyType.SWITCH, name = "Ping Overlay", description = "Enable Ping overlay", category = "Overlays", subcategory = "Game Settings")
+	public boolean ping = false;
+	@Property(type = PropertyType.BUTTON, name = "Edit Ping Overlay", description = "Edit GUI Location for Ping Overlay", category = "Overlays", subcategory = "Game Settings", placeholder = "Edit")
+	@SuppressWarnings("unused")
+	public void MovePingOverlay() {
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{PingOverlay.element}));
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SWITCH, name = "Show Splits Overlay", description = "Show splits", category = "Overlays", subcategory = "Splits Overlay")
+
+
+    @Property(type = PropertyType.BUTTON, name = "Edit Overlay Locations", description = "Move every GUI overlay option", category = "Overlays", subcategory = "Locations", placeholder = "Edit")
+	@SuppressWarnings("unused")
+	public void MoveGuis() {
+		Main.mc.displayGuiScreen(new MoveGui(GuiInit.getOverlayLoaded().toArray(new GuiElement[0])));
+		Main.display = null;
+	}
+
+	@Property(type = PropertyType.SWITCH,
+			name = "Show Splits Overlay",
+			description = "Show splits",
+			category = "Overlays",
+			subcategory = "Splits")
 	public boolean splitsOverlay = false;
-	@Property(type = PropertyType.BUTTON, name = "Move Splits Overlay", description = "Test", category = "Overlays", subcategory = "Splits Overlay")
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit Splits Overlay",
+			description = "Edit Splits Overlay GUI Location",
+			category = "Overlays",
+			subcategory = "Splits", placeholder = "Edit")
 	@SuppressWarnings("unused")
 	public void MoveSplits() {
-		Main.mc.displayGuiScreen(new MoveGui(SplitsOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{SplitsOverlay.element}));
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SELECTOR, name = "Show Ragnarok Timer", description = "Show ragnarok buff timer and cooldown timer", category = "Overlays", subcategory = "Ragnarok Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	@Property(type = PropertyType.SELECTOR,
+			name = "Ragnarok Axe Cooldown",
+			description = "Show ragnarok buff timer and cooldown timer",
+			category = "Overlays",
+			subcategory = "Ragnarok Axe",
+			options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int ragnarokTimer = 0;
-	@Property(type = PropertyType.BUTTON, name = "Move Ragnarok Timer", description = "Test", category = "Overlays", subcategory = "Ragnarok Timer")
+	@Property(type = PropertyType.BUTTON, name = "Edit Ragnarok Timer Overlay",
+			description = "Edit the GUI location for the raganarock axe timer",
+			category = "Overlays",
+			subcategory = "Ragnarok Axe", placeholder = "Edit")
 	@SuppressWarnings("unused")
 	public void MoveRagnarokTimer() {
 		if (ragnarokTimer == 0) {
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Ragnarok Timer is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(RagnarokOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{RagnarokOverlay.element}));
 		Main.display = null;
 	}
 
@@ -231,89 +273,121 @@ public class Config extends Vigilant
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show End Stone Sword Timer is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(EndstoneOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{EndstoneOverlay.element}));
 		Main.display = null;
 	}
 
 	@Property(type = PropertyType.SELECTOR, name = "Show Reaper Timer", description = "Show reaper buff timer and cooldown timer", category = "Overlays", subcategory = "Reaper Timer", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int reaperTimer = 0;
-	@Property(type = PropertyType.BUTTON, name = "Move Reaper Timer", description = "Test", category = "Overlays", subcategory = "Reaper Timer")
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit Reaper Timer",
+			description = "Edit GUI Location for Reaper Armor Timer",
+			category = "Overlays",
+			subcategory = "Reaper Armor", placeholder = "Edit")
 	@SuppressWarnings("unused")
 	public void MoveReaperTimer() {
 		if (reaperTimer == 0) {
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Reaper Timer is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(ReaperOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{ReaperOverlay.element}));
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SWITCH, name = "Show Run Info", description = "Shows information for every phase (Except 3 because idk what to put there)", category = "Overlays", subcategory = "Run Overview")
+	@Property(type = PropertyType.SWITCH,
+			name = "Show Run Info",
+			description = "Shows information for every phase (Except 3 because idk what to put there)",
+			category = "Overlays",
+			subcategory = "Run Overview")
 	public boolean runInfo = false;
-	@Property(type = PropertyType.COLOR, name = "Supply Waypoints Color", description = "Choose the color for supply waypoints", category = "Overlays", subcategory = "Supply Info")
+	@Property(type = PropertyType.COLOR,
+			name = "Supply Waypoints Color",
+			description = "Choose the color for supply waypoints",
+			category = "Overlays",
+			subcategory = "Kuudra")
 	public Color supplyColor = Color.BLUE;
-	@Property(type = PropertyType.BUTTON, name = "Move Run info", description = "Test", category = "Overlays", subcategory = "Run Overview")
-	@SuppressWarnings("unused")
-	public void MoveSupplyInfo() {
-		Main.mc.displayGuiScreen(new MoveGui(CratesOverlay.element));
-		Main.display = null;
-	}
 
-	@Property(type = PropertyType.SWITCH, name = "Supply Ender Pearls", description = "Show where to ender pearl to get to supply", category = "Overlays", subcategory = "Supply Info")
+	@Property(type = PropertyType.SWITCH,
+			name = "Supply Ender Pearls",
+			description = "Show where to ender pearl to get to supply",
+			category = "Overlays",
+			subcategory = "Kuudra")
 	public boolean enderPearl = false;
-	@Property(type = PropertyType.COLOR, name = "Pearl Waypoint Color", description = "Choose the color of pearl waypoints", category = "Overlays", subcategory = "Supply Info")
+	@Property(type = PropertyType.COLOR,
+			name = "Pearl Waypoint Color",
+			description = "Choose the color of pearl waypoints",
+			category = "Overlays",
+			subcategory = "Kuudra")
 	public Color enderPearlColor = Color.RED;
 
-	@Property(type = PropertyType.SWITCH, name = "Supply Safe Spots", description = "Show safe spots", category = "Kuudra", subcategory = "Supplies")
-	public boolean safeSpots = false;
 	@Property(type = PropertyType.SWITCH, name = "Kuudra Player Alert", description = "Alerts when all 4 players are not in run.", category = "Kuudra", subcategory = "General")
 	public boolean kuudraPlayerAlert = false;
 	@Property(type = PropertyType.SWITCH, name = "Dungeon Player Alert", description = "Alerts when all 4 players are not in run.", category = "Dungeons", subcategory = "General")
 	public boolean dungeonPlayerAlert = false;
 
-	@Property(type = PropertyType.SWITCH, name = "Broken Wither Impact Notification", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Broken Wither Impact")
-	public boolean brokenHyp = false;
-	@Property(type = PropertyType.BUTTON, name = "Move Broken Wither Impact", description = "Test", category = "Overlays", subcategory = "Broken Wither Impact")
-	@SuppressWarnings("unused")
-	public void MoveWitherImpact() {
-		Main.mc.displayGuiScreen(new MoveGui(ChampionOverlay.element));
-		Main.display = null;
-	}
-
-	@Property(type = PropertyType.SWITCH, name = "Fishing Overlay", description = "Notifies when wither impact is broken, and also shows champion XP", category = "Overlays", subcategory = "Fishing")
+	@Property(type = PropertyType.SWITCH,
+			name = "Fishing Overlay",
+			description = "Shows fishing overlay",
+			category = "Overlays",
+			subcategory = "Fishing")
 	public boolean fishingOverlay = false;
-	@Property(type = PropertyType.BUTTON, name = "Move Fishing Overlay", description = "Test", category = "Overlays", subcategory = "Fishing")
+
+	@Property(type = PropertyType.BUTTON, name = "Edit Fishing Overlay",
+			description = "Edit Fishing Overlay Location",
+			category = "Overlays",
+			subcategory = "Fishing", placeholder = "Edit")
 	@SuppressWarnings("unused")
 	public void MoveFishingOverlay() {
-		Main.mc.displayGuiScreen(new MoveGui(FishingOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{FishingOverlay.element}));
 		Main.display = null;
 	}
-	@Property(type = PropertyType.SELECTOR, name = "Fatal Tempo Overlay", description = "Shows Fatal Tempo bonus in Phase 4 of Kuudra", category = "Overlays", subcategory = "Fatal Tempo", options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
+	@Property(type = PropertyType.SELECTOR,
+			name = "Fatal Tempo Overlay",
+			description = "Shows Fatal Tempo bonus in Phase 4 of Kuudra",
+			category = "Overlays",
+			subcategory = "Fatal Tempo",
+			options = {"Off", "On", "Kuudra Only", "Phase 4 Only"})
 	public int ftOverlay = 0;
-	@Property(type = PropertyType.BUTTON, name = "Move Fatal Tempo Overlay", description = "Test", category = "Overlays", subcategory = "Fatal Tempo")
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit Fatal Tempo Overlay",
+			description = "Edit Fatal Tempo GUI Location",
+			category = "Overlays", subcategory = "Fatal Tempo")
 	@SuppressWarnings("unused")
 	public void MoveFTOverlay() {
 		if (ftOverlay == 0) {
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Fatal Tempo Overlay is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(FatalTempoOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{FatalTempoOverlay.element}));
 		Main.display = null;
 	}
-	@Property(type = PropertyType.SELECTOR, name = "Profit Overlay", description = "Shows Coins / Hour and other profit info for Kuudra", category = "Overlays", subcategory = "Profit", options = {"Off", "On", "Kuudra Only", "End of Run only"})
+	@Property(type = PropertyType.SELECTOR,
+			name = "Profit Overlay",
+			description = "Shows Coins / Hour and other profit info for Kuudra",
+			category = "Overlays",
+			subcategory = "Kuudra Profit",
+			options = {"Off", "On", "Kuudra Only", "End of Run only"})
 	public int profitOverlay = 0;
-	@Property(type = PropertyType.BUTTON, name = "Move Profit Overlay", description = "Test", category = "Overlays", subcategory = "Profit")
+	@Property(type = PropertyType.BUTTON,
+			name = "Move Profit Overlay",
+			description = "Test",
+			category = "Overlays", subcategory = "Kuudra Profit")
 	@SuppressWarnings("unused")
 	public void MoveProfitOverlay() {
 		if (profitOverlay == 0) {
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Profit Overlay is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(ProfitOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{ProfitOverlay.element}));
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.BUTTON, name = "Reset Profit Overlay", description = "Test", category = "Overlays", subcategory = "Profit")
+	@Property(type = PropertyType.BUTTON,
+			name = "Reset Profit Overlay",
+			description = "Rest Profit Overlay back to it's original position",
+			category = "Overlays",
+			subcategory = "Profit",
+			placeholder = "Reset")
 	@SuppressWarnings("unused")
 	public void ResetProfitOverlay() {
 		if (profitOverlay == 0) {
@@ -324,74 +398,119 @@ public class Config extends Vigilant
 		Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.GREEN + "Profit Overlay Data reset."));
 	}
 
-	@Property(type = PropertyType.SELECTOR, name = "Damage Bonus Indicator", description = "Shows an indicator to show whether dominance / lifeline is active.", category = "Overlays", subcategory = "Damage Bonus", options = {"None", "Dominance", "Lifeline"})
+	@Property(type = PropertyType.SELECTOR,
+			name = "Damage Bonus Indicator",
+			description = "Shows an indicator to show whether dominance / lifeline is active.",
+			category = "Overlays",
+			subcategory = "Damage Bonus",
+			options = {"None", "Dominance", "Lifeline"})
 	public int damageOverlay = 0;
-	@Property(type = PropertyType.BUTTON, name = "Move Damage Overlay", description = "Test", category = "Overlays", subcategory = "Damage Bonus")
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit Damage Overlay",
+			description = "Edit GUI location for Damage Bonus overlay",
+			category = "Overlays",
+			subcategory = "Damage Bonus")
 	@SuppressWarnings("unused")
 	public void MoveDamageOverlay() {
 		if (damageOverlay == 0) {
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Damage Bonus Indicator is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(DamageOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{DamageOverlay.element}));
 		Main.display = null;
 	}
 
-
-
 	@Property(
 			type = PropertyType.SLIDER,
-			name = "Min. Godroll Price",
-			description = "Minimum Price for a combo to be considered a godroll (in millions).",
-			category = "General",
-			subcategory = "Attribute Overlay",
+			name = "Required Godroll Price",
+			description = "Set the minimum price for an armor/equipment to be considered a god roll (in millions).",
+			category = "Kuudra",
+			subcategory = "Attributes",
 			min = 1,
 			max = 300
 	)
 	public int min_godroll_price = 50;
 
-	@Property(type = PropertyType.SWITCH, name = "Display Attribute Overlay", description = "Show the best attribute on any attribute item (Will also show if it's a godroll).", category = "General", subcategory = "Attribute Overlay")
+	@Property(type = PropertyType.SWITCH,
+			name = "Display Attribute Overlay",
+			description = "Show the best attribute on any attribute item (Will also show if it's a godroll).",
+			category = "Overlays",
+			subcategory = "Attributes")
 	public boolean attribute_overlay = true;
 
-	@Property(type = PropertyType.SELECTOR, name = "Combine Helper", description = "temp", category = "General", subcategory = "Other", options = {"", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "ignition", "combo", "attack_speed", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "ender", "mana_steal", "blazing", "elite", "arachno", "undead", "warrior", "deadeye", "fortitude", "magic_find"})
+	@Property(type = PropertyType.SELECTOR,
+			name = "Combine Helper",
+			description = "temp",
+			category = "General",
+			subcategory = "Other",
+			options = {"", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "ignition", "combo", "attack_speed", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "ender", "mana_steal", "blazing", "elite", "arachno", "undead", "warrior", "deadeye", "fortitude", "magic_find"})
 	public int combineAttribute = 0;
 
 	@Property(
 			type = PropertyType.SWITCH,
-			name = "Display Kuudra Overlay",
+			name = "Kuudra Profit Overlay",
 			description = "Accurate Kuudra Profit Overlay.",
-			category = "General",
-			subcategory = "Kuudra Profit Overlay"
+			category = "Overlays",
+			subcategory = "Profit"
 	)
 	public boolean kuudra_overlay = true;
 
-	@Property(type = PropertyType.SELECTOR, name = "Container Value", description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).", category = "Overlays", subcategory = "Container Value", options = {"Off", "Next to GUI", "Custom"})
+
+
+	@Property(type = PropertyType.SELECTOR,
+			name = "Container Value Overlay",
+			description = "Turn this on to be able to use the keybind (in controls) to show value of all items in any chest (backpack, ender chest, etc.).",
+			category = "Overlays",
+			subcategory = "Container Value",
+			options = {"Off", "Next to GUI", "Custom"})
 	public int container_value = 0;
-	@Property(type = PropertyType.SWITCH, name = "Compact Container Value", description = "Compacts text by removing \"Terror\", \"Aurora\", etc. when it doesn't affect value", category = "Overlays", subcategory = "Container Value")
-	public boolean compactContainerValue = true;
-	@Property(type = PropertyType.SWITCH, name = "Sell Shards as Equipment", description = "Use Equipment prices to price attribute shards", category = "Overlays", subcategory = "Container Value")
-	public boolean shardEquipmentPricing = true;
-	@Property(type = PropertyType.SELECTOR, name = "Sorting of Container Value", description = "Decide how container value display is sorted.", category = "Overlays", subcategory = "Container Value", options = {"Descending Price", "Ascending Price", "Alphabetical", "Attribute Tier", "Item Type"})
-	public int containerSorting = 0;
-	@Property(type = PropertyType.SELECTOR, name = "Data Source", description = "Decide where the data is gotten from for valuing items.", category = "Overlays", subcategory = "Container Value", options = {"Auction House", "Cofl"})
-	public int dataSource = 0;
-	@Property(type = PropertyType.BUTTON, name = "Move Container Value", description = "Test", category = "Overlays", subcategory = "Container Value")
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit Container Value",
+			description = "Edit GUI Location for Container Value",
+			category = "Overlays",
+			subcategory = "Container Value")
 	@SuppressWarnings("unused")
 	public void MoveContainerValue() {
 		if (container_value == 0) {
 			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Container Value is off."));
 			return;
 		}
-		Main.mc.displayGuiScreen(new MoveGui(ContainerOverlay.element));
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{ContainerOverlay.element}));
 		Main.display = null;
 	}
+	@Property(type = PropertyType.SWITCH,
+			name = "Compact Container Value",
+			description = "Compacts text by removing \"Terror\", \"Aurora\", etc. when it doesn't affect value",
+			category = "General",
+			subcategory = "Containers")
+	public boolean compactContainerValue = true;
+	@Property(type = PropertyType.SWITCH,
+			name = "Sell Shards as Equipment",
+			description = "Use Equipment prices to price attribute shards",
+			category = "General",
+			subcategory = "Containers")
+	public boolean shardEquipmentPricing = true;
+	@Property(type = PropertyType.SELECTOR,
+			name = "Sorting of Container Value",
+			description = "Decide how container value display is sorted.",
+			category = "General",
+			subcategory = "Containers",
+			options = {"Descending Price", "Ascending Price", "Alphabetical", "Attribute Tier", "Item Type"})
+	public int containerSorting = 0;
+	@Property(type = PropertyType.SELECTOR,
+			name = "Data Source",
+			description = "Decide where the data is gotten from for valuing items.",
+			category = "General",
+			subcategory = "Containers",
+			options = {"Auction House", "Cofl"})
+	public int dataSource = 0;
 
 	@Property(
 			type = PropertyType.SELECTOR,
 			name = "Kuudra Pet Rarity",
 			description = "Enter Kuudra Pet Rarity to include the extra essence in calculation",
-			category = "General",
-			subcategory = "Kuudra Profit Overlay",
+			category = "Kuudra",
+			subcategory = "Profit",
 			options = {"Common", "Uncommon", "Rare", "Epic", "Legendary"}
 	)
 	public int kuudraPetRarity = 0;
@@ -400,8 +519,8 @@ public class Config extends Vigilant
 			type = PropertyType.SLIDER,
 			name = "Kuudra Pet Level",
 			description = "Enter Kuudra Pet Level to include the extra essence in calculation",
-			category = "General",
-			subcategory = "Kuudra Profit Overlay",
+			category = "Kuudra",
+			subcategory = "Profit",
 			max = 100
 	)
 	public int kuudraPetLevel = 0;
@@ -410,8 +529,8 @@ public class Config extends Vigilant
 			type = PropertyType.SELECTOR,
 			name = "Book Valuation",
 			description = "Choose whether books are insta-sold/sell offer.\n(Hardened Mana is always insta-sold)",
-			category = "General",
-			subcategory = "Kuudra Profit Overlay",
+			category = "Kuudra",
+			subcategory = "Profit",
 			options = {"Instant Sell", "Sell Offer"}
 	)
 	public int book_sell_method = 0;
@@ -420,17 +539,31 @@ public class Config extends Vigilant
 			type = PropertyType.SWITCH,
 			name = "Sell Essence",
 			description = "Choose whether essence is considered in the value and profit of a chest.",
-			category = "General",
-			subcategory = "Kuudra Profit Overlay"
+			category = "Kuudra",
+			subcategory = "Profit"
 	)
 	public boolean considerEssenceValue = true;
 
-	@Property(type = PropertyType.SELECTOR, name = "Faction", description = "Needed to calculate key cost for kuudra.", category = "General", options = {"Mage", "Barbarian"}, subcategory = "Kuudra Profit Overlay")
+
+  @Property(type = PropertyType.SELECTOR,
+			name = "Faction",
+			description = "Needed to calculate key cost for kuudra.",
+			category = "Kuudra",
+			subcategory = "Profit",
+			options = {"Mage", "Barbarian"})
 	public int faction = 0;
 
-	@Property(type = PropertyType.SELECTOR, name = "Auto-Updater", description = "Notifies when a new mod version is available.", category = "Updater", options = {"Off", "Full Release Only", "Full & Beta Release"}, subcategory = "Updater")
-	public int autoUpdater = 0;
+	@Property(type = PropertyType.SLIDER, name = "Show Chat Waypoints", description = "Select delay before waypoints when coordinates sent in chat disappear. 0 = off", category = "General", subcategory = "General", max = 60)
+	public int showWaypoints = 0;
+	@Property(type = PropertyType.SWITCH, name = "Remove Selfie Mode", description = "Remove Selfie mode when toggling perspective", category = "General", subcategory = "General")
+	public boolean removeSelfie = false;
+	@Property(type = PropertyType.SWITCH, name = "Supply Safe Spots", description = "Show safe spots", category = "Kuudra", subcategory = "Instance QoL")
+	public boolean safeSpots = false;
+	@Property(type = PropertyType.SWITCH, name = "Allow Custom Emotes", description = "Allow you to use MVP++/Gifting emotes without the requirement", category = "General", subcategory = "General")
+	public boolean customEmotes = false;
 
+	@Property(type = PropertyType.SWITCH, name = "Auto Kick Players", description = "Auto kick players based on their armor, kuudra related stats, etc.", category = "Kuudra", subcategory = "Party Finder")
+	public boolean autoKick = false;
 	private void checkFolderExists() {
 		Path directory = Paths.get(configFolder);
 		if (!Files.exists(directory)) {
@@ -454,12 +587,25 @@ public class Config extends Vigilant
 
 		try {
 			addDependency("MoveWitherImpact", "brokenHyp");
-			addDependency("MoveSupplyInfo", "supplyInfo");
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
 			addDependency("MoveMainAlert", "mainAlert");
-		} catch (Exception ignored) {}
+			addDependency("MoveFPSOverlay", "fps");
+			addDependency("MoveTPSOverlay", "tps");
+			addDependency("MovePingOverlay", "ping");
+			addDependency("minKuudraLevel", "autoKick");
+			addDependency("minMagicalPower", "autoKick");
+			addDependency("minCompsTier", "autoKick");
+			addDependency("minComps", "autoKick");
+			addDependency("minTerrorTier", "autoKick");
+			addDependency("minAuroraTier", "autoKick");
+			addDependency("minDomLevel", "autoKick");
+			addDependency("kickAPIoff", "autoKick");
+		} catch (Exception e) {
+			Logger.error(e);
+		}
 	}
+
 
 	static {
 		Config.configFolder = "config/SkyblockUtils/";
@@ -470,8 +616,14 @@ public class Config extends Vigilant
 		@Override
 		public Comparator<Category> getCategoryComparator() {
 			return Comparator.comparingInt(o -> this.categories.indexOf(o.getName()));
+
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Kuudra", "Dungeons", "Crimson Isles", "Overlays", "Updater"); //
+		private final List<String> categories = Arrays.asList("General", "Kuudra", "Dungeons", "Crimson Isles", "Overlays");
+		@NotNull
+		@Override
+		public Comparator<? super Map.Entry<String, ? extends List<PropertyData>>> getSubcategoryComparator() {
+			return Comparator.comparing(entry -> ("Locations".equals(entry.getKey()) || "Player Stats".equals(entry.getKey())) ? "" : entry.getKey());
+		}
 	}
 }

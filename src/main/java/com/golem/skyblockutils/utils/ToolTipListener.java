@@ -41,6 +41,9 @@ public class ToolTipListener {
 			// Possible bugs where items don't have nbt, ignore the item.
 			return;
 		}
+
+		if (!itemNbt.hasKey("attributes")) return;
+
 		String name = getItemId(itemNbt);
 
 		NBTTagCompound shards;
@@ -92,6 +95,26 @@ public class ToolTipListener {
 				}
 			} catch (NullPointerException e) {
 				e.printStackTrace();
+			}
+			if (itemNbt.hasKey("boss_tier")) {
+				String obtainedString = EnumChatFormatting.GOLD + "Obtained in ";
+				switch (itemNbt.getInteger("boss_tier")) {
+					case 1:
+						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Basic");
+						break;
+					case 2:
+						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Hot");
+						break;
+					case 3:
+						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Burning");
+						break;
+					case 4:
+						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Fiery");
+						break;
+					case 5:
+						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Infernal");
+						break;
+				}
 			}
 		}
 

@@ -2,6 +2,7 @@ package com.golem.skyblockutils.models;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.AuctionHouse;
+import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -102,8 +103,6 @@ public class AttributePrice {
 	}
 
 	public static JsonObject getComboValue(String item_id, ArrayList<String> attributes) {
-		JsonObject auction = null;
-
 		if (AllCombos.keySet().size() == 0) {
 			if (System.currentTimeMillis() - AuctionHouse.lastErrorMessage > 30000) {
 				final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
@@ -198,7 +197,7 @@ public class AttributePrice {
 						JsonObject av = AttributeValue(item, eq);
 						if (av != null && av.has("value")) {
 							if (av.get("value").getAsInt() > bv.get("value").getAsInt() && av.get("value").getAsInt() > LowestBin.getOrDefault(eq, 0)) {
-								av.addProperty("display_string", av.get("display_string").getAsString() + EnumChatFormatting.RED + " * ");
+								av.addProperty("display_string", av.get("display_string").getAsString() + EnumChatFormatting.RED + " (" + ToolTipListener.TitleCase(eq.split("_")[1]) + ") ");
 								bv = av;
 							}
 						}

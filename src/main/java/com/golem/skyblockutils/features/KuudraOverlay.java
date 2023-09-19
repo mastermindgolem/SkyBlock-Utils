@@ -3,6 +3,7 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
@@ -35,12 +36,16 @@ public class KuudraOverlay {
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 	public static int profit = 0;
 	public static int keyCost = 0;
+	public int xSize = 0;
+	public int guiLeft = 0;
+	public int guiTop = 0;
 
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
 			if (!configFile.kuudra_overlay) return;
+			if (configFile.customProfitOverlay == 0) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;
@@ -52,15 +57,26 @@ public class KuudraOverlay {
 			BigInteger totalValue = new BigInteger("0");
 			BigInteger totalProfit;
 
-			int xSize = ((AccessorGuiContainer) gui).getXSize();
-			int guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
-			int guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+
+
+			if (configFile.customProfitOverlay == 1) {
+				xSize = ((AccessorGuiContainer) gui).getXSize();
+				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
+				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+			}
+			else if (configFile.customProfitOverlay == 2) {
+				xSize = (int) (ContainerOverlay.element.position.getX());
+				guiLeft = 0;
+				guiTop = (int) (ContainerOverlay.element.position.getY());
+			}
+
+
+
 
 			chestInventory = chestInventory.subList(0, 33);
 			for (Slot slot : chestInventory) {
 				try {
-					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
-						continue;
+					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) continue;
 					Matcher matcher = ESSENCE_PATTERN.matcher(slot.getStack().getDisplayName());
 					if (matcher.matches() && configFile.considerEssenceValue) {
 						int buy_price = 1000;
@@ -93,6 +109,7 @@ public class KuudraOverlay {
 					}
 
 					String item_id = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
+					if (Objects.equals(item_id, "ATTRIBUTE_SHARD") && !configFile.valueShards) continue;
 					switch (item_id) {
 						case "BURNING_KUUDRA_CORE":
 						case "WHEEL_OF_FATE":
@@ -131,10 +148,24 @@ public class KuudraOverlay {
 
 			keyCost = 0;
 			int itemCost = 0;
-			String item = (configFile.faction == 0 ? "ENCHANTED_MYCELIUM" : "ENCHANTED_RED_SAND");
+
 			try {
-				itemCost = bazaar.get("products").getAsJsonObject().get(item).getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+				int myceliumCost = itemCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_MYCELIUM").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+				int redSandCost = itemCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_RED_SAND").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+
+				switch (configFile.faction) {
+					case 0: // Mage
+						itemCost = myceliumCost;
+						break;
+					case 1: // Barbarian
+						itemCost = redSandCost;
+						break;
+					case 2: // Cheapest
+						itemCost = Math.min(myceliumCost, redSandCost);
+						break;
+				}
 			} catch (Exception ignored) {}
+
 			if (chestName.contains("Paid")) {
 				try {
 					String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
@@ -159,12 +190,14 @@ public class KuudraOverlay {
 
 
 			GlStateManager.disableLighting();
+
 			GlStateManager.translate(0, 0, 200);
+
 			for (int i = 0; i < displayStrings.size(); i++) {
 				Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
 						displayStrings.get(i),
 						guiLeft + xSize + 5,
-						guiTop + 5 + 10*i,
+						guiTop + 5 + 10 * i,
 						0xffffffff
 				);
 			}
@@ -194,8 +227,7 @@ public class KuudraOverlay {
 					0xffffffff
 			);
 
-
-			GlStateManager.translate(0, 0, -200);
+			GlStateManager.translate(0,0,-200);
 
 		} catch (Exception e) {
 			e.printStackTrace();

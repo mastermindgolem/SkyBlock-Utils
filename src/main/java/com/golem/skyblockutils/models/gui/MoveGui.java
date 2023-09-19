@@ -1,6 +1,9 @@
 package com.golem.skyblockutils.models.gui;
 
 import com.golem.skyblockutils.PersistentData;
+import com.sun.jna.platform.win32.Guid;
+import logger.Logger;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import gg.essential.universal.UResolution;
@@ -9,6 +12,7 @@ import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static com.golem.skyblockutils.Main.persistentData;
 
@@ -16,11 +20,12 @@ public class MoveGui extends GuiScreen {
 	private GuiElement currentElement = null;
 	private double clickOffsetX = 0.0;
 	private double clickOffsetY = 0.0;
-	private GuiElement Element = null;
+	private GuiElement[] Element = null;
 
-	public MoveGui(GuiElement element) {
-		this.Element = element;
+	public MoveGui(GuiElement[] elements) {
+		this.Element = elements;
 	}
+
 
 	@Override
 	public void drawScreen(int x, int y, float partialTicks) {
@@ -36,8 +41,13 @@ public class MoveGui extends GuiScreen {
 		OverlayUtils.drawString(0, 10, "Drag to move GUI elements.", TextStyle.Outline, Alignment.Center);
 		OverlayUtils.drawString(0, 20, "Scroll inside elements to scale.", TextStyle.Outline, Alignment.Center);
 		GlStateManager.popMatrix();
-		this.Element.draw(mouseX, mouseY);
+		for(GuiElement element : this.Element) {
+			element.draw(mouseX, mouseY);
+		}
+
 	}
+
+
 
 	@Override
 	public void mouseClicked(int x, int y, int mouseButton) throws IOException {
@@ -46,7 +56,16 @@ public class MoveGui extends GuiScreen {
 		mouseX = mouseCoordinates[0];
 		mouseY = mouseCoordinates[1];
 
-		currentElement = (Element.isInsideElement(mouseX, mouseY) ? Element : null);
+		currentElement = null;
+
+		for (GuiElement element : this.Element) {
+			if (element.isInsideElement(mouseX, mouseY)) {
+				currentElement = element;
+				clickOffsetX = mouseX - element.position.getX();
+				clickOffsetY = mouseY - element.position.getY();
+				break;
+			}
+		}
 
 		super.mouseClicked(x, y, mouseButton);
 	}
@@ -58,6 +77,7 @@ public class MoveGui extends GuiScreen {
 			double[] mouseCoordinates = getMouseCoordinates();
 			mouseX = mouseCoordinates[0];
 			mouseY = mouseCoordinates[1];
+
 
 			currentElement.position.setX(mouseX - clickOffsetX);
 			currentElement.position.setY(mouseY - clickOffsetY);
@@ -80,24 +100,27 @@ public class MoveGui extends GuiScreen {
 		mouseX = mouseCoordinates[0];
 		mouseY = mouseCoordinates[1];
 
-		double dScroll = (Integer.signum(Mouse.getEventDWheel()) * 0.1);
+		double dScroll = (Integer.signum(Mouse.getEventDWheel()) * 0.2);
 		if (dScroll == 0) {
 			return;
 		}
 
-		if (Element.isInsideElement(mouseX, mouseY)) {
-			currentElement = Element;
-			clickOffsetX = mouseX - Element.position.getX();
-			clickOffsetY = mouseY - Element.position.getY();
+		for(GuiElement element : this.Element) {
+			if (element.isInsideElement(mouseX, mouseY)) {
 
-			double oldScale = Element.position.getScale();
-			double newScale = Math.max(oldScale + dScroll, 0.1);
+				currentElement = element;
+				clickOffsetX = mouseX - element.position.getX();
+				clickOffsetY = mouseY - element.position.getY();
 
-			Element.position.setX(mouseX + ((newScale / oldScale) * (Element.position.getX() - mouseX)));
-			Element.position.setY(mouseY + ((newScale / oldScale) * (Element.position.getY() - mouseY)));
-			Element.position.setScale(newScale);
+				double oldScale = element.position.getScale();
+				double newScale = Math.max(1, Math.min(5, dScroll + oldScale));
 
-			Element.coerceIntoScreen();
+				element.position.setX(mouseX + ((newScale / oldScale) * (element.position.getX() - mouseX)));
+				element.position.setY(mouseY + ((newScale / oldScale) * (element.position.getY() - mouseY)));
+				element.position.setScale(newScale);
+
+				element.coerceIntoScreen();
+			}
 		}
 	}
 
@@ -109,8 +132,11 @@ public class MoveGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		PersistentData.positions.put(Element.getName(), Element.position);
-		persistentData.savePositions();
+		for(GuiElement element : this.Element) {
+			PersistentData.positions.put(element.getName(), element.position);
+			persistentData.savePositions();
+		}
+
 	}
 
 }

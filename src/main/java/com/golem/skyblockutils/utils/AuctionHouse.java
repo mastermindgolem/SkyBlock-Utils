@@ -47,22 +47,6 @@ public class AuctionHouse {
 				new Thread(() -> {
 					try {
 						JsonObject result = new RequestUtil().sendGetRequest(urlString).getJsonAsObject();
-						if (configFile.autoUpdater > 0) {
-							if (result.has("update")) {
-								if (configFile.autoUpdater == 1 && result.get("update").getAsJsonObject().has("release")) {
-									mc.thePlayer.addChatMessage(new ChatComponentText(
-											EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.DARK_RED + "You are not using the latest full release of the mod\n" +
-													EnumChatFormatting.BLUE + "Click on this message to open the latest release version. Join the discord at https://discord.gg/s4EvYpF2Z8 to get notified of beta versions and new releases."
-									).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, result.get("update").getAsJsonObject().get("release").getAsString()))));
-								}
-								if (configFile.autoUpdater == 2 && result.get("update").getAsJsonObject().has("beta")) {
-									mc.thePlayer.addChatMessage(new ChatComponentText(
-											EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.DARK_RED + "You are not using the latest full release of the mod\n" +
-													EnumChatFormatting.BLUE + "Click on this message to open the latest release version. Join the discord at https://discord.gg/s4EvYpF2Z8 to get notified of beta versions and new releases."
-									).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, result.get("update").getAsJsonObject().get("beta").getAsString()))));
-								}
-							}
-						}
 						auctions = result.get("auctions").getAsJsonArray();
 						if (result.has("elite")) {
 							JsonArray temp = result.get("elite").getAsJsonArray();

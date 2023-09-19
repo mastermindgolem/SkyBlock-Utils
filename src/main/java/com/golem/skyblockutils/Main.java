@@ -1,6 +1,7 @@
 package com.golem.skyblockutils;
 
 import com.golem.skyblockutils.init.*;
+import com.golem.skyblockutils.models.Overlay.TextOverlay.PingOverlay;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.TimeHelper;
@@ -64,6 +65,7 @@ public class Main
 	public void post(FMLPostInitializationEvent event) {
 		configFile = new Config();
 		PersistentData.load();
+		Logger.debug("Successfully loaded data");
 		EventInit.registerOverlays();
 		Logger.info("Time taken to reach post initialization: " + time.getDelay());
 		if (!AuctionHouse.isRunning) {
@@ -71,6 +73,7 @@ public class Main
 			all_auctions = new AuctionHouse();
 			new Thread(getAuctions()::run, "fetch-auctions").start();
 		}
+
 	}
 
 	@SubscribeEvent
@@ -80,7 +83,6 @@ public class Main
 
 	@SubscribeEvent
 	public void leave(final PlayerEvent.PlayerLoggedOutEvent e) {
-
 	}
 
 	@SubscribeEvent
