@@ -74,20 +74,23 @@ public class TPSOverlay {
         pastDate = System.currentTimeMillis();
     }
     public void adjustTPS() {
-        JsonObject postData = new JsonObject();
-        ReflectionUtil reflectionUtil = new ReflectionUtil();
-        postData.add("tps-fps-ping", reflectionUtil.getObjectFields(s));
-        postData.add("pastDate", new JsonParser().parse(pastDate.toString()));
-        postData.add("tps", new JsonParser().parse(String.valueOf(tps)));
-        postData.add("pastTPS", new JsonParser().parse(Arrays.toString(pastTps)));
-        RequestData responseData = new RequestUtil().sendPostRequest("https://walkda.pythonanywhere.com/", postData);
-        Logger.debug("Sending data");
-        if (responseData != null && responseData.getStatus() == 200) {
-            JsonObject responseJson = responseData.getJsonAsObject();
-            Tps = responseJson.get("tps").getAsDouble();
+        new Thread(() -> {
+            try {
+                JsonObject postData = new JsonObject();
+                ReflectionUtil reflectionUtil = new ReflectionUtil();
+                postData.add("tps-fps-ping", reflectionUtil.getObjectFields(s));
+                postData.add("pastDate", new JsonParser().parse(pastDate.toString()));
+                postData.add("tps", new JsonParser().parse(String.valueOf(tps)));
+                postData.add("pastTPS", new JsonParser().parse(Arrays.toString(pastTps)));
+                RequestData responseData = new RequestUtil().sendPostRequest("https://walkda.pythonanywhere.com/", postData);
+                Logger.debug("Sending data");
+                if (responseData != null && responseData.getStatus() == 200) {
+                    JsonObject responseJson = responseData.getJsonAsObject();
+                    Tps = responseJson.get("tps").getAsDouble();
+                    }
+                } catch (Exception ignored) {}
+        }).start();
         }
-
-    }
 
     @SubscribeEvent
     public void onPacket(PacketEvent.ReceiveEvent event) {
