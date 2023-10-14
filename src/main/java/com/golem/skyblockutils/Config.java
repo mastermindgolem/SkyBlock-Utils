@@ -586,7 +586,7 @@ public class Config extends Vigilant
 		this.initialize();
 
 		try {
-			//addDependency("MoveWitherImpact", "brokenHyp"); <- idk y this doesnt exist
+			addDependency("MoveWitherImpact", "brokenHyp"); // it does exist
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
 			addDependency("MoveMainAlert", "mainAlert");
