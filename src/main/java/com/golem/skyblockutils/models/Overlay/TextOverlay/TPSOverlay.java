@@ -82,8 +82,7 @@ public class TPSOverlay {
                 postData.add("pastDate", new JsonParser().parse(pastDate.toString()));
                 postData.add("tps", new JsonParser().parse(String.valueOf(tps)));
                 postData.add("pastTPS", new JsonParser().parse(Arrays.toString(pastTps)));
-                RequestData responseData = new RequestUtil().sendPostRequest("https://walkda.pythonanywhere.com/", postData);
-                Logger.debug("Sending data");
+                RequestData responseData = new RequestUtil().sendPostRequest("https://walkda.pythonanywhere.com/", postData);;
                 if (responseData != null && responseData.getStatus() == 200) {
                     JsonObject responseJson = responseData.getJsonAsObject();
                     Tps = responseJson.get("tps").getAsDouble();
