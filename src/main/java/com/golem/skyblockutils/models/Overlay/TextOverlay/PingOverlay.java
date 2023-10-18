@@ -118,7 +118,7 @@ public class PingOverlay {
             try {
                 sendPing();
             } catch (NullPointerException ignored) {
-                Logger.error("No clue why this is null", ignored);
+                ;
             }
         }, 0, 250, TimeUnit.MILLISECONDS); //hopefully server can handle sending 1 packet every 250ms
 
