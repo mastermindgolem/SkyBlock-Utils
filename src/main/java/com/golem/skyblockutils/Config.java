@@ -127,8 +127,11 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.TEXT, name = "Attributes to Prioritize", description = "If the item is not a godroll and one attribute is from this list, it will value it over the other attribute no matter what. Separate multiple by _", category = "General", subcategory = "Kuudra Pricing")
 	public String priorityAttributes = "";
 
-	@Property(type = PropertyType.TEXT, name = "Excluded Attributes", description = "Attributes here will not be valued in any circumstance.", category = "General", subcategory = "Kuudra Pricing")
-	public String attributesToExclude = "experience, arachno_resistance, blazing_resistance, undead_resistance, life_regeneration, ender_resistance";
+	@Property(type = PropertyType.TEXT, name = "Excluded Attributes (Armor)", description = "Attributes here will not be valued in any circumstance for armor pieces.", category = "General", subcategory = "Kuudra Pricing")
+	public String attributesToExcludeArmor = "experience, arachno_resistance, blazing_resistance, undead_resistance, life_regeneration, ender_resistance";
+
+	@Property(type = PropertyType.TEXT, name = "Excluded Attributes (Equipment)", description = "Attributes here will not be valued in any circumstance for equipment.", category = "General", subcategory = "Kuudra Pricing")
+	public String attributesToExcludeEquip = "experience, arachno_resistance, blazing_resistance, undead_resistance, life_regeneration, ender_resistance";
 
 	@Property(type = PropertyType.SWITCH, name = "Show Player Info", description = "Gives a summary on players joining kuudra parties.", category = "General", subcategory = "Party Finder")
 	public boolean showKuudraPlayerInfo = false;

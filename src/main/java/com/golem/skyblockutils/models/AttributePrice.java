@@ -7,8 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import logger.Logger;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +24,7 @@ import static com.golem.skyblockutils.Main.*;
 public class AttributePrice {
 
 	public static final String[] all_attributes = new String[]{"arachno", "attack_speed", "combo", "elite", "ignition", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "mana_steal", "ender", "blazing", "undead", "warrior", "deadeye", "fortitude", "magic_find"};
-	public static final String[] all_kuudra_categories = new String[]{"SHARD", "HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS", "MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_CLOAK", "MOLTEN_NECKLACE", "GAUNTLET_OF_CONTAGION", "IMPLOSION_BELT", "MAGMA_NECKLACE", "GHAST_CLOAK", "BLAZE_BELT", "GLOWSTONE_GAUNTLET"};
+	public static final String[] all_kuudra_categories = new String[]{"SHARD", "HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS", "MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_CLOAK", "MOLTEN_NECKLACE", "GAUNTLET_OF_CONTAGION", "IMPLOSION_BELT", "MAGMA_NECKLACE", "GHAST_CLOAK", "BLAZE_BELT", "GLOWSTONE_GAUNTLET", "LAVA_SHELL_NECKLACE"};
 	private static final List<String> moltenAttributes = Arrays.asList("lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "fortitude", "magic_find");
 	private static HashMap<ArrayList<String>, JsonObject> AllCombos = new HashMap<>();
 	public static HashMap<String, Integer> LowestBin = new HashMap<>();
@@ -113,7 +111,10 @@ public class AttributePrice {
 			return null;
 		}
 
-		List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
+		List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
+		if (item_id.contains("HELMET") || item_id.contains("CHESTPLATE") || item_id.contains("LEGGINGS") || item_id.contains("BOOTS")) {
+			excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
+		}
 
 		for (String attribute : attributes) if (excludeAttributes.contains(attribute)) return null;
 
@@ -137,11 +138,15 @@ public class AttributePrice {
 		result.addProperty("display_string", "");
 		result.addProperty("value", 0);
 
-		List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
-		List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
-
 		NBTTagCompound nbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
 		String item_id = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
+
+		List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
+		if (item_id.contains("HELMET") || item_id.contains("CHESTPLATE") || item_id.contains("LEGGINGS") || item_id.contains("BOOTS")) {
+			excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
+		}
+		List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
+
 		for (String item_key : all_kuudra_categories) {
 			if (!item_id.contains(item_key)) continue;
 			if ((item_key.equals("HELMET") || item_key.equals("CHESTPLATE") || item_key.equals("LEGGINGS") || item_key.equals("BOOTS")) &&
@@ -157,7 +162,7 @@ public class AttributePrice {
 			for (String attr_key : nbt.getKeySet()) {
 				if (excludeAttributes.contains(attr_key)) continue;
 				ArrayList<JsonObject> items = AttributePrices.get(item_key).get(attr_key);
-				if (items == null || items.size() == 0) {
+				if (items == null || items.isEmpty()) {
 					continue;
 				}
 				if ((item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
@@ -276,7 +281,10 @@ public class AttributePrice {
 		result.addProperty("display_string", "");
 		result.addProperty("value", 0);
 
-		List<String> excludeAttributes = Arrays.asList(Main.configFile.attributesToExclude.split(", "));
+		List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
+		if (id.contains("HELMET") || id.contains("CHESTPLATE") || id.contains("LEGGINGS") || id.contains("BOOTS")) {
+			excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
+		}
 		List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
 
 		NBTTagCompound nbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
@@ -435,7 +443,7 @@ public class AttributePrice {
 			case "experience":
 				return "EXP";
 			case "lifeline":
-				return "LIF";
+				return "LL";
 			case "life_regeneration":
 				return "LR";
 			case "fortitude":
