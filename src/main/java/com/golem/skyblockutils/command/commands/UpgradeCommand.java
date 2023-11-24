@@ -150,17 +150,18 @@ public class UpgradeCommand extends CommandBase implements Help {
 				if (id.contains(key)) armor_type = key;
 			}
 			if (armor_type == null) {
-				addClickChatMessage("[SHARD]", "/au SHARD " + args[0] + " " + args[1]);
-				addClickChatMessage("[HELMET]", "/au HELMET " + args[0] + " " + args[1]);
-				addClickChatMessage("[CHESTPLATE]", "/au CHESTPLATE " + args[0] + " " + args[1]);
-				addClickChatMessage("[LEGGINGS]", "/au LEGGINGS " + args[0] + " " + args[1]);
-				addClickChatMessage("[BOOTS]", "/au BOOTS " + args[0] + " " + args[1]);
-				addClickChatMessage("[MOLTEN_BELT]", "/au MOLTEN_BELT " + args[0] + " " + args[1]);
-				addClickChatMessage("[MOLTEN_BRACELET]", "/au MOLTEN_BRACELET " + args[0] + " " + args[1]);
-				addClickChatMessage("[MOLTEN_CLOAK]", "/au MOLTEN_CLOAK " + args[0] + " " + args[1]);
-				addClickChatMessage("[MOLTEN_NECKLACE]", "/au MOLTEN_NECKLACE " + args[0] + " " + args[1]);
-				addClickChatMessage("[GAUNTLET_OF_CONTAGION]", "/au GAUNTLET_OF_CONTAGION " + args[0] + " " + args[1]);
-				addClickChatMessage("[IMPLOSION_BELT]", "/au IMPLOSION_BELT " + args[0] + " " + args[1]);
+				addClickChatMessage("[Shard]", "/au SHARD " + args[0] + " " + args[1]);
+				addClickChatMessage("[Helmet]", "/au HELMET " + args[0] + " " + args[1]);
+				addClickChatMessage("[Chestplate]", "/au CHESTPLATE " + args[0] + " " + args[1]);
+				addClickChatMessage("[Leggings]", "/au LEGGINGS " + args[0] + " " + args[1]);
+				addClickChatMessage("[Boots]", "/au BOOTS " + args[0] + " " + args[1]);
+				addClickChatMessage("[Molten Belt]", "/au MOLTEN_BELT " + args[0] + " " + args[1]);
+				addClickChatMessage("[Molten Bracelet]", "/au MOLTEN_BRACELET " + args[0] + " " + args[1]);
+				addClickChatMessage("[Molten Cloak]", "/au MOLTEN_CLOAK " + args[0] + " " + args[1]);
+				addClickChatMessage("[Molten Necklace]", "/au MOLTEN_NECKLACE " + args[0] + " " + args[1]);
+				addClickChatMessage("[Gauntlet of Contagion]", "/au GAUNTLET_OF_CONTAGION " + args[0] + " " + args[1]);
+				addClickChatMessage("[Lava Shell Necklace]", "/au LAVA_SHELL_NECKLACE " + args[0] + " " + args[1]);
+				addClickChatMessage("[Implosion Belt]", "/au IMPLOSION_BELT " + args[0] + " " + args[1]);
 				return;
 			}
 			getAttributePrice(attribute, armor_type, tiers_needed, end_tier);

@@ -31,7 +31,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 
 	private final List<String> helpStrings;
 
-	private final String[] item_types = new String[] {"MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_NECKLACE", "MOLTEN_CLOAK", "IMPLOSION_BELT", "GAUNTLET_OF_CONTAGION"};
+	private final String[] item_types = new String[] {"MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_NECKLACE", "MOLTEN_CLOAK", "IMPLOSION_BELT", "GAUNTLET_OF_CONTAGION", "LAVA_SHELL_NECKLACE"};
 
 	public EquipmentCommand() {
 		helpStrings = new ArrayList<>();
