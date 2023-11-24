@@ -196,11 +196,11 @@ public class StatCommand extends CommandBase implements Help {
 
 		addChatMessage(EnumChatFormatting.RED + "------------------");
 		if (data.get("Expert Plus").getAsBoolean()) {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]");
+			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]", "/pv " + ign);
 		} else if (data.get("Expert").getAsBoolean()) {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]");
+			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]", "/pv " + ign);
 		} else {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign);
+			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign, "/pv " + ign);
 		}
 		addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
 		addChatMessage(EnumChatFormatting.GREEN + "Magical Power: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
@@ -223,6 +223,16 @@ public class StatCommand extends CommandBase implements Help {
 			))));
 		Main.mc.thePlayer.addChatMessage(msg);
 
+		String ragnarokText = "";
+		int chimeraLevel = data.get("Ragnarok Chimera").getAsInt();
+		if (chimeraLevel == 0) {
+			ragnarokText = EnumChatFormatting.DARK_RED + "Chimera Ragnarok Axe";
+		} else if (chimeraLevel < 3) {
+			ragnarokText = EnumChatFormatting.YELLOW + "Chimera " + chimeraLevel + " Ragnarok Axe";
+		} else {
+			ragnarokText = EnumChatFormatting.GREEN + "Chimera " + chimeraLevel + " Ragnarok Axe";
+		}
+
 		msg = new ChatComponentText(
 			EnumChatFormatting.AQUA + "Important Items: " + EnumChatFormatting.GRAY + "(Hover)"
 		).setChatStyle(new ChatStyle().setChatHoverEvent(
@@ -236,9 +246,12 @@ public class StatCommand extends CommandBase implements Help {
 				(data.get("Reaper Armor").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Reaper Armor\n" +
 				(data.get("Duplex Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Duplex Terminator\n" +
 				(data.get("FT Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Fatal Tempo Terminator\n" +
-				(data.get("Rend Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Rend Terminator"
+				(data.get("Rend Term").getAsBoolean() ? EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED) + "Rend Terminator\n" +
+				ragnarokText
+
 			))));
 		Main.mc.thePlayer.addChatMessage(msg);
+
 
 		displayItem(data.get("Aurora Chestplate").getAsJsonObject());
 		displayItem(data.get("Aurora Leggings").getAsJsonObject());
@@ -248,6 +261,13 @@ public class StatCommand extends CommandBase implements Help {
 		displayItem(data.get("Terror Boots").getAsJsonObject());
 
 		for (JsonElement equipment : data.get("Equipment").getAsJsonArray()) displayItem(equipment.getAsJsonObject());
+
+		if (data.get("Dominance").getAsInt() > data.get("Lifeline").getAsInt()) {
+			addChatMessage(EnumChatFormatting.GREEN + "Dominance: " + EnumChatFormatting.YELLOW + data.get("Dominance").getAsInt());
+		} else {
+			addChatMessage(EnumChatFormatting.GREEN + "Lifeline: " + EnumChatFormatting.YELLOW + data.get("Lifeline").getAsInt());
+		}
+
 		displayItem(data.get("Support Item").getAsJsonObject());
 
 		if (!data.get("InventoryAPI").getAsBoolean()) addChatMessage(EnumChatFormatting.RED + "This player has their inventory API disabled.");
@@ -390,5 +410,9 @@ public class StatCommand extends CommandBase implements Help {
 	}
 	public static void addChatMessage(String string) {
 		mc.thePlayer.addChatMessage(new ChatComponentText(string));
+	}
+	public static void addChatMessage(String string, String command) {
+		IChatComponent msg = new ChatComponentText(string).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
+		mc.thePlayer.addChatMessage(msg);
 	}
 }
