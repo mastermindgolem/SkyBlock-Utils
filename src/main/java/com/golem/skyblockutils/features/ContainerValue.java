@@ -6,6 +6,7 @@ import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiCont
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
+import com.golem.skyblockutils.utils.RenderUtils;
 import com.google.gson.JsonObject;
 import jline.internal.Log;
 import logger.Logger;
@@ -28,8 +29,10 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.awt.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.configFile;
@@ -78,6 +81,7 @@ public class ContainerValue {
 							String displayString = valueData.get("display_string").getAsString();
 							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
 							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
+							RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, slot);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -109,6 +113,7 @@ public class ContainerValue {
 					guiTop + 5,
 					0xffffffff
 			);
+
 
 			for (String displayString : displayStrings.keySet()) {
 				int amount = displayStrings.get(displayString).quantity;

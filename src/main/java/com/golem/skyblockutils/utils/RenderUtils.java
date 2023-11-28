@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -13,11 +14,13 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
+import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +37,9 @@ public class RenderUtils {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 
 	private static final ResourceLocation beaconBeam = new ResourceLocation("textures/entity/beacon_beam.png");
+	public static MethodHandle xSizeField = ReflectionUtil.getField(GuiContainer.class, "xSize", "field_146999_f", "f");
+	public static MethodHandle ySizeField = ReflectionUtil.getField(GuiContainer.class, "ySize", "field_147000_g", "g");
+
 
 
 	static {
@@ -941,6 +947,24 @@ public class RenderUtils {
 		GlStateManager.doPolygonOffset(1.0F, 1000000.0F);
 		GlStateManager.disablePolygonOffset();
 	}
+
+
+	public static void highlight(Color color, GuiContainer gui, Slot slot) {
+		try {
+			int guiTop = (gui.height - (int) ySizeField.invokeExact(gui)) / 2;
+			int guiLeft = (gui.width - (int) xSizeField.invokeExact(gui)) / 2;
+			int slotX = slot.xDisplayPosition + guiLeft;
+			int slotY = slot.yDisplayPosition + guiTop;
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(0, 0, 0.1);
+			Gui.drawRect(slotX, slotY, slotX + 16, slotY + 16,
+					color.getRGB());
+			GlStateManager.popMatrix();
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 
 
 }
