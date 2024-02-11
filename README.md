@@ -5,9 +5,9 @@
 
 <div align="center">
     <!--Download link-->
-    <a href="https://sbu.kami-x.tk"><img alt="Click Me" src="https://img.shields.io/badge/SkyblockUtils-Click%20Me-191919?logo=Oracle&logoColor=red" height=50></a>
+    <a href="https://sbu.kami.wtf"><img alt="Click Me" src="https://img.shields.io/badge/SkyblockUtils-Click%20Me-191919?logo=Oracle&logoColor=red" height=50></a>
     <!--164 downloads as of today-->
-    <a href="https://sbu.kami-x.tk"><img src="https://img.shields.io/github/downloads/mastermindgolem/Skyblock-Utils/total?style=social&label=Downloads" alt="Download amount of 1.0.1"></a>
+    <a href="https://sbu.kami.wtf"><img src="https://img.shields.io/github/downloads/mastermindgolem/Skyblock-Utils/total?style=social&label=Downloads" alt="Download amount of 1.0.1"></a>
     <!--
         To get current lines since tokei seems to be not working for other sources such as         
         https://img.shields.io/tokei/lines/github/ascopes/java-compiler-testing
