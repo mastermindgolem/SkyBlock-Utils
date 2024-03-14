@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonArray;
@@ -29,6 +30,8 @@ public class AttributePrice {
 	private static HashMap<ArrayList<String>, JsonObject> AllCombos = new HashMap<>();
 	public static HashMap<String, Integer> LowestBin = new HashMap<>();
 	public static HashMap<String, HashMap<String, ArrayList<JsonObject>>> AttributePrices = new HashMap<>();
+	public static HashMap<String, HashMap<String, ArrayList<Integer>>> LowestAttributePrices = new HashMap<>();
+	static final IChatComponent ErrorMessage = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
 
 
 	public static void checkAuctions(JsonArray auctions) {
@@ -38,7 +41,7 @@ public class AttributePrice {
 			LowestBin = new HashMap<>();
 			double price_per;
 			for (String key : all_kuudra_categories) AttributePrices.put(key, new HashMap<>());
-
+			for (String key : all_kuudra_categories) LowestAttributePrices.put(key, new HashMap<>());
 			for (JsonElement auction : auctions) {
 				try {
 					JsonObject auc = auction.getAsJsonObject();
@@ -87,6 +90,20 @@ public class AttributePrice {
 								auc2.addProperty("starting_bid", auc.get("starting_bid").getAsInt());
 								auc2.addProperty("price_per_tier", price_per);
 								auc2.addProperty(attribute, attributes.getInteger(attribute));
+								if (!LowestAttributePrices.get(key).containsKey(attribute)) {
+									LowestAttributePrices.get(key).put(attribute, new ArrayList<>());
+									for (int i = 0; i < 11; ++i) {
+										LowestAttributePrices.get(key).get(attribute).add(0);
+									}
+								}
+								for (int i = attributes.getInteger(attribute); i < 11; ++i) {
+									if (LowestAttributePrices.get(key).get(attribute).get(i) == 0) {
+										LowestAttributePrices.get(key).get(attribute).set(i, (int) price_per);
+									}
+									else if (price_per < LowestAttributePrices.get(key).get(attribute).get(i)) {
+										LowestAttributePrices.get(key).get(attribute).set(i, (int) price_per);
+									}
+								}
 								if (!AttributePrices.get(key).containsKey(attribute))
 									AttributePrices.get(key).put(attribute, new ArrayList<>());
 								AttributePrices.get(key).get(attribute).add(auc2);
@@ -95,33 +112,32 @@ public class AttributePrice {
 					}
 
 				} catch (NullPointerException | IOException ignored) {
+					Kuudra.addChatMessage("ERROR: " + ignored.getMessage());
 				}
 			}
 		}).start();
 	}
 
 	public static JsonObject getComboValue(String item_id, ArrayList<String> attributes) {
-		if (AllCombos.keySet().size() == 0) {
-			if (System.currentTimeMillis() - AuctionHouse.lastErrorMessage > 30000) {
-				final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
-				AuctionHouse.lastErrorMessage = time.getCurrentMS();
-				mc.thePlayer.addChatMessage(msg);
+		Set<ArrayList<String>> combosKeys = AllCombos.keySet();
+		if (combosKeys.isEmpty()) {
+			long currentTimeMillis = time.getCurrentMS();
+			if (currentTimeMillis - AuctionHouse.lastErrorMessage > 30000) {
+				AuctionHouse.lastErrorMessage = currentTimeMillis;
+				mc.thePlayer.addChatMessage(ErrorMessage);
 			}
-
 			return null;
 		}
 
 		List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
-		if (item_id.contains("HELMET") || item_id.contains("CHESTPLATE") || item_id.contains("LEGGINGS") || item_id.contains("BOOTS")) {
+		if (item_id.endsWith("HELMET") || item_id.endsWith("CHESTPLATE") || item_id.endsWith("LEGGINGS") || item_id.endsWith("BOOTS")) {
 			excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
 		}
 
 		for (String attribute : attributes) if (excludeAttributes.contains(attribute)) return null;
 
-		Set<ArrayList<String>> combosKeys = AllCombos.keySet();
-
 		for (ArrayList<String> key : combosKeys) {
-			if (item_id.contains(key.get(0)) && key.containsAll(attributes)) {
+			if (key.containsAll(attributes) && item_id.contains(key.get(0))) {
 				return AllCombos.get(key);
 			}
 		}
@@ -141,11 +157,7 @@ public class AttributePrice {
 		NBTTagCompound nbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
 		String item_id = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
 
-		List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
-		if (item_id.contains("HELMET") || item_id.contains("CHESTPLATE") || item_id.contains("LEGGINGS") || item_id.contains("BOOTS")) {
-			excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
-		}
-		List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
+
 
 		for (String item_key : all_kuudra_categories) {
 			if (!item_id.contains(item_key)) continue;
@@ -153,30 +165,33 @@ public class AttributePrice {
 					!item_id.contains("AURORA") && !item_id.contains("CRIMSON") && !item_id.contains("TERROR") && !item_id.contains("FERVOR") && !item_id.contains("HOLLOW")
 			) continue;
 
+			List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
+			if (item_id.contains("HELMET") || item_id.contains("CHESTPLATE") || item_id.contains("LEGGINGS") || item_id.contains("BOOTS")) {
+				excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
+			}
+			List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
+
 			String best_attribute = "";
 			int best_tier = 0;
 			int best_value = 0;
 			int added_value = 0;
 			int total_tiers = 0;
+			int value;
 
 			for (String attr_key : nbt.getKeySet()) {
 				if (excludeAttributes.contains(attr_key)) continue;
-				ArrayList<JsonObject> items = AttributePrices.get(item_key).get(attr_key);
-				if (items == null || items.isEmpty()) {
-					continue;
-				}
-				if ((item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
-					items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= (item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
+				if (!LowestAttributePrices.containsKey(item_key)) continue;
+				if (!LowestAttributePrices.get(item_key).containsKey(attr_key)) continue;
+				int attr_tier = nbt.getInteger(attr_key) - 1;
+				ArrayList<Integer> items = LowestAttributePrices.get(item_key).get(attr_key);
+				int min_tier = (item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier);
+				if (min_tier > 0) {
+					value = items.get(min_tier) << attr_tier;
 				} else {
-					items = items.stream().filter(i -> i.get(attr_key).getAsInt() == nbt.getInteger(attr_key)).collect(Collectors.toCollection(ArrayList::new));
+					value = items.get(0) << attr_tier;
 				}
-				if (items.size() == 0) {
-					continue;
-				}
-				items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
-				int value = (int) (items.get(0).get("price_per_tier").getAsInt() * Math.pow(2, nbt.getInteger(attr_key) - 1));
 				added_value += value;
-				total_tiers += Math.pow(2, nbt.getInteger(attr_key) - 1);
+				total_tiers += 1 << attr_tier;
 				if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
 					continue;
 				if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(attr_key))
@@ -184,7 +199,7 @@ public class AttributePrice {
 				if (value > best_value) {
 					best_value = value;
 					best_attribute = attr_key;
-					best_tier = nbt.getInteger(attr_key);
+					best_tier = attr_tier + 1;
 				}
 			}
 
@@ -281,43 +296,44 @@ public class AttributePrice {
 		result.addProperty("display_string", "");
 		result.addProperty("value", 0);
 
-		List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
-		if (id.contains("HELMET") || id.contains("CHESTPLATE") || id.contains("LEGGINGS") || id.contains("BOOTS")) {
-			excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
-		}
-		List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
-
 		NBTTagCompound nbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
+		String item_id = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
+
+
+
 		for (String item_key : all_kuudra_categories) {
-			if (!id.contains(item_key)) continue;
+			if (!item_id.contains(item_key)) continue;
 			if ((item_key.equals("HELMET") || item_key.equals("CHESTPLATE") || item_key.equals("LEGGINGS") || item_key.equals("BOOTS")) &&
-					!id.contains("AURORA") && !id.contains("CRIMSON") && !id.contains("TERROR") && !id.contains("FERVOR") && !id.contains("HOLLOW")
+					!item_id.contains("AURORA") && !item_id.contains("CRIMSON") && !item_id.contains("TERROR") && !item_id.contains("FERVOR") && !item_id.contains("HOLLOW")
 			) continue;
+
+			List<String> excludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
+			if (item_id.contains("HELMET") || item_id.contains("CHESTPLATE") || item_id.contains("LEGGINGS") || item_id.contains("BOOTS")) {
+				excludeAttributes = Arrays.asList(Main.configFile.attributesToExcludeArmor.split(", "));
+			}
+			List<String> priorityAttributes = Arrays.asList(Main.configFile.priorityAttributes.split(", "));
 
 			String best_attribute = "";
 			int best_tier = 0;
 			int best_value = 0;
 			int added_value = 0;
 			int total_tiers = 0;
+			int value = 0;
 
 			for (String attr_key : nbt.getKeySet()) {
 				if (excludeAttributes.contains(attr_key)) continue;
-				ArrayList<JsonObject> items = AttributePrices.get(item_key).get(attr_key);
-				if (items == null || items.size() == 0) {
-					continue;
-				}
-				if ((item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
-					items = items.stream().filter(i -> i.get(attr_key).getAsInt() >= (item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
+				if (!LowestAttributePrices.containsKey(item_key)) continue;
+				if (!LowestAttributePrices.get(item_key).containsKey(attr_key)) continue;
+				int attr_tier = nbt.getInteger(attr_key) - 1;
+				ArrayList<Integer> items = LowestAttributePrices.get(item_key).get(attr_key);
+				int min_tier = (item_key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier);
+				if (min_tier > 0) {
+					value = items.get(min_tier) << attr_tier;
 				} else {
-					items = items.stream().filter(i -> i.get(attr_key).getAsInt() == nbt.getInteger(attr_key)).collect(Collectors.toCollection(ArrayList::new));
+					value = items.get(0) << attr_tier;
 				}
-				if (items.size() == 0) {
-					continue;
-				}
-				items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
-				int value = (int) (items.get(0).get("price_per_tier").getAsInt() * Math.pow(2, nbt.getInteger(attr_key) - 1));
 				added_value += value;
-				total_tiers += Math.pow(2, nbt.getInteger(attr_key) - 1);
+				total_tiers += 1 << attr_tier;
 				if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
 					continue;
 				if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(attr_key))
@@ -325,14 +341,14 @@ public class AttributePrice {
 				if (value > best_value) {
 					best_value = value;
 					best_attribute = attr_key;
-					best_tier = nbt.getInteger(attr_key);
+					best_tier = attr_tier + 1;
 				}
 			}
 
 			JsonObject comboitem = null;
-			if (!id.equals("ATTRIBUTE_SHARD")) {
-				comboitem = getComboValue(id, new ArrayList<>(nbt.getKeySet()));
-				if (!Main.configFile.valueStarredArmor && (id.startsWith("HOT_") || id.startsWith("BURNING_") || id.startsWith("FIERY_") || id.startsWith("INFERNAL"))) {
+			if (!item_id.equals("ATTRIBUTE_SHARD")) {
+				comboitem = getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
+				if (!Main.configFile.valueStarredArmor && (item_id.startsWith("HOT_") || item_id.startsWith("BURNING_") || item_id.startsWith("FIERY_") || item_id.startsWith("INFERNAL"))) {
 					return null;
 				}
 			}
@@ -359,29 +375,29 @@ public class AttributePrice {
 				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + displayName);
 				result.addProperty("value", combo_value);
 				return result;
-			} else if (best_value > LowestBin.getOrDefault(id, 0)) {
+			} else if (best_value > LowestBin.getOrDefault(item_id, 0)) {
 				result.addProperty("top_display", ShortenedAttribute(best_attribute));
 				result.addProperty("bottom_display", best_tier);
 				result.addProperty("display_string", ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName);
 				result.addProperty("value", best_value);
 				return result;
-			} else if (id.equals("ATTRIBUTE_SHARD")) {
+			} else if (item_id.equals("ATTRIBUTE_SHARD")) {
 				result.addProperty("top_display", ShortenedAttribute(attrArray.get(0)));
 				result.addProperty("bottom_display", nbt.getInteger(attrArray.get(0)));
 				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + displayName);
 				result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
 				return result;
-			} else if (10 * total_tiers * AuctionHouse.ESSENCE_VALUE > LowestBin.getOrDefault(id, 0)) {
+			} else if (10 * total_tiers * AuctionHouse.ESSENCE_VALUE > LowestBin.getOrDefault(item_id, 0)) {
 				result.addProperty("top_display", "SAL");
 				result.addProperty("bottom_display", 0);
 				result.addProperty("display_string", "SALVAGE " + displayName);
 				result.addProperty("value", 10 * total_tiers * AuctionHouse.ESSENCE_VALUE);
 				return result;
-			} else if (LowestBin.getOrDefault(id, 0) > 0 && nbt.getKeySet().size() > 0) {
+			} else if (LowestBin.getOrDefault(item_id, 0) > 0 && nbt.getKeySet().size() > 0) {
 				result.addProperty("top_display", "LBIN");
 				result.addProperty("bottom_display", 0);
 				result.addProperty("display_string", "LBIN " + displayName);
-				result.addProperty("value", LowestBin.getOrDefault(id, 0));
+				result.addProperty("value", LowestBin.getOrDefault(item_id, 0));
 				return result;
 			}
 

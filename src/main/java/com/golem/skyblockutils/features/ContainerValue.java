@@ -6,37 +6,25 @@ import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiCont
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
-import com.golem.skyblockutils.utils.RenderUtils;
 import com.google.gson.JsonObject;
-import jline.internal.Log;
-import logger.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.models.AttributePrice.*;
 
 public class ContainerValue {
 	public static boolean isActive = false;
@@ -81,7 +69,7 @@ public class ContainerValue {
 							String displayString = valueData.get("display_string").getAsString();
 							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
 							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
-							RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, slot);
+							//RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, slot);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

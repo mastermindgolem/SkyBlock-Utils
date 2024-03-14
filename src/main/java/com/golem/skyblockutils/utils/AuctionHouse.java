@@ -3,15 +3,11 @@ package com.golem.skyblockutils.utils;
 import com.golem.skyblockutils.NoteForDecompilers;
 import com.golem.skyblockutils.features.General.Elite500;
 import com.golem.skyblockutils.models.AttributePrice;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import logger.Logger;
-import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 

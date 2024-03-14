@@ -7,14 +7,10 @@ import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 
-import java.util.*;
+import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
-import static com.golem.skyblockutils.models.AttributePrice.all_kuudra_categories;
 
 public class AttributeOverlay {
 
