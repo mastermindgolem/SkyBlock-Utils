@@ -1,7 +1,9 @@
 package com.golem.skyblockutils;
 
-import com.golem.skyblockutils.init.*;
-import com.golem.skyblockutils.models.Overlay.TextOverlay.PingOverlay;
+import com.golem.skyblockutils.init.CommandInit;
+import com.golem.skyblockutils.init.EventInit;
+import com.golem.skyblockutils.init.HelpInit;
+import com.golem.skyblockutils.init.KeybindsInit;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.TimeHelper;
@@ -20,10 +22,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
 
 @Mod(modid = Main.MODID, version = Main.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.9]")
 public class Main

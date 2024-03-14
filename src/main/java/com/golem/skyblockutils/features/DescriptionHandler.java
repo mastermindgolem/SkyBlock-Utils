@@ -5,15 +5,12 @@ import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.utils.RequestUtil;
-import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -21,14 +18,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,7 +44,6 @@ public class DescriptionHandler{
     public static LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
     private static final DecimalFormat formatter = new DecimalFormat("#,###,###,###");
     public static final NBTTagCompound EMPTY_COMPOUND = new NBTTagCompound();
-    private static long lastUpdate = 0;
 
     private boolean IsOpen = true;
     private boolean shouldUpdate = false;
@@ -71,6 +64,7 @@ public class DescriptionHandler{
                 return serialized.getCompoundTag("tag").getCompoundTag("display")
                         .getString("Name");
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return "";
@@ -81,11 +75,12 @@ public class DescriptionHandler{
             try {
                 String uuid = stack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes")
                         .getString("uuid");
-                if (uuid.length() == 0) {
+                if (uuid.isEmpty()) {
                     throw new Exception();
                 }
                 return uuid;
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return ExtractStackableIdFromItemStack(stack);
@@ -94,7 +89,7 @@ public class DescriptionHandler{
 
     @SubscribeEvent
     public void onToolTipEvent(ItemTooltipEvent event) {
-        if (event.toolTip.size() == 0 || !Main.configFile.showItemValue) return;
+        if (event.toolTip.isEmpty() || !Main.configFile.showItemValue) return;
         JsonObject data = tooltipItemMap.getOrDefault(event.itemStack, null);
         if (data == null) return;
         event.toolTip.add(EnumChatFormatting.GOLD + "Item Value: " + EnumChatFormatting.GREEN + formatter.format(data.get("median").getAsDouble()));
@@ -223,7 +218,7 @@ public class DescriptionHandler{
 
     private static boolean isAttributeItem(ItemStack item) {
         try {
-            return item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes").getKeySet().size() > 0;
+            return !item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes").getKeySet().isEmpty();
         } catch (Exception ignored) {
             return false;
         }

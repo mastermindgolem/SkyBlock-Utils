@@ -7,18 +7,11 @@ import com.golem.skyblockutils.models.gui.OverlayUtils;
 import com.golem.skyblockutils.models.gui.TextStyle;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.BossStatus;
-import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.boss.IBossDisplayData;
-import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -26,7 +19,6 @@ import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -34,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.golem.skyblockutils.Main.*;
+import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.init.KeybindsInit.mc;
 
 public class KuudraHealth {

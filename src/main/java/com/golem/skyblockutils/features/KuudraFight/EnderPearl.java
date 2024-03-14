@@ -3,18 +3,12 @@ package com.golem.skyblockutils.features.KuudraFight;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 
 public class EnderPearl {
 
@@ -94,7 +88,6 @@ public class EnderPearl {
                 double r = Math.hypot(-g / 2, sqrtH);
                 double theta = Math.atan2(sqrtH, -g / 2);
                 double s = Math.cbrt(r);
-                double t = -f / (3 * s);
                 double cosTheta3 = Math.cos(theta / 3);
                 double sinTheta3 = Math.sin(theta / 3);
 

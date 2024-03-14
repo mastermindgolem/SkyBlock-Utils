@@ -1,10 +1,8 @@
 package com.golem.skyblockutils.features;
 
-import com.golem.skyblockutils.Main;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
@@ -30,8 +28,6 @@ public class CombineHelper {
             "MOLTEN_BELT",
             "MOLTEN_BRACELET"
     };
-    private Slot slot1;
-    private ItemStack item;
 
     private final String[] attributes = {"", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "ignition", "combo", "attack_speed", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "ender", "mana_steal", "blazing", "elite", "arachno", "undead", "warrior", "deadeye", "fortitude", "magic_find"};
 
@@ -62,11 +58,11 @@ public class CombineHelper {
 
         for (String piece : pieces) {
             for (int level = 1; level < 10; level++) {
-                slot1 = null;
+                Slot slot1 = null;
                 for (Slot slot : chestInventory) {
                     if (!slot.getHasStack()) continue;
                     if (slot.slotNumber < 53) continue;
-                    item = slot.getStack();
+                    ItemStack item = slot.getStack();
                     NBTTagCompound itemNbt;
                     try {
                         itemNbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");

@@ -2,6 +2,7 @@ package com.golem.skyblockutils.events;
 
 import io.netty.channel.ChannelPipeline;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
@@ -11,7 +12,7 @@ public class ChannelHandlerInput {
     public static Minecraft mc = Minecraft.getMinecraft();
     public static boolean firstConnection = true;
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void init(ClientConnectedToServerEvent event) {
         if (firstConnection) {
             firstConnection = false;
@@ -21,7 +22,7 @@ public class ChannelHandlerInput {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDisconnect(ClientDisconnectionFromServerEvent event) {
         firstConnection = true;
     }

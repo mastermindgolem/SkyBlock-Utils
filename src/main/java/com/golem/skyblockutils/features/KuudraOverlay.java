@@ -4,7 +4,6 @@ import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
-import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -22,14 +21,15 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.bazaar;
 import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.models.AttributePrice.*;
+import static com.golem.skyblockutils.models.AttributePrice.LowestBin;
 
 public class KuudraOverlay {
 
@@ -150,8 +150,8 @@ public class KuudraOverlay {
 			int itemCost = 0;
 
 			try {
-				int myceliumCost = itemCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_MYCELIUM").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
-				int redSandCost = itemCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_RED_SAND").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+				int myceliumCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_MYCELIUM").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+				int redSandCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_RED_SAND").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 
 				switch (configFile.faction) {
 					case 0: // Mage

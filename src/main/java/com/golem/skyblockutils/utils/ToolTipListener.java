@@ -11,15 +11,15 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
+import static com.golem.skyblockutils.models.AttributePrice.LowestAttributePrices;
 import static com.golem.skyblockutils.models.AttributePrice.all_attributes;
 
 public class ToolTipListener {
-	public static JsonObject attribute_prices = new JsonObject();
 	private int comboprice = -1;
 	private String previousItemSearched = "";
 
@@ -52,7 +52,7 @@ public class ToolTipListener {
 		} catch (NullPointerException e) {
 			return;
 		}
-		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && event.toolTip.size() > 0 && shards.getKeySet().size() > 0) {
+		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && !event.toolTip.isEmpty() && !shards.getKeySet().isEmpty()) {
 			String[] s = shards.getKeySet().toArray(new String[0]);
 			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched) && shards.getKeySet().size() > 1) {
 				JsonObject comboitem = AttributePrice.getComboValue(name, new ArrayList<>(shards.getKeySet()));
@@ -70,25 +70,14 @@ public class ToolTipListener {
 			}
 			int attributeprice;
 			String key = "none";
-			for (String k : AttributePrices.keySet()) if (name.contains(k)) key = k;
+			for (String k : LowestAttributePrices.keySet()) if (name.contains(k)) key = k;
 			if (Objects.equals(key, "none")) return;
 			try {
 				for (String attribute : all_attributes) {
 					if (!shards.getKeySet().contains(attribute)) continue;
-					if (!AttributePrices.get(key).containsKey(attribute)) continue;
-					ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
-					if ((key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier) > 0) {
-						String finalKey = key;
-						items = items.stream().filter(i -> i.get(attribute).getAsInt() >= (finalKey.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier)).collect(Collectors.toCollection(ArrayList::new));
-					} else {
-						items = items.stream().filter(i -> i.get(attribute).getAsInt() == shards.getInteger(attribute)).collect(Collectors.toCollection(ArrayList::new));
-					}
-					items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
-					if (items.size() == 0) {
-						attributeprice = 0;
-					} else {
-						attributeprice = (int) (items.get(0).get("price_per_tier").getAsDouble() * Math.pow(2,shards.getInteger(attribute)-1));
-					}
+					if (!LowestAttributePrices.get(key).containsKey(attribute)) continue;
+					int min_tier = (key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier);
+					attributeprice = LowestAttributePrices.get(key).get(attribute).get(min_tier) << (shards.getInteger(attribute) - 1);
 					String ToolTipString1 = EnumChatFormatting.GOLD + TitleCase(attribute) + " " + shards.getInteger(attribute) + ": " + EnumChatFormatting.GREEN + String.format("%,d", attributeprice);
 					event.toolTip.add(event.toolTip.size(), ToolTipString1);
 

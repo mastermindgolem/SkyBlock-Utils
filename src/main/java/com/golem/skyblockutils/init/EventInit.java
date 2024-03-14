@@ -65,10 +65,7 @@ public class EventInit {
 				new FatalTempoOverlay(),
 				new ProfitOverlay(),
 				new ContainerOverlay(),
-				new TimerOverlay(),
-				new TPSOverlay(),
-				new FPSOverlay(),
-				new PingOverlay()
+				new TimerOverlay()
 		};
 
 		for (Object listener : listeners) {

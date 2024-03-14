@@ -71,43 +71,10 @@ public class Config extends Vigilant
 		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{TimerOverlay.element}));
 	}
 
-	@Property(type = PropertyType.SWITCH, name = "FPS Overlay", description = "Enable Frames Per Second Overlay", category = "Overlays", subcategory = "Game Settings")
-	public boolean fps = false;
-
 	@Property(type = PropertyType.SELECTOR, name = "Custom Kuudra Profit Overlay",
 			description = "Set the Kuudra Profit overlay to be set to a custom position. Note: Custom will take the position of the Container overlay",
 			category = "Kuudra", subcategory = "Profit", options = {"Off", "Next to GUI", "Custom"})
 	public int customProfitOverlay = 1;
-
-
-	@Property(type = PropertyType.BUTTON,
-			name = "Edit FPS Overlay",
-			description = "Edit GUI Location for FPS Overlay",
-			category = "Overlays",
-			subcategory = "Game Settings", placeholder = "Edit")
-	@SuppressWarnings("unused")
-	public void MoveFPSOverlay() {
-		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{FPSOverlay.element}));
-		Main.display = null;
-	}
-
-	@Property(type = PropertyType.SWITCH,
-			name = "TPS Overlay",
-			description = "Enable Server TPS overlay",
-			category = "Overlays",
-			subcategory = "Game Settings")
-	public boolean tps = false;
-	@Property(type = PropertyType.BUTTON,
-			name = "Edit TPS Overlay",
-			description = "Edit GUI Location for TPS Overlay",
-			category = "Overlays",
-			subcategory = "Game Settings", placeholder = "Edit")
-	@SuppressWarnings("unused")
-	public void MoveTPSOverlay() {
-		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{TPSOverlay.element}));
-		Main.display = null;
-	}
-
 	@Property(type = PropertyType.SWITCH, name = "Send Kuudra Chest Data", description = "Sends data for any kuudra chest you buy with a key for future features such as better pricing system and notifying when to sell for best value.", category = "General", subcategory = "General")
 	public boolean sendProfitData = true;
 
@@ -163,6 +130,7 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Possibly kick API off players", description = "If this is on and Aurora/Terror/Dominance requirement is set, API off players may get instakicked even if they meet requirements.", category = "General", subcategory = "Party Finder")
 	public boolean kickAPIoff = false;
 
+
 	@Property(type = PropertyType.SWITCH, name = "Show Unfinished Supplies Waypoints", description = "temp", category = "General", subcategory = "Kuudra")
 	public boolean showSupplyWaypoint = false;
 	@Property(type = PropertyType.SWITCH, name = "Show Unfinished Build Waypoints", description = "temp", category = "General", subcategory = "Kuudra")
@@ -209,15 +177,6 @@ public class Config extends Vigilant
 			return;
 		}
 		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{AlignOverlay.element}));
-	}
-
-	@Property(type = PropertyType.SWITCH, name = "Ping Overlay", description = "Enable Ping overlay", category = "Overlays", subcategory = "Game Settings")
-	public boolean ping = false;
-	@Property(type = PropertyType.BUTTON, name = "Edit Ping Overlay", description = "Edit GUI Location for Ping Overlay", category = "Overlays", subcategory = "Game Settings", placeholder = "Edit")
-	@SuppressWarnings("unused")
-	public void MovePingOverlay() {
-		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{PingOverlay.element}));
-		Main.display = null;
 	}
 
 
@@ -562,6 +521,8 @@ public class Config extends Vigilant
 	public boolean removeSelfie = false;
 	@Property(type = PropertyType.SWITCH, name = "Supply Safe Spots", description = "Show safe spots", category = "Kuudra", subcategory = "Instance QoL")
 	public boolean safeSpots = false;
+	@Property(type = PropertyType.SWITCH, name = "Crate Waypoints", description = "Show waypoints for supply crates in lava", category = "Kuudra", subcategory = "Instance QoL")
+	public boolean crateWaypoints = false;
 	@Property(type = PropertyType.SWITCH, name = "Allow Custom Emotes", description = "Allow you to use MVP++/Gifting emotes without the requirement", category = "General", subcategory = "General")
 	public boolean customEmotes = false;
 
@@ -593,9 +554,6 @@ public class Config extends Vigilant
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
 			addDependency("MoveMainAlert", "mainAlert");
-			addDependency("MoveFPSOverlay", "fps");
-			addDependency("MoveTPSOverlay", "tps");
-			addDependency("MovePingOverlay", "ping");
 			addDependency("minKuudraLevel", "autoKick");
 			addDependency("minMagicalPower", "autoKick");
 			addDependency("minCompsTier", "autoKick");

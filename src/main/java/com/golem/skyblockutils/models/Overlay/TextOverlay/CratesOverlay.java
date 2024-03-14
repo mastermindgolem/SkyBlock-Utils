@@ -20,7 +20,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +36,6 @@ public class CratesOverlay {
     public static HashMap<String, Integer> playerInfo = new HashMap<>();
     private static List<String> heldCrates = new ArrayList<>();
     private static boolean inPeak = false;
-    private final DecimalFormat formatter = new DecimalFormat("0.00");
 
 
     @SubscribeEvent
@@ -71,7 +69,7 @@ public class CratesOverlay {
         if (event.phase == TickEvent.Phase.START || mc.theWorld == null || mc.thePlayer == null || Kuudra.currentPhase >= 5 || Kuudra.currentPhase < 0) return;
 
         List<String> tabData = TabUtils.getTabList();
-        if (tabData.size() == 0) return;
+        if (tabData.isEmpty()) return;
         Pattern pattern = Pattern.compile("Players \\((\\d+)\\)");
         Matcher matcher = pattern.matcher(tabData.get(0).replaceAll("§.", ""));
 
@@ -106,7 +104,7 @@ public class CratesOverlay {
         for (Entity entity : entities) {
             if (entity instanceof EntityGiantZombie) {
                 phase1.put(entity.getEntityId(), entity.getPosition());
-                RenderUtils.renderBeaconBeam(entity.posX - viewerX -1.5, entity.posY - viewerY, entity.posZ - viewerZ +2, 0xFF0000, 1.0F, event.partialTicks);
+                if (configFile.crateWaypoints) RenderUtils.renderBeaconBeam(entity.posX - viewerX -1.5, entity.posY - viewerY, entity.posZ - viewerZ +2, 0xFF0000, 1.0F, event.partialTicks);
             }
             /*
             if (entity instanceof EntityPlayer) {
@@ -274,7 +272,7 @@ public class CratesOverlay {
                 }
                 inPeak = currentPeak;
                 if (inPeak) {
-                    if (phase4.size() >= 1 && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
+                    if (!phase4.isEmpty() && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
                     phase4.add(kuudra.getHealth());
                 }
 

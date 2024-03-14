@@ -2,8 +2,8 @@ package com.golem.skyblockutils;
 
 import com.golem.skyblockutils.init.GuiInit;
 import com.golem.skyblockutils.models.gui.GuiPosition;
-import com.google.gson.JsonArray;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import logger.Logger;

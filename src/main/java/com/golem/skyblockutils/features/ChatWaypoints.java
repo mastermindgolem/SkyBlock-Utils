@@ -8,9 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.spongepowered.asm.mixin.injection.struct.InjectorGroupInfo;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -28,7 +26,7 @@ public class ChatWaypoints {
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
         if (Main.configFile.showWaypoints == 0) return;
-        String message = event.message.getUnformattedText().replaceAll("\u00a7.", "");
+        String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (!message.startsWith("Party > ") || !message.contains("x: ") || !message.contains(", y:") || !message.contains(", z:")) return;
         Matcher matcher = pattern.matcher(message);
         if (matcher.find()) {

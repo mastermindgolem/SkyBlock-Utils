@@ -1,22 +1,22 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
-import static com.golem.skyblockutils.features.KuudraFight.Kuudra.splits;
 
 public class FishingOverlay {
 
@@ -28,22 +28,37 @@ public class FishingOverlay {
     private static long timer = 0;
 
     public static String text = "";
+    public static long lastRodHeldTime = 0;
 
     public static int renderWidth(String text) {
         return mc.fontRendererObj.getStringWidth(text);
     }
 
-
+    @SubscribeEvent
+    public void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START || Main.mc.theWorld == null || Main.mc.thePlayer == null) return;
+        ItemStack heldItem = Main.mc.thePlayer.getHeldItem();
+        if (heldItem != null && heldItem.hasDisplayName() && heldItem.getDisplayName().contains("Rod")) lastRodHeldTime = time.getCurrentMS();
+    }
     @SubscribeEvent
     public void RenderEvent(RenderWorldLastEvent event) {
+
+        if (!configFile.fishingOverlay || time.getCurrentMS() - lastRodHeldTime > 10000) return;
+
         ArrayList<Entity> entities = Kuudra.getAllEntitiesInRange(30);
         HashMap<String, Integer> temp = new HashMap<>();
+
         for (Entity entity : entities) {
-            for (String sc : seacreatures) if (entity.getName().contains(sc.replaceAll("§.", ""))) temp.put(sc, temp.getOrDefault(sc, 0) + 1);
+            for (String sc : seacreatures) {
+                if (entity.getName().contains(sc)) {
+                    temp.put(sc, temp.getOrDefault(sc, 0) + 1);
+                }
+            }
+
         }
         if (temp.containsKey("§fSquid")) temp.put("§fSquid", temp.getOrDefault("§fSquid", 0)/2);
-        if (scCount.keySet().size() == 0 && temp.keySet().size() > 0) timer = time.getCurrentMS();
-        if (scCount.keySet().size() > 0 && temp.keySet().size() == 0) timer = 0;
+        if (scCount.keySet().isEmpty() && !temp.keySet().isEmpty()) timer = time.getCurrentMS();
+        if (!scCount.keySet().isEmpty() && temp.keySet().isEmpty()) timer = 0;
         scCount = temp;
 
     }
