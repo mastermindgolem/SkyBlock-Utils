@@ -12,6 +12,7 @@ import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.TokenHelper;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
+import com.golem.skyblockutils.features.Mining.FossilFinder;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
 import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
@@ -41,13 +42,16 @@ public class EventInit {
 				new Elite500(),
 				new PlayerAlert(),
 				new TokenHelper(),
-				new ChannelHandlerInput()
+				new ChannelHandlerInput(),
+				new FossilFinder()
 		//new TrackKills()
 		};
 
 		for (Object listener : listeners) {
 			MinecraftForge.EVENT_BUS.register(listener);
 		}
+
+
 
 	}
 

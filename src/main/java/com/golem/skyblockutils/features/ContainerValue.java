@@ -1,11 +1,13 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.init.KeybindsInit;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
+import com.golem.skyblockutils.utils.RenderUtils;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -20,11 +22,14 @@ import net.minecraft.item.Item;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.*;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.*;
 
 public class ContainerValue {
 	public static boolean isActive = false;
@@ -32,7 +37,6 @@ public class ContainerValue {
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
-
 			if (!(event.gui instanceof GuiContainer)) return;
 			if (!isActive) return;
 			if (configFile.container_value == 0) return;
@@ -68,7 +72,7 @@ public class ContainerValue {
 							if (valueData == null) continue;
 							String displayString = valueData.get("display_string").getAsString();
 							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
-							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
+							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong(), 0, slot));
 							//RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, slot);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -87,6 +91,7 @@ public class ContainerValue {
 			long totalMedian = displayStrings.values().stream().mapToLong(displayString -> displayString.median * displayString.quantity).sum();
 			if (configFile.dataSource == 1 && (totalLbin == 0 || totalMedian == 0))return;
 
+
 			GlStateManager.disableLighting();
 			GlStateManager.translate(0, 0, 200);
 			int counter = 1;
@@ -102,11 +107,17 @@ public class ContainerValue {
 					0xffffffff
 			);
 
+			int mouseX = Mouse.getX();
+			int mouseY = Mouse.getY();
+			boolean mouseClicked = Mouse.isButtonDown(0);
+
+
 
 			for (String displayString : displayStrings.keySet()) {
-				int amount = displayStrings.get(displayString).quantity;
-				long value = displayStrings.get(displayString).price;
-				long median = displayStrings.get(displayString).median;
+				DisplayString display = displayStrings.get(displayString);
+				int amount = display.quantity;
+				long value = display.price;
+				long median = display.median;
 				if (amount > 1) {
 					displayString = amount + "x " + displayString;
 				}
@@ -121,12 +132,34 @@ public class ContainerValue {
 						guiTop + 5 + 10*counter,
 						0xffffffff
 				);
+
+				Point mousePos = new Point(
+						mouseX * event.gui.width / event.gui.mc.displayWidth,
+						event.gui.height - mouseY * event.gui.height / event.gui.mc.displayHeight
+				);
+
+				StringBuilder sb = new StringBuilder();
+				System.out.println("MouseX: " + mouseX + ", MouseY: " + mouseY + ", newMouseX: " + mousePos.x + ", newMouseY: " + mousePos.y + " , " + (guiLeft+xSize+5) + " , " + guiTop + 5 + 10*counter);
+				sb.append(mouseX).append(" ").append(mouseY).append(" ").append(mouseClicked).append(" ").append(guiLeft).append(" ").append(xSize).append(" ").append(guiTop);
+				Kuudra.addChatMessage(sb.toString());
+
+				if (mouseX >= guiLeft + xSize + 5 &&
+						mouseX <= guiLeft + xSize + 5 + mc.fontRendererObj.getStringWidth(displayString) &&
+						mouseY >= guiTop + 5 + 10 * counter &&
+						mouseY <= guiTop + 5 + 10 * counter + 10
+				) {
+					RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, display.slot);
+					if (mouseClicked) {
+						Robot robot = new Robot();
+						robot.mouseMove(display.slot.xDisplayPosition, display.slot.yDisplayPosition);
+					}
+				}
+
 				counter++;
 			}
 
 
 			GlStateManager.translate(0, 0, -200);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

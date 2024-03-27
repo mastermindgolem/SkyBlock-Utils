@@ -50,8 +50,7 @@ public class AttributeOverlay {
 				GlStateManager.enableLighting();
 				GlStateManager.enableDepth();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ignored) {
 		}
 
 	}

@@ -64,14 +64,18 @@ public class ToolTipListener {
 				previousItemSearched = name;
 				previousAttributesSearched = s;
 			}
+			String newToolTip = "";
 			if (shards.getKeySet().size() > 1) {
 				String ToolTipString = EnumChatFormatting.GOLD + "Combo Value: " + EnumChatFormatting.GREEN + String.format("%,d", comboprice);
-				event.toolTip.add(event.toolTip.size(), ToolTipString);
+				newToolTip += ToolTipString;
 			}
 			int attributeprice;
 			String key = "none";
 			for (String k : LowestAttributePrices.keySet()) if (name.contains(k)) key = k;
-			if (Objects.equals(key, "none")) return;
+			if (Objects.equals(key, "none")) {
+				event.toolTip.add(newToolTip);
+				return;
+			}
 			try {
 				for (String attribute : all_attributes) {
 					if (!shards.getKeySet().contains(attribute)) continue;
@@ -79,7 +83,8 @@ public class ToolTipListener {
 					int min_tier = (key.equals("SHARD") ? configFile.minShardTier : configFile.minArmorTier);
 					attributeprice = LowestAttributePrices.get(key).get(attribute).get(min_tier) << (shards.getInteger(attribute) - 1);
 					String ToolTipString1 = EnumChatFormatting.GOLD + TitleCase(attribute) + " " + shards.getInteger(attribute) + ": " + EnumChatFormatting.GREEN + String.format("%,d", attributeprice);
-					event.toolTip.add(event.toolTip.size(), ToolTipString1);
+					if (newToolTip == "") newToolTip = ToolTipString1;
+					else newToolTip += "\n" + ToolTipString1;
 
 				}
 			} catch (NullPointerException e) {
@@ -89,22 +94,23 @@ public class ToolTipListener {
 				String obtainedString = EnumChatFormatting.GOLD + "Obtained in ";
 				switch (itemNbt.getInteger("boss_tier")) {
 					case 1:
-						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Basic");
+						newToolTip += "\n" + obtainedString + EnumChatFormatting.YELLOW + "Basic";
 						break;
 					case 2:
-						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Hot");
+						newToolTip += "\n" + obtainedString + EnumChatFormatting.YELLOW + "Hot";
 						break;
 					case 3:
-						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Burning");
+						newToolTip += "\n" + obtainedString + EnumChatFormatting.YELLOW + "Burning";
 						break;
 					case 4:
-						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Fiery");
+						newToolTip += "\n" + obtainedString + EnumChatFormatting.YELLOW + "Fiery";
 						break;
 					case 5:
-						event.toolTip.add(event.toolTip.size(), obtainedString + EnumChatFormatting.YELLOW + "Infernal");
+						newToolTip += "\n" + obtainedString + EnumChatFormatting.YELLOW + "Infernal";
 						break;
 				}
 			}
+			event.toolTip.add(newToolTip);
 		}
 
 

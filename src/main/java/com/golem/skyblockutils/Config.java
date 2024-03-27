@@ -549,8 +549,7 @@ public class Config extends Vigilant
 		this.CONFIG_FILE = new File(Config.configFolder + "config.toml");
 		this.initialize();
 
-		try {
-			addDependency("MoveWitherImpact", "brokenHyp"); // it does exist
+		try { // it does exist
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
 			addDependency("MoveMainAlert", "mainAlert");

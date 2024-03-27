@@ -2,13 +2,11 @@ package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.events.SlotClickEvent;
-import com.golem.skyblockutils.features.GuiEvent;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraOverlay;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.RequestUtil;
-import com.golem.skyblockutils.utils.TimeHelper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,17 +14,9 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C0EPacketClickWindow;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
@@ -34,7 +24,6 @@ import static com.golem.skyblockutils.Main.mc;
 public class ProfitOverlay {
 
     public static GuiElement element = new GuiElement("Profit Overlay", 50, 10);
-    private static final TimeHelper time = new TimeHelper();
     private static long totalProfit = 0;
     private static int chests = 0;
     public static long totalTime = 0;
