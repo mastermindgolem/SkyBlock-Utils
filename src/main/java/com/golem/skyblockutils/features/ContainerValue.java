@@ -9,7 +9,6 @@ import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.init.Blocks;
@@ -21,7 +20,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.golem.skyblockutils.Main.configFile;
@@ -33,7 +32,7 @@ public class ContainerValue {
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
 
-			if (!(event.gui instanceof GuiContainer)) return;
+			if (!(event.gui instanceof GuiChest)) return;
 			if (!isActive) return;
 			if (configFile.container_value == 0) return;
 
@@ -44,7 +43,7 @@ public class ContainerValue {
 				if (chestName.contains("Paid Chest") || chestName.contains("Free Chest"))  return;
 			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
-			BigInteger totalValue = new BigInteger("0");
+			BigDecimal totalValue = new BigDecimal("0");
 
 
 			int xSize = (int) (ContainerOverlay.element.position.getX() - 5);
@@ -67,7 +66,7 @@ public class ContainerValue {
 							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
 							if (valueData == null) continue;
 							String displayString = valueData.get("display_string").getAsString();
-							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
+							totalValue = totalValue.add(valueData.get("value").getAsBigDecimal());
 							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
 							//RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, slot);
 						} catch (Exception e) {
@@ -82,7 +81,7 @@ public class ContainerValue {
 
 			displayStrings = sort(displayStrings);
 
-			if (configFile.dataSource == 0 && totalValue.compareTo(BigInteger.ONE) < 0)  return;
+			if (configFile.dataSource == 0 && totalValue.compareTo(BigDecimal.ONE) < 0)  return;
 			long totalLbin = displayStrings.values().stream().mapToLong(displayString -> displayString.price * displayString.quantity).sum();
 			long totalMedian = displayStrings.values().stream().mapToLong(displayString -> displayString.median * displayString.quantity).sum();
 			if (configFile.dataSource == 1 && (totalLbin == 0 || totalMedian == 0))return;
