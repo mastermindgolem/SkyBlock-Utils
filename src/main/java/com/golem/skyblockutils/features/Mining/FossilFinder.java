@@ -1,20 +1,22 @@
 package com.golem.skyblockutils.features.Mining;
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.RenderUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class FossilFinder {
@@ -37,6 +39,7 @@ public class FossilFinder {
     @SubscribeEvent
     public void onGui(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest) || !Objects.equals(LocationUtils.getLocation(), "mining_3")) return;
+        if (!Main.configFile.fossilFinder) return;
         GuiChest gui = (GuiChest) event.gui;
         Container container = gui.inventorySlots;
         String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
@@ -50,15 +53,19 @@ public class FossilFinder {
         if (slots.size() > 54) slots = slots.subList(0, 54);
         if (!started) onStart();
         lastClicked = -1;
+        int dirtCount = 0;
         for (Slot slot : slots) {
             int slotIndex = slot.getSlotIndex();
             boolean hasStack = slot.getHasStack();
             if (hasStack) {
                 String displayName = slot.getStack().getDisplayName();
-                if (displayName.equals("§6Dirt")) clickedSlots.remove(slotIndex);
+                if (displayName.equals("§6Dirt")) {
+                    clickedSlots.remove(slotIndex);
+                    dirtCount++;
+                }
                 else if (displayName.equals("§6Fossil")) {
                     fossilFound = true;
-                    if (!clickedSlots.containsKey(slotIndex)) lastClicked = slotIndex;
+                    if (!clickedSlots.getOrDefault(slotIndex, false)) lastClicked = slotIndex;
                     clickedSlots.put(slotIndex, true);
                 } else {
                     if (!clickedSlots.containsKey(slotIndex)) lastClicked = slotIndex;
@@ -69,9 +76,13 @@ public class FossilFinder {
                 clickedSlots.put(slotIndex, false);
             }
         }
+        if (dirtCount == 54) {
+            clickedSlots.clear();
+            lastClicked = 0;
+        }
 
         if (lastClicked >= 0) {
-            possibleGrids = possibleGrids.stream()
+            possibleGrids = grids.stream()
                     .filter(grid -> clickedSlots.entrySet().stream()
                             .allMatch(entry -> {
                                 int index = entry.getKey();
@@ -80,8 +91,22 @@ public class FossilFinder {
                                 return grid[row][col] == '#' == entry.getValue();
                             }))
                     .collect(Collectors.toList());
+
+            System.out.println("Possible Grids: " + possibleGrids.size());
+            System.out.println("Total Clicked Slots: " + clickedSlots.size());
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Integer, Boolean> s : clickedSlots.entrySet()) {
+                sb.append(s.getKey()).append(": ").append(s.getValue()).append(", ");
+            }
+            System.out.println(sb.toString());
         }
-        fossilFound = !possibleGrids.isEmpty();
+
+        boolean newFossilFound = clickedSlots.entrySet().stream().anyMatch(Map.Entry::getValue);
+
+        if (!fossilFound && newFossilFound) Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Fossil Found!"));
+
+        fossilFound = newFossilFound;
+
         if (!possibleGrids.isEmpty()) {
             int[][] board = new int[6][9];
             int maxCount = -1;
