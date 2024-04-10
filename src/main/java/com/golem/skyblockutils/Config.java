@@ -541,6 +541,13 @@ public class Config extends Vigilant
 		}
 	}
 
+	@Property(type = PropertyType.SWITCH, name = "Fossil Finder", description = "Highlights the ideal slot to click in fossil excavator", category = "Mining", subcategory = "Fossils")
+	public boolean fossilFinder = false;
+
+	@Property(type = PropertyType.SWITCH, name = "Corpse Locator", description = "Highlights any corpses visible on screen with a waypoint", category = "Mining", subcategory = "Corpse")
+	public boolean corpseLocator = false;
+
+
 	public Config() {
 		super(new File(Config.configFolder + "config.toml"), "SkyblockUtils", new JVMAnnotationPropertyCollector(),
 				new ConfigSorting());
@@ -579,7 +586,7 @@ public class Config extends Vigilant
 
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Kuudra", "Dungeons", "Crimson Isles", "Overlays");
+		private final List<String> categories = Arrays.asList("General", "Kuudra", "Mining", "Dungeons", "Crimson Isles", "Overlays");
 		@NotNull
 		@Override
 		public Comparator<? super Map.Entry<String, ? extends List<PropertyData>>> getSubcategoryComparator() {
