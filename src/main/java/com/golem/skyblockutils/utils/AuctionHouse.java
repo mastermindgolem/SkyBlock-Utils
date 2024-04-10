@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.golem.skyblockutils.Main.*;
-import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 
 public class AuctionHouse {
 	public static long lastKnownLastUpdated = 0;
@@ -74,8 +73,6 @@ public class AuctionHouse {
 	}
 
 	public static boolean CheckIfAuctionsSearched() {
-		System.out.println("Checking " + auctions.size() + " auctions");
-		System.out.println(AttributePrices.keySet());
 		if (auctions.size() == 0) {
 			final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem.");
 			mc.thePlayer.addChatMessage(msg);

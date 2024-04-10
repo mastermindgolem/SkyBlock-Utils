@@ -775,7 +775,6 @@ public class RenderUtils {
 	 */
 	public static void renderWaypointText(String str, double X, double Y, double Z, float partialTicks) {
 		GlStateManager.alphaFunc(516, 0.1F);
-
 		GlStateManager.pushMatrix();
 
 		Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
@@ -794,6 +793,8 @@ public class RenderUtils {
 			y *= 12 / dist;
 			z *= 12 / dist;
 		}
+
+
 		GlStateManager.translate(x, y, z);
 		GlStateManager.translate(0, viewer.getEyeHeight(), 0);
 
@@ -948,7 +949,6 @@ public class RenderUtils {
 		GlStateManager.disablePolygonOffset();
 	}
 
-
 	public static void highlight(Color color, GuiContainer gui, Slot slot) {
 		try {
 			int guiTop = (gui.height - (int) ySizeField.invokeExact(gui)) / 2;
@@ -964,6 +964,7 @@ public class RenderUtils {
 			throw new RuntimeException(e);
 		}
 	}
+
 
 
 

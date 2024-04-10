@@ -7,6 +7,7 @@ import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.google.gson.JsonObject;
+import logger.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -41,7 +42,7 @@ public class ContainerValue {
 			Container container = gui.inventorySlots;
 			if (!(container instanceof ContainerChest)) return;
 			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-				if (chestName.contains("Paid Chest") || chestName.contains("Free Chest"))  return;
+			if (chestName.contains("Paid Chest") || chestName.contains("Free Chest"))  return;
 			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
 			BigInteger totalValue = new BigInteger("0");
@@ -52,9 +53,11 @@ public class ContainerValue {
 			int guiTop = (int) (ContainerOverlay.element.position.getY() - 5);
 
 			if (configFile.container_value == 1) {
-				xSize = ((AccessorGuiContainer) gui).getXSize();
-				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
-				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
+			AccessorGuiContainer ac = (AccessorGuiContainer) gui;
+				// Works for me for intellij and compiling! We needa fix ur intellij ngl
+				xSize = ac.getXSize();
+				guiLeft = ac.getGuiLeft();
+				guiTop = ac.getGuiTop();
 			}
 
 			chestInventory = chestInventory.subList(0, chestInventory.size() - 36);

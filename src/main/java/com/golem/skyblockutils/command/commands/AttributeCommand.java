@@ -1,14 +1,19 @@
 package com.golem.skyblockutils.command.commands;
 
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.AttributePrice;
-import com.golem.skyblockutils.utils.*;
+import com.golem.skyblockutils.utils.AttributeUtils;
+import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
-import net.minecraft.util.*;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,7 +139,21 @@ public class AttributeCommand extends CommandBase implements Help {
 		//Check all tiers
 		String attribute1;
 		if (args.length == 1) {
+			if (Objects.equals(args[0], "info")) {
+				JsonObject result = AttributePrice.AttributeValue(mc.thePlayer.getHeldItem(), true);
+				try {
+					Kuudra.addChatMessage("top display: " + result.get("top_display"));
+					Kuudra.addChatMessage("bottom display: " + result.get("bottom_display"));
+					Kuudra.addChatMessage("display string: " + result.get("display_string"));
+					Kuudra.addChatMessage("value: " + result.get("value"));
+				} catch (Exception ignored) {}
+				return;
+			}
+
+
 			attribute1 = AttributeUtils.AttributeAliases(args[0]);
+
+
 
 			if (CheckIfAuctionsSearched()) return;
 

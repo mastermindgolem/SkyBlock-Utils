@@ -145,8 +145,10 @@ public class AttributePrice {
 		return null;
 
 	}
-
 	public static JsonObject AttributeValue(ItemStack item) {
+		return AttributeValue(item, false);
+	}
+	public static JsonObject AttributeValue(ItemStack item, boolean dev) {
 
 		JsonObject result = new JsonObject();
 		result.addProperty("top_display", "");
@@ -157,7 +159,7 @@ public class AttributePrice {
 		NBTTagCompound nbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("attributes");
 		String item_id = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
 
-
+		if (dev) Kuudra.addChatMessage("Item ID: " + item_id);
 
 		for (String item_key : all_kuudra_categories) {
 			if (!item_id.contains(item_key)) continue;
@@ -188,8 +190,9 @@ public class AttributePrice {
 				if (min_tier > 0) {
 					value = items.get(min_tier) << attr_tier;
 				} else {
-					value = items.get(0) << attr_tier;
+					value = items.get(1) << attr_tier;
 				}
+				if (dev) Kuudra.addChatMessage(attr_key + " " + attr_tier + " value : " + value);
 				added_value += value;
 				total_tiers += 1 << attr_tier;
 				if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
@@ -235,7 +238,10 @@ public class AttributePrice {
 			}
 
 			int combo_value = (comboitem == null ? 0 : comboitem.get("starting_bid").getAsInt());
-
+			if (dev) {
+				Kuudra.addChatMessage("Combo Value: " + combo_value);
+				Kuudra.addChatMessage("Best Attribute: " + best_attribute);
+			}
 
 			added_value += combo_value;
 
@@ -267,12 +273,6 @@ public class AttributePrice {
 				result.addProperty("bottom_display", nbt.getInteger(attrArray.get(0)));
 				result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + displayName);
 				result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
-				return result;
-			} else if (10 * total_tiers * AuctionHouse.ESSENCE_VALUE > LowestBin.getOrDefault(item_id, 0)) {
-				result.addProperty("top_display", "SAL");
-				result.addProperty("bottom_display", 0);
-				result.addProperty("display_string", "SALVAGE " + displayName);
-				result.addProperty("value", 10 * total_tiers * AuctionHouse.ESSENCE_VALUE);
 				return result;
 			} else if (LowestBin.getOrDefault(item_id, 0) > 0 && nbt.getKeySet().size() > 0) {
 				result.addProperty("top_display", "LBIN");
