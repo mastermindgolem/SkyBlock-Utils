@@ -330,7 +330,7 @@ public class AttributePrice {
 				if (min_tier > 0) {
 					value = items.get(min_tier) << attr_tier;
 				} else {
-					value = items.get(0) << attr_tier;
+					value = items.get(1) << attr_tier;
 				}
 				added_value += value;
 				total_tiers += 1 << attr_tier;
