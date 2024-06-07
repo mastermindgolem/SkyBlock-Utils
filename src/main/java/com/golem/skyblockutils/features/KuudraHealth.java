@@ -111,6 +111,7 @@ public class KuudraHealth {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
+        if (!configFile.showKuudraBossBar) return;
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT || Kuudra.currentPhase <= 0) return;
 
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
