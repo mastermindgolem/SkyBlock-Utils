@@ -48,7 +48,7 @@ public class KuudraHealth {
                 if (configFile.showKuudraHP) {
                     String string = EnumChatFormatting.RED + formatter.format(Kuudra.boss.getHealth()) + "/100,000";
                     if (Kuudra.tier == 5) string = EnumChatFormatting.RED + formatter.format((Kuudra.boss.getHealth() - 25000)/3*4) + "/100,000";
-                    if (Kuudra.currentPhase >= 4) string = EnumChatFormatting.YELLOW + Main.formatNumber(Kuudra.boss.getHealth() * 12000).toUpperCase() + "/240M";
+                    if (Kuudra.currentPhase >= 4) string = EnumChatFormatting.YELLOW + Main.formatNumber(Kuudra.boss.getHealth() * 9600).toUpperCase() + "/240M";
                     RenderUtils.renderNameTag(string, e.posX, e.posY + e.height / 2, e.posZ, 4.0f);
                 }
                 if (configFile.showKuudraBossBar) {
