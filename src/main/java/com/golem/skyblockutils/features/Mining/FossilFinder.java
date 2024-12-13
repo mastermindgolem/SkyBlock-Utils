@@ -24,6 +24,7 @@ public class FossilFinder {
     private static boolean started = false;
     private HashMap<Integer, Boolean> clickedSlots = new HashMap<>();
     private int lastClicked = -1;
+    private int fossilPieces = 0;
     private boolean fossilFound = false;
     private List<char[][]> grids = new ArrayList<>();
     private List<char[][]> possibleGrids = new ArrayList<>();
@@ -34,6 +35,7 @@ public class FossilFinder {
         possibleGrids = grids;
         clickedSlots.clear();
         fossilFound = false;
+        fossilPieces = 0;
     }
 
     @SubscribeEvent
@@ -64,6 +66,14 @@ public class FossilFinder {
                     dirtCount++;
                 }
                 else if (displayName.equals("§6Fossil")) {
+                    List<String> lore = Commissions.getLore(slot.getStack());
+                    if (lore.stream().anyMatch(s -> s.contains("7.1"))) fossilPieces = 14;
+                    if (lore.stream().anyMatch(s -> s.contains("7.7"))) fossilPieces = 13;
+                    if (lore.stream().anyMatch(s -> s.contains("8.3"))) fossilPieces = 12;
+                    if (lore.stream().anyMatch(s -> s.contains("9.1"))) fossilPieces = 11;
+                    if (lore.stream().anyMatch(s -> s.contains("10"))) fossilPieces = 10;
+                    if (lore.stream().anyMatch(s -> s.contains("11.1"))) fossilPieces = 9;
+                    if (lore.stream().anyMatch(s -> s.contains("12.5"))) fossilPieces = 8;
                     fossilFound = true;
                     if (!clickedSlots.getOrDefault(slotIndex, false)) lastClicked = slotIndex;
                     clickedSlots.put(slotIndex, true);
@@ -82,15 +92,34 @@ public class FossilFinder {
         }
 
         if (lastClicked >= 0) {
-            possibleGrids = grids.stream()
-                    .filter(grid -> clickedSlots.entrySet().stream()
-                            .allMatch(entry -> {
-                                int index = entry.getKey();
-                                int row = index / 9;
-                                int col = index % 9;
-                                return grid[row][col] == '#' == entry.getValue();
-                            }))
-                    .collect(Collectors.toList());
+            if (fossilPieces > 0) {
+                possibleGrids = grids.stream()
+                        .filter(grid -> {
+                            long count = Arrays.stream(grid)
+                                    .flatMapToInt(row -> new String(row).chars().map(c -> (char)c)) // Convert char[] to IntStream
+                                    .filter(cell -> cell == '#')
+                                    .count();
+                            return count == fossilPieces;
+                        })
+                        .filter(grid -> clickedSlots.entrySet().stream()
+                                .allMatch(entry -> {
+                                    int index = entry.getKey();
+                                    int row = index / 9;
+                                    int col = index % 9;
+                                    return grid[row][col] == '#' == entry.getValue();
+                                }))
+                        .collect(Collectors.toList());
+            } else {
+                possibleGrids = grids.stream()
+                        .filter(grid -> clickedSlots.entrySet().stream()
+                                .allMatch(entry -> {
+                                    int index = entry.getKey();
+                                    int row = index / 9;
+                                    int col = index % 9;
+                                    return grid[row][col] == '#' == entry.getValue();
+                                }))
+                        .collect(Collectors.toList());
+            }
 
             System.out.println("Possible Grids: " + possibleGrids.size());
             System.out.println("Total Clicked Slots: " + clickedSlots.size());
@@ -98,7 +127,7 @@ public class FossilFinder {
             for (Map.Entry<Integer, Boolean> s : clickedSlots.entrySet()) {
                 sb.append(s.getKey()).append(": ").append(s.getValue()).append(", ");
             }
-            System.out.println(sb.toString());
+            System.out.println(sb);
         }
 
         boolean newFossilFound = clickedSlots.entrySet().stream().anyMatch(Map.Entry::getValue);
@@ -108,15 +137,40 @@ public class FossilFinder {
         fossilFound = newFossilFound;
 
         if (!possibleGrids.isEmpty()) {
-            int[][] board = new int[6][9];
-            int maxCount = -1;
-            for (char[][] grid : possibleGrids) {
+
+            if (possibleGrids.size() == 1) {
+                char[][] grid = possibleGrids.get(0);
                 for (int i = 0; i < 6; ++i) {
                     for (int j = 0; j < 9; ++j) {
                         if (grid[i][j] == '#' && !clickedSlots.containsKey(9 * i + j)) {
-                            board[i][j]++;
-                            if (board[i][j] > maxCount) {
-                                maxCount = board[i][j];
+                            RenderUtils.highlight(Color.GREEN, gui, container.getSlot(9 * i + j));
+                        }
+                    }
+                }
+            } else {
+
+                int[][] board = new int[6][9];
+                int maxCount = -1;
+                for (char[][] grid : possibleGrids) {
+                    for (int i = 0; i < 6; ++i) {
+                        for (int j = 0; j < 9; ++j) {
+                            if (grid[i][j] == '#' && !clickedSlots.containsKey(9 * i + j)) {
+                                board[i][j]++;
+
+                                if (board[i][j] > maxCount) {
+                                    maxCount = board[i][j];
+                                    highlightSlot = 9 * i + j;
+                                }
+                            }
+                        }
+                    }
+                }
+                int minCount = 100;
+                if (fossilPieces == 14 && Main.configFile.helixSkip) {
+                    for (int i = 0; i < 6; ++i) {
+                        for (int j = 0; j < 9; ++j) {
+                            if (board[i][j] < minCount) {
+                                minCount = board[i][j];
                                 highlightSlot = 9 * i + j;
                             }
                         }
@@ -124,6 +178,7 @@ public class FossilFinder {
                 }
             }
         }
+
 
         if (highlightSlot >= 0) {
             RenderUtils.highlight(Color.GREEN, gui, container.getSlot(highlightSlot));
@@ -168,7 +223,24 @@ public class FossilFinder {
             positions.add(currentFossil);
             currentFossil = rotateFossil(currentFossil);
         }
+
+        currentFossil = flipFossil(currentFossil);
+        for (int i = 0; i < 4; i++) {
+            positions.add(currentFossil);
+            currentFossil = rotateFossil(currentFossil);
+        }
+
         return positions;
+    }
+
+    private static char[][] flipFossil(char[][] fossil) {
+        int rows = fossil.length;
+        int cols = fossil[0].length;
+        char[][] flippedFossil = new char[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            System.arraycopy(fossil[rows - 1 - i], 0, flippedFossil[i], 0, cols);
+        }
+        return flippedFossil;
     }
 
     private static char[][] rotateFossil(char[][] fossil) {

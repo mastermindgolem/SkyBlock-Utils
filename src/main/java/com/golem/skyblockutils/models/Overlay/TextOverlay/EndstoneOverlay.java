@@ -1,12 +1,9 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
-import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
-import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;

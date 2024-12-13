@@ -34,7 +34,7 @@ public class Corpses {
 
         for (EntityArmorStand armorStand : entities) {
             if (armorStand.getCurrentArmor(3) != null) {
-//            if (armorStand.getCurrentArmor(3) != null && mc.thePlayer.canEntityBeSeen(armorStand)) {
+            //if (armorStand.getCurrentArmor(3) != null && mc.thePlayer.canEntityBeSeen(armorStand)) {
                 corpses.putIfAbsent(armorStand, false);
             }
         }
@@ -53,12 +53,8 @@ public class Corpses {
     public void onChatMessage(ClientChatReceivedEvent event) {
         if (event.type == 2) return;
         String message = event.message.getUnformattedText();
-        System.out.println(message);
         if (message.contains("FROZEN CORPSE LOOT!")) {
             removeClosestCorpse();
-        }
-        if (message.equals(" WOW! You found a Glacite Mineshaft portal!")) {
-            //idk what to do here yet
         }
     }
 

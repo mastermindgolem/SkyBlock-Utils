@@ -3,7 +3,6 @@ package com.golem.skyblockutils.models;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.utils.AuctionHouse;
-import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,7 +25,6 @@ public class AttributePrice {
 
 	public static final String[] all_attributes = new String[]{"arachno", "attack_speed", "combo", "elite", "ignition", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "mana_steal", "ender", "blazing", "undead", "warrior", "deadeye", "fortitude", "magic_find"};
 	public static final String[] all_kuudra_categories = new String[]{"SHARD", "HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS", "MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_CLOAK", "MOLTEN_NECKLACE", "GAUNTLET_OF_CONTAGION", "IMPLOSION_BELT", "MAGMA_NECKLACE", "GHAST_CLOAK", "BLAZE_BELT", "GLOWSTONE_GAUNTLET", "LAVA_SHELL_NECKLACE"};
-	private static final List<String> moltenAttributes = Arrays.asList("lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "fortitude", "magic_find");
 	private static HashMap<ArrayList<String>, JsonObject> AllCombos = new HashMap<>();
 	public static HashMap<String, Integer> LowestBin = new HashMap<>();
 	public static HashMap<String, HashMap<String, ArrayList<JsonObject>>> AttributePrices = new HashMap<>();
@@ -96,7 +94,7 @@ public class AttributePrice {
 										LowestAttributePrices.get(key).get(attribute).add(0);
 									}
 								}
-								for (int i = attributes.getInteger(attribute); i < 11; ++i) {
+								for (int i = attributes.getInteger(attribute); i >= 0; --i) {
 									if (LowestAttributePrices.get(key).get(attribute).get(i) == 0) {
 										LowestAttributePrices.get(key).get(attribute).set(i, (int) price_per);
 									}
@@ -206,35 +204,9 @@ public class AttributePrice {
 				}
 			}
 
-			JsonObject comboitem = null;
-			if (!item_id.equals("ATTRIBUTE_SHARD")) {
-				comboitem = getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
-				if (!Main.configFile.valueStarredArmor && (item_id.startsWith("HOT_") || item_id.startsWith("BURNING_") || item_id.startsWith("FIERY_") || item_id.startsWith("INFERNAL"))) {
-					return null;
-				}
-			} else {
-				if ((best_value < LowestBin.getOrDefault(item_id, 0) || configFile.shardEquipmentPricing) && configFile.dataSource == 0 && new HashSet<>(moltenAttributes).containsAll(nbt.getKeySet())) {
-					JsonObject bv = new JsonObject();
-					bv.addProperty("value", 0);
-					for (String eq : new String[]{"MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_CLOAK", "MOLTEN_NECKLACE"}) {
-						JsonObject av = AttributeValue(item, eq);
-						if (av != null && av.has("value")) {
-							if (av.get("value").getAsInt() > bv.get("value").getAsInt() && av.get("value").getAsInt() > LowestBin.getOrDefault(eq, 0)) {
-								av.addProperty("display_string", av.get("display_string").getAsString() + EnumChatFormatting.RED + " (" + ToolTipListener.TitleCase(eq.split("_")[1]) + ") ");
-								bv = av;
-							}
-						}
-					}
-					if (bv.get("value").getAsInt() == 0) {
-						ArrayList<String> attrArray = new ArrayList<>(nbt.getKeySet());
-						result.addProperty("top_display", ShortenedAttribute(attrArray.get(0)));
-						result.addProperty("bottom_display", nbt.getInteger(attrArray.get(0)));
-						result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + nbt.getInteger(attrArray.get(0)) + " " + item.getDisplayName());
-						result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
-						return result;
-					}
-					return bv;
-				}
+			JsonObject comboitem = getComboValue(item_id, new ArrayList<>(nbt.getKeySet()));
+			if (!Main.configFile.valueStarredArmor && (item_id.startsWith("HOT_") || item_id.startsWith("BURNING_") || item_id.startsWith("FIERY_") || item_id.startsWith("INFERNAL"))) {
+				return null;
 			}
 
 			int combo_value = (comboitem == null ? 0 : comboitem.get("starting_bid").getAsInt());

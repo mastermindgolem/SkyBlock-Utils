@@ -155,6 +155,9 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Draw Line to Kuudra", description = "Draws a line to Kuudra in Phase 4.", category = "Kuudra", subcategory = "Boss")
 	public boolean showKuudraLine = false;
 
+	@Property(type = PropertyType.SWITCH, name = "Show Splits at End of Run", description = "Sends time of each phase in chat at the end of the run.", category = "Kuudra", subcategory = "Boss")
+	public boolean showSplits = false;
+
 	@Property(type = PropertyType.SWITCH, name = "Display Kuudra Location", description = "Says whether Kuudra is FRONT!, BACK!, RIGHT!, or LEFT! in Phase 4.", category = "Kuudra", subcategory = "Boss")
 	public boolean showKuudraLocation = false;
 
@@ -382,6 +385,27 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
+	@Property(type = PropertyType.SWITCH,
+			name = "Gift Profit Tracker",
+			description = "Tracks profit from opening gifts.",
+			category = "Overlays",
+			subcategory = "Gifts")
+	public boolean giftOverlay = false;
+	@Property(type = PropertyType.BUTTON,
+			name = "Edit Gift Overlay",
+			description = "Edit GUI location for Gift overlay",
+			category = "Overlays",
+			subcategory = "Gifts")
+	@SuppressWarnings("unused")
+	public void MoveGiftOverlay() {
+		if (!giftOverlay) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Gift Overlay is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{GiftOverlay.element}));
+		Main.display = null;
+	}
+
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Required Godroll Price",
@@ -543,6 +567,9 @@ public class Config extends Vigilant
 
 	@Property(type = PropertyType.SWITCH, name = "Fossil Finder", description = "Highlights the ideal slot to click in fossil excavator", category = "Mining", subcategory = "Fossils")
 	public boolean fossilFinder = false;
+
+	@Property(type = PropertyType.SWITCH, name = "Helix Skip", description = "Skips any helix fossils", category = "Mining", subcategory = "Fossils")
+	public boolean helixSkip = false;
 
 	@Property(type = PropertyType.SWITCH, name = "Corpse Locator", description = "Highlights any corpses visible on screen with a waypoint", category = "Mining", subcategory = "Corpse")
 	public boolean corpseLocator = false;
