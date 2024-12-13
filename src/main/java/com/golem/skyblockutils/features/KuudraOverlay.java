@@ -71,8 +71,6 @@ public class KuudraOverlay {
 			}
 
 
-
-
 			chestInventory = chestInventory.subList(0, 33);
 			for (Slot slot : chestInventory) {
 				try {
@@ -114,7 +112,9 @@ public class KuudraOverlay {
 						case "BURNING_KUUDRA_CORE":
 						case "WHEEL_OF_FATE":
 						case "RUNIC_STAFF":
-						case "HOLLOW_WAND": {
+						case "HOLLOW_WAND":
+						case "TENTACLE_DYE":
+						case "ENRAGER": {
 							int price = LowestBin.getOrDefault(item_id, 0);
 							displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
 							totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
@@ -169,6 +169,7 @@ public class KuudraOverlay {
 			if (chestName.contains("Paid")) {
 				try {
 					String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
+					keyCost += bazaar.get("products").getAsJsonObject().get("NETHER_STAR").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt() * 2;
 					if (keySlotLore.contains("Infernal")) {
 						keyCost += 3000000;
 						keyCost += itemCost * 120;
@@ -185,6 +186,14 @@ public class KuudraOverlay {
 						keyCost += 200000;
 						keyCost += itemCost * 2;
 					}
+					Slot kismetSlot = (chestInventory.get(50));
+					if (kismetSlot.getHasStack()) {
+						String lore = kismetSlot.getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
+						if (lore.contains("You already rerolled this chest!")) {
+							keyCost += bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt() * 2;
+						}
+					}
+
 				} catch (Exception ignored) {}
 			}
 

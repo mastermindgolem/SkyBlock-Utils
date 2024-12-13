@@ -4,10 +4,11 @@ package com.golem.skyblockutils.models.gui;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.PersistentData;
 import gg.essential.universal.UResolution;
-import logger.Logger;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.renderer.GlStateManager;
 
-import java.awt.Color;
+import java.awt.*;
 
 import static com.golem.skyblockutils.Main.StaticPosition;
 
@@ -17,7 +18,11 @@ public class GuiElement {
 	}
 
 	private final String name;
+	@Getter
+	@Setter
 	private int width;
+	@Getter
+	@Setter
 	private int height;
 	public GuiPosition position;
 	private static final double padding = 0.05;
@@ -59,10 +64,6 @@ public class GuiElement {
 		position.setX(coercedX);
 		position.setY(coercedY);
 	}
-
-	public void setWidth(int w) {width = w;}
-
-	public void setHeight(int h) {height = h;}
 
 	public void draw(double mouseX, double mouseY) {
 		GlStateManager.pushMatrix();
