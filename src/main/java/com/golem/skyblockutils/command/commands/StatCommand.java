@@ -348,14 +348,11 @@ public class StatCommand extends CommandBase implements Help {
 					if (Main.configFile.autoKick && (!data.get("Terror Chestplate").getAsJsonObject().has("stars") || data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier)) {
 						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						System.out.println(data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt());
 						return;
 					}
 					if (Main.configFile.autoKick && (!data.get("Terror Leggings").getAsJsonObject().has("stars") || data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier)) {
 						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
 						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						System.out.println(data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt());
-
 						return;
 					}
 					if (Main.configFile.autoKick && (!data.get("Terror Boots").getAsJsonObject().has("stars") || data.get("Terror Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier)) {

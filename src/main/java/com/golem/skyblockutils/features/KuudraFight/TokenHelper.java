@@ -81,16 +81,12 @@ public class TokenHelper {
                 }
                 if (event.slotId == 14) chosenClass = "Specialist";
                 if (event.slotId == 16) chosenClass = "Support";
-                System.out.println(chosenClass);
             } else {
                 if (Objects.equals(chosenClass, "Crowd Control")) {
                     if (event.slotId == 23) blightLevel++;
-                    System.out.println(blightLevel);
                 } else if (Objects.equals(chosenClass, "Specialist")) {
                     if (event.slotId == 13) mechanicLevel++;
                     if (event.slotId == 22) minerLevel++;
-                    System.out.println(mechanicLevel);
-                    System.out.println(minerLevel);
                 }
             }
         }

@@ -192,7 +192,6 @@ public class UpgradeCommand extends CommandBase implements Help {
 
 	public void getAttributePrice(String attribute, String key, int tiers_needed, int end_tier) {
 		if (!AttributePrices.get(key).containsKey(attribute)) return;
-		System.out.println("Passed guard clause");
 		ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
 		if (!Objects.equals(key, "SHARD")) {
 			ArrayList<JsonObject> items2 = AttributePrices.get("SHARD").get(attribute);

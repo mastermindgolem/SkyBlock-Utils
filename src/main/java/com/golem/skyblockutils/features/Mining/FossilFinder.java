@@ -141,13 +141,10 @@ public class FossilFinder {
                         .collect(Collectors.toList());
             }
 
-            System.out.println("Possible Grids: " + possibleGrids.size());
-            System.out.println("Total Clicked Slots: " + clickedSlots.size());
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, Boolean> s : clickedSlots.entrySet()) {
                 sb.append(s.getKey()).append(": ").append(s.getValue()).append(", ");
             }
-            System.out.println(sb);
         }
 
         boolean newFossilFound = clickedSlots.entrySet().stream().anyMatch(Map.Entry::getValue);

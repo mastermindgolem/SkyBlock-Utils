@@ -30,7 +30,6 @@ public class ChatWaypoints {
         if (!message.startsWith("Party > ") || !message.contains("x: ") || !message.contains(", y:") || !message.contains(", z:")) return;
         Matcher matcher = pattern.matcher(message);
         if (matcher.find()) {
-            System.out.println("1");
             String text = matcher.group(1);
             String x = matcher.group(2);
             String y = matcher.group(3);

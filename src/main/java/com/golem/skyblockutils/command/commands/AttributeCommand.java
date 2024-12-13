@@ -218,7 +218,6 @@ public class AttributeCommand extends CommandBase implements Help {
 					for (String key2: armor_types) {
 						JsonObject item = AttributePrice.getComboValue(key + "_" + key2, new ArrayList<>(Arrays.asList(attribute1,attribute2)));
 						if (item == null) continue;
-						System.out.println(item);
 						final IChatComponent msg = new ChatComponentText(ToolTipListener.TitleCase(key2) + ": " + getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + " - " + EnumChatFormatting.GREEN + coolFormat(item.get("starting_bid").getAsDouble(), 0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.get("uuid").getAsString()) {
 							public Action getAction() {
 								return Action.RUN_COMMAND;
@@ -271,7 +270,6 @@ public class AttributeCommand extends CommandBase implements Help {
 			} else {
 				for (int i = 0; i < 5; i++) {
 					JsonObject item = items.get(i);
-					System.out.println(item);
 					final IChatComponent msg = new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + " - " + EnumChatFormatting.YELLOW + coolFormat(item.get("price_per_tier").getAsDouble(), 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.get("starting_bid").getAsDouble(),0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.get("uuid").getAsString()) {
 						public Action getAction() {
 							return Action.RUN_COMMAND;

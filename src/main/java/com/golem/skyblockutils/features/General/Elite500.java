@@ -30,7 +30,6 @@ public class Elite500 {
                 if (!msg.contains(":")) return;
                 String[] usernames = msg.split(":")[0].split(" ");
                 String username = usernames[usernames.length - 1];
-                System.out.println(username);
                 if (elite500.contains(username)) {
                     String message = chatComponent.getUnformattedText().replaceFirst(username, username + " " + EnumChatFormatting.GRAY + "[#" + (elite500.indexOf(username) + 1) + EnumChatFormatting.GRAY + "]");
                     event.setCanceled(true);
@@ -52,7 +51,6 @@ public class Elite500 {
             if (startsWith != null) {
                 String username = partyOrGuildChat ? getNameFromChatComponent(chatComponent) : chatComponent.getChatStyle().getChatClickEvent().getValue().substring(15);
                 if (username.equals("")) return;
-                System.out.println(username);
                 if (elite500.contains(username)) {
                     String message = chatComponent.getUnformattedText().replaceFirst(username, username + " " + EnumChatFormatting.GRAY + "[#" + (elite500.indexOf(username) + 1) + EnumChatFormatting.GRAY + "]");
                     event.setCanceled(true);
