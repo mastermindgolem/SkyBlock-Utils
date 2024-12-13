@@ -53,7 +53,7 @@ public class KuudraOverlay {
 			if (!(container instanceof ContainerChest)) return;
 			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest")) return;
-			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+			List<Slot> fullChestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 			List<String> displayStrings = new ArrayList<>();
 			BigInteger totalValue = new BigInteger("0");
 			BigInteger totalProfit;
@@ -72,7 +72,7 @@ public class KuudraOverlay {
 			}
 
 
-			chestInventory = chestInventory.subList(0, 33);
+			List<Slot> chestInventory = fullChestInventory.subList(0, 33);
 			for (Slot slot : chestInventory) {
 				try {
 					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) continue;
@@ -188,7 +188,7 @@ public class KuudraOverlay {
 						keyCost += itemCost * 2;
 					}
 					usedKismet = false;
-					Slot kismetSlot = (chestInventory.get(50));
+					Slot kismetSlot = (fullChestInventory.get(50));
 					if (kismetSlot.getHasStack()) {
 						String lore = kismetSlot.getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
 						if (lore.contains("You already rerolled this chest!")) {
