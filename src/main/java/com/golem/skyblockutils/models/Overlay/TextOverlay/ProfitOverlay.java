@@ -18,8 +18,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class ProfitOverlay {
 
@@ -49,6 +48,11 @@ public class ProfitOverlay {
         } catch (Exception ignored) {}
         if (!event.slot.getHasStack() || !chestName.contains("Paid Chest")) return;
         totalProfit += KuudraOverlay.profit;
+        try {
+            if (KuudraOverlay.usedKismet)
+                totalProfit -= bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
+        }
+        catch (Exception ignored) {}
         chests++;
 
         if (!configFile.sendProfitData) return;
