@@ -8,6 +8,9 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -28,6 +31,23 @@ public class FossilFinder {
     private boolean fossilFound = false;
     private List<char[][]> grids = new ArrayList<>();
     private List<char[][]> possibleGrids = new ArrayList<>();
+
+    public static List<String> getLore(ItemStack is) {
+        if (is == null) return new ArrayList<>();
+        return getLore(is.getTagCompound());
+    }
+
+    public static List<String> getLore(NBTTagCompound tagCompound) {
+        if (tagCompound == null) {
+            return Collections.emptyList();
+        }
+        NBTTagList tagList = tagCompound.getCompoundTag("display").getTagList("Lore", 8);
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < tagList.tagCount(); i++) {
+            list.add(tagList.getStringTagAt(i));
+        }
+        return list;
+    }
 
     @SubscribeEvent
     public void guiOpenEvent(GuiOpenEvent event) {
@@ -66,7 +86,7 @@ public class FossilFinder {
                     dirtCount++;
                 }
                 else if (displayName.equals("§6Fossil")) {
-                    List<String> lore = Commissions.getLore(slot.getStack());
+                    List<String> lore = getLore(slot.getStack());
                     if (lore.stream().anyMatch(s -> s.contains("7.1"))) fossilPieces = 14;
                     if (lore.stream().anyMatch(s -> s.contains("7.7"))) fossilPieces = 13;
                     if (lore.stream().anyMatch(s -> s.contains("8.3"))) fossilPieces = 12;

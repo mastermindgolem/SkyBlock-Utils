@@ -12,7 +12,6 @@ import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.TokenHelper;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
-import com.golem.skyblockutils.features.Mining.Commissions;
 import com.golem.skyblockutils.features.Mining.Corpses;
 import com.golem.skyblockutils.features.Mining.FossilFinder;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
@@ -46,8 +45,7 @@ public class EventInit {
 				new TokenHelper(),
 				new ChannelHandlerInput(),
 				new FossilFinder(),
-				new Corpses(),
-				new Commissions()
+				new Corpses()
 		//new TrackKills()
 		};
 
