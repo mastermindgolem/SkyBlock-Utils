@@ -385,27 +385,6 @@ public class Config extends Vigilant
 		Main.display = null;
 	}
 
-	@Property(type = PropertyType.SWITCH,
-			name = "Gift Profit Tracker",
-			description = "Tracks profit from opening gifts.",
-			category = "Overlays",
-			subcategory = "Gifts")
-	public boolean giftOverlay = false;
-	@Property(type = PropertyType.BUTTON,
-			name = "Edit Gift Overlay",
-			description = "Edit GUI location for Gift overlay",
-			category = "Overlays",
-			subcategory = "Gifts")
-	@SuppressWarnings("unused")
-	public void MoveGiftOverlay() {
-		if (!giftOverlay) {
-			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Gift Overlay is off."));
-			return;
-		}
-		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{GiftOverlay.element}));
-		Main.display = null;
-	}
-
 	@Property(
 			type = PropertyType.SLIDER,
 			name = "Required Godroll Price",
