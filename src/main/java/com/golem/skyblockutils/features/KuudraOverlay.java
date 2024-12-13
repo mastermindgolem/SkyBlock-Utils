@@ -172,19 +172,19 @@ public class KuudraOverlay {
 					String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
 					keyCost += bazaar.get("products").getAsJsonObject().get("CORRUPTED_NETHER_STAR").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt() * 2;
 					if (keySlotLore.contains("Infernal")) {
-						keyCost += 3000000;
-						keyCost += itemCost * 120;
+						keyCost += 2400000;
+						keyCost += itemCost * 80;
 					} else if (keySlotLore.contains("Fiery")) {
-						keyCost += 1500000;
-						keyCost += itemCost * 60;
+						keyCost += 1200000;
+						keyCost += itemCost * 40;
 					} else if (keySlotLore.contains("Burning")) {
-						keyCost += 750000;
-						keyCost += itemCost * 20;
+						keyCost += 600000;
+						keyCost += itemCost * 16;
 					} else if (keySlotLore.contains("Hot")) {
-						keyCost += 400000;
-						keyCost += itemCost * 60;
+						keyCost += 320000;
+						keyCost += itemCost * 4;
 					} else {
-						keyCost += 200000;
+						keyCost += 160000;
 						keyCost += itemCost * 2;
 					}
 					usedKismet = false;
