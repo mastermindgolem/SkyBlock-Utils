@@ -28,7 +28,9 @@ public class ProfitOverlay {
     public static long totalTime = 0;
     public static int totalRuns = 0;
     public static long start = 0;
+    public static int numRerolls = 0;
     public static long end = 0;
+    public static long lastChestOpen = 0;
 
     public static int renderWidth(String text) {
         return mc.fontRendererObj.getStringWidth(text);
@@ -37,6 +39,8 @@ public class ProfitOverlay {
     @SubscribeEvent
     public void onMouseClick(SlotClickEvent event) {
         if (event.slotId != 31) return;
+        if (time.getCurrentMS() - lastChestOpen < 60000) return;
+        lastChestOpen = time.getCurrentMS();
         String chestName = "";
         Container container = null;
         try {
@@ -89,8 +93,9 @@ public class ProfitOverlay {
             String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
-            String string5 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
-            String string6 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTime > 0 ? (double) totalProfit / totalTime * 3600000 : 0));
+            String string5 = EnumChatFormatting.GOLD + "Rerolls: " + EnumChatFormatting.GREEN + numRerolls;
+            String string6 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
+            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTime > 0 ? (double) totalProfit / totalTime * 3600000 : 0));
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
@@ -98,6 +103,7 @@ public class ProfitOverlay {
             OverlayUtils.drawString(0, 30, string4, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 40, string5, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 50, string6, textStyle, Alignment.Left);
+            OverlayUtils.drawString(0, 50, string7, textStyle, Alignment.Left);
 
             GlStateManager.popMatrix();
         }
@@ -113,11 +119,13 @@ public class ProfitOverlay {
             max = Math.max(renderWidth(string2), max);
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             max = Math.max(renderWidth(string3), max);
-            String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
+            String string4 = EnumChatFormatting.GOLD + "Rerolls: " + EnumChatFormatting.GREEN + numRerolls;
+            max = Math.max(renderWidth(string3), max);
+            String string5 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
             max = Math.max(renderWidth(string4), max);
-            String string5 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
+            String string6 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
             max = Math.max(renderWidth(string5), max);
-            String string6 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((totalTime)/3600000 + 1)));
+            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((totalTime)/3600000 + 1)));
             max = Math.max(renderWidth(string6), max);
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
@@ -125,6 +133,8 @@ public class ProfitOverlay {
             OverlayUtils.drawString(0, 20, string3, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 30, string4, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 40, string5, textStyle, Alignment.Left);
+            OverlayUtils.drawString(0, 50, string6, textStyle, Alignment.Left);
+            OverlayUtils.drawString(0, 60, string7, textStyle, Alignment.Left);
 
             element.setWidth(max);
             element.setHeight(60);
