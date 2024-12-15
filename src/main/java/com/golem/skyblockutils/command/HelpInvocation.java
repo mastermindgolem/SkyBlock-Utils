@@ -4,16 +4,12 @@ import com.golem.skyblockutils.command.commands.Alias;
 import com.golem.skyblockutils.command.commands.AttributeCommand;
 import com.golem.skyblockutils.command.commands.EquipmentCommand;
 import com.golem.skyblockutils.command.commands.Help;
+import com.golem.skyblockutils.utils.ChatUtils;
 import logger.Logger;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.golem.skyblockutils.Main.mc;
 
 /**
  * Write to mc chat
@@ -72,7 +68,7 @@ public class HelpInvocation {
 			}
 			String hover = sb.toString();
 
-			addChatMessage(helpString.replace("[", "").replace("]", ""), hover);
+			ChatUtils.addChatMessage(helpString.replace("[", "").replace("]", ""), hover);
 		}
 	}
 
@@ -83,24 +79,17 @@ public class HelpInvocation {
 		for (Map.Entry<String, Help> entry : cache.entrySet()) {
 			String key = entry.getKey();
 			String cn = CommandName.cmdNameEquivalent(key);
-			addChatMessage("\n" + EnumChatFormatting.BOLD + EnumChatFormatting.AQUA + cn);
+			ChatUtils.addChatMessage("\n" + EnumChatFormatting.BOLD + EnumChatFormatting.AQUA + cn);
 
 			Help help = entry.getValue();
 			List<String> alias = help.getCommandAliases();
 
 			for (String s : alias) {
-				addChatMessage(EnumChatFormatting.DARK_GREEN + "✵" + s + EnumChatFormatting.RESET);
+				ChatUtils.addChatMessage(EnumChatFormatting.DARK_GREEN + "✵" + s + EnumChatFormatting.RESET);
 			}
 
 		}
-			addChatMessage("\n");
+			ChatUtils.addChatMessage("\n");
 	}
 
-	public static void addChatMessage(String chat) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(chat));
-	}
-
-	public static void addChatMessage(String chat, String hoverChat) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverChat)))));
-	}
 }

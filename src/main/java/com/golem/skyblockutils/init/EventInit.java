@@ -45,7 +45,8 @@ public class EventInit {
 				new TokenHelper(),
 				new ChannelHandlerInput(),
 				new FossilFinder(),
-				new Corpses()
+				new Corpses(),
+				new ChestAnalyzer()
 		//new TrackKills()
 		};
 

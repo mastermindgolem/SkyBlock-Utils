@@ -1,11 +1,18 @@
 package com.golem.skyblockutils.utils;
 
+import com.golem.skyblockutils.Main;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import com.golem.skyblockutils.Main;
+
+import static com.golem.skyblockutils.Main.mc;
 
 @SideOnly(Side.CLIENT)
 public class ChatUtils {
@@ -25,5 +32,21 @@ public class ChatUtils {
 
 	public static void info(String s) {
 		send(PREFIX + s);
+	}
+
+	public static void addChatMessage(String chat, boolean sbuprefix) {
+		mc.thePlayer.addChatMessage(new ChatComponentText((sbuprefix ? EnumChatFormatting.GOLD + "SBU > " : "") + chat));
+	}
+
+	public static void addChatMessage(String chat) {
+		mc.thePlayer.addChatMessage(new ChatComponentText(chat));
+	}
+
+	public static void addChatMessage(String chat, String hoverChat) {
+		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverChat)))));
+	}
+
+	public static void addChatMessage(String chat, ClickEvent event) {
+		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(event)));
 	}
 }

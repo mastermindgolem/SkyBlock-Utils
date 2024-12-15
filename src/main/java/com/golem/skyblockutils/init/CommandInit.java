@@ -16,7 +16,8 @@ public class CommandInit {
 			new StatCommand(),
 			new UpgradeCommand(),
 			new SbuCommand(),
-			new UpdateCommand()
+			new UpdateCommand(),
+			new AnalyzeChestCommand()
 		};
 		for (ICommand command : commands) {
 			ClientCommandHandler.instance.registerCommand(command);

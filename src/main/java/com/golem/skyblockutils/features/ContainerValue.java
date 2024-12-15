@@ -7,7 +7,6 @@ import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.google.gson.JsonObject;
-import logger.Logger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -175,9 +174,6 @@ public class ContainerValue {
 				break;
 
 		}
-
-		// Sort the list using the custom comparator
-
 
 		// Create a new LinkedHashMap to hold the sorted entries
 		LinkedHashMap<String, DisplayString> sortedMap = new LinkedHashMap<>();
