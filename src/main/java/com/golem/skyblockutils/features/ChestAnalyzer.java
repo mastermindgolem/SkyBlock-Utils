@@ -43,7 +43,7 @@ public class ChestAnalyzer {
         }
         analyzeChests = false;
         ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Chest analyzer disabled.", true);
-        ChatUtils.addChatMessage(EnumChatFormatting.YELLOW + "[Click this to view the chest data]", new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/analyzechests"));
+        ChatUtils.addChatMessage(EnumChatFormatting.YELLOW + "[Click this to view the chest data]", new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/analyzechests gui"));
 
     }
 

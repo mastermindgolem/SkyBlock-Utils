@@ -36,12 +36,21 @@ public class AnalyzeChestCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length == 0 && !ChestAnalyzer.analyzeChests) Main.mc.displayGuiScreen(new ChestDataGui());
+        if (args.length == 0) {
+            if (ChestAnalyzer.analyzeChests) {
+                ChestAnalyzer.disableAnalyzer();
+            } else {
+                ChestAnalyzer.enableAnalyzer();
+            }
+        }
+
         if (args.length != 1) return;
         if (args[0].equalsIgnoreCase("on")) {
             ChestAnalyzer.enableAnalyzer();
         } else if (args[0].equalsIgnoreCase("off")) {
             ChestAnalyzer.disableAnalyzer();
+        } else if (args[0].equalsIgnoreCase("gui") && !ChestAnalyzer.analyzeChests) {
+            Main.mc.displayGuiScreen(new ChestDataGui());
         }
     }
 
