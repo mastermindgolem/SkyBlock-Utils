@@ -86,7 +86,7 @@ public class KuudraHealth {
 
                                 @Override
                                 public float getHealth() {
-                                    return Kuudra.boss.getHealth() * 12000;
+                                    return Kuudra.boss.getHealth() * 9600;
                                 }
 
                                 @Override
