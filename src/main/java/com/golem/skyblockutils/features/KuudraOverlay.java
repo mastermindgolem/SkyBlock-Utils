@@ -4,7 +4,6 @@ import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
-import com.golem.skyblockutils.models.Overlay.TextOverlay.ProfitOverlay;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -193,9 +192,6 @@ public class KuudraOverlay {
 					if (kismetSlot.getHasStack()) {
 						String lore = kismetSlot.getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
 						if (lore.contains("You already rerolled this chest!")) {
-							if (!usedKismet) {
-								ProfitOverlay.numRerolls++;
-							}
 							usedKismet = true;
 						}
 					}

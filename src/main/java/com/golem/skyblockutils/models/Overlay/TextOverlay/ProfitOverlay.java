@@ -38,7 +38,7 @@ public class ProfitOverlay {
 
     @SubscribeEvent
     public void onMouseClick(SlotClickEvent event) {
-        if (event.slotId != 31) return;
+        if (event.slotId != 31 && event.slotId != 50) return;
         if (time.getCurrentMS() - lastChestOpen < 60000) return;
         lastChestOpen = time.getCurrentMS();
         String chestName = "";
@@ -51,6 +51,7 @@ public class ProfitOverlay {
             chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
         } catch (Exception ignored) {}
         if (!event.slot.getHasStack() || !chestName.contains("Paid Chest")) return;
+        if (event.slotId == 50) checkReroll(event);
         totalProfit += KuudraOverlay.profit;
         try {
             if (KuudraOverlay.usedKismet)
@@ -75,6 +76,15 @@ public class ProfitOverlay {
             } catch (Exception ignored) {}
         }).start();
 
+    }
+
+    private void checkReroll(SlotClickEvent event) {
+        if (event.slot.getHasStack()) {
+            String lore = event.slot.getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
+            if (lore.contains("Click to reroll this chest!")) {
+                numRerolls++;
+            }
+        }
     }
 
 
@@ -103,7 +113,7 @@ public class ProfitOverlay {
             OverlayUtils.drawString(0, 30, string4, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 40, string5, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 50, string6, textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 50, string7, textStyle, Alignment.Left);
+            OverlayUtils.drawString(0, 60, string7, textStyle, Alignment.Left);
 
             GlStateManager.popMatrix();
         }
