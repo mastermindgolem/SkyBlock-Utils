@@ -14,7 +14,6 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -159,39 +158,41 @@ public class AutoUpdater {
                 String fileName = fileUrl.getFile().substring(fileUrl.getFile().lastIndexOf('/') + 1);
                 File zipFile = new File(modulesDir, fileName);
 
-                try (InputStream inputStream = fileUrl.openStream(); OutputStream outputStream = Files.newOutputStream(zipFile.toPath())) {
+                try (InputStream inputStream = fileUrl.openStream();
+                     FileOutputStream fileOutputStream = new FileOutputStream(zipFile)) {
                     byte[] buffer = new byte[1024];
                     int bytesRead;
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        outputStream.write(buffer, 0, bytesRead);
+                        fileOutputStream.write(buffer, 0, bytesRead);
                     }
+                    fileOutputStream.getFD().sync();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                // Notify the player about the update status
+                System.out.println("File downloaded to: " + zipFile.getAbsolutePath());
+                System.out.println("File exists: " + zipFile.exists());
+
                 player.addChatMessage(new ChatComponentText(
                         EnumChatFormatting.GREEN + "Update successful: New version " +
                                 EnumChatFormatting.WHITE + "v" + latestVersion +
                                 EnumChatFormatting.GREEN + " downloaded!"
                 ));
-                changelogs = changelogs.replaceAll("(?s)```[\\s\\S]*?```", "")         // Remove code blocks (```...```)
-                        .replaceAll("#+\\s*", "")                     // Remove headings (#, ##, ###, etc.)
-                        .replaceAll("!?\\[[^\\]]*?]\\([^)]*?\\)", "")  // Remove images and links (![...](...), [...](...))
-                        .replaceAll("<[^>]*?>", "")                   // Remove HTML-like tags (<...>)
-                        .replaceAll("\\*{1,2}|_{1,2}", "")            // Remove bold and italic markers (*, **, _, __)
-                        .replaceAll("~{2}", "")                       // Remove strikethrough markers (~~)
-                        .replaceAll("\\[\\d+\\]", "")                 // Remove numbered lists ([1], [2], etc.)
-                        .replaceAll("^\\s*[-+*]\\s*", "")             // Remove bullet lists (-, +, *)
-                        .replaceAll("(?m)^\\s{0,3}>\\s?", "")         // Remove block quotes (>)
-                        .replaceAll("`", "")                          // Remove inline code (`...`)
-                        .trim();                                                        // Trim leading and trailing whitespace
-                // Split the plain text into individual lines
+                changelogs = changelogs.replaceAll("(?s)```[\\s\\S]*?```", "")
+                        .replaceAll("#+\\s*", "")
+                        .replaceAll("!?\\[[^\\]]*?]\\([^)]*?\\)", "")
+                        .replaceAll("<[^>]*?>", "")
+                        .replaceAll("\\*{1,2}|_{1,2}", "")
+                        .replaceAll("~{2}", "")
+                        .replaceAll("\\[\\d+\\]", "")
+                        .replaceAll("^\\s*[-+*]\\s*", "")
+                        .replaceAll("(?m)^\\s{0,3}>\\s?", "")
+                        .replaceAll("`", "")
+                        .trim();
+
                 String[] lines = changelogs.split("\r\n");
 
-                // Send each line as a separate chat message
                 for (String l : lines) {
-                    // Assuming you have a way to send chat messages, replace the line below with your implementation
                     Main.mc.thePlayer.addChatMessage(new ChatComponentText(l));
                 }
             }
