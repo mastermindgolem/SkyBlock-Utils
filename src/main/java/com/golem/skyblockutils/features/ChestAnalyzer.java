@@ -73,6 +73,11 @@ public class ChestAnalyzer {
         if (!(container instanceof ContainerChest)) return;
 
         List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
+        if (getAdjacentChest(lastOpenedChest) != null) {
+            chestInventory = chestInventory.subList(0, 54);
+        } else {
+            chestInventory = chestInventory.subList(0, 27);
+        }
         chestData.put(lastOpenedChest.getPos(), chestInventory);
     }
 
