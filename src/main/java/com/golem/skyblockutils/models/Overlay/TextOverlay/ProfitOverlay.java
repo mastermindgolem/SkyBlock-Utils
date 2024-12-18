@@ -51,7 +51,10 @@ public class ProfitOverlay {
             chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
         } catch (Exception ignored) {}
         if (!event.slot.getHasStack() || !chestName.contains("Paid Chest")) return;
-        if (event.slotId == 50) checkReroll(event);
+        if (event.slotId == 50) {
+            checkReroll(event);
+            return;
+        }
         totalProfit += KuudraOverlay.profit;
         try {
             if (KuudraOverlay.usedKismet)
