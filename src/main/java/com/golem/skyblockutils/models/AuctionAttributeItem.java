@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 
 public class AuctionAttributeItem extends AttributeItem {
-    public Integer price;
+    public Long price;
     public String viewauctionID;
     public HashMap<String, Attribute> attributeInfo = new HashMap<>();
     public String tier;
@@ -14,7 +14,7 @@ public class AuctionAttributeItem extends AttributeItem {
         super(auction_data);
 
         if (!auction_data.get("bin").getAsBoolean()) return;
-        this.price = auction_data.get("starting_bid").getAsInt();
+        this.price = auction_data.get("starting_bid").getAsLong();
         this.viewauctionID = auction_data.get("uuid").getAsString();
         this.tier = auction_data.get("tier").getAsString();
     }

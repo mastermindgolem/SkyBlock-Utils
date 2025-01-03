@@ -19,7 +19,7 @@ import static com.golem.skyblockutils.models.AttributePrice.LowestAttributePrice
 import static com.golem.skyblockutils.models.AttributePrice.all_attributes;
 
 public class ToolTipListener {
-	private int comboprice = -1;
+	private long comboprice = -1;
 	private String previousItemSearched = "";
 
 	private String[] previousAttributesSearched = new String[0];
@@ -37,7 +37,6 @@ public class ToolTipListener {
 		try {
 			itemNbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
 		} catch (NullPointerException e) {
-			// Possible bugs where items don't have nbt, ignore the item.
 			return;
 		}
 
@@ -68,7 +67,7 @@ public class ToolTipListener {
 				String ToolTipString = EnumChatFormatting.GOLD + "Combo Value: " + EnumChatFormatting.GREEN + String.format("%,d", comboprice);
 				newToolTip.append(ToolTipString);
 			}
-			int attributeprice;
+			long attributeprice;
 			AttributeItemType key = AttributeUtils.getItemType(name);
 			if (key == null) {
 				event.toolTip.add(newToolTip.toString());

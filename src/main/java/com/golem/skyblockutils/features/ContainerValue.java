@@ -70,7 +70,7 @@ public class ContainerValue {
 			renderStrings.clear();
 
 			for (String displayString : displayStrings.keySet()) {
-				int amount = displayStrings.get(displayString).quantity;
+				int amount = (int) displayStrings.get(displayString).quantity;
 				long value = displayStrings.get(displayString).price;
 				if (amount > 1) {
 					displayString = amount + "x " + displayString;
@@ -155,16 +155,16 @@ public class ContainerValue {
 		switch (configFile.containerSorting) {
 			case 0:
 				valueComparator = (entry1, entry2) -> {
-					long product1 = entry1.getValue().quantity * entry1.getValue().price;
-					long product2 = entry2.getValue().quantity * entry2.getValue().price;
+					long product1 = (long) (entry1.getValue().quantity * entry1.getValue().price);
+					long product2 = (long) (entry2.getValue().quantity * entry2.getValue().price);
 					return Long.compare(product2, product1); // Sorting in descending order
 				};
 				list.sort(valueComparator);
 				break;
 			case 1:
 				valueComparator = (entry1, entry2) -> {
-					long product1 = entry1.getValue().quantity * entry1.getValue().price;
-					long product2 = entry2.getValue().quantity * entry2.getValue().price;
+					long product1 = (long) (entry1.getValue().quantity * entry1.getValue().price);
+					long product2 = (long) (entry2.getValue().quantity * entry2.getValue().price);
 					return Long.compare(product1, product2); // Sorting in ascending order
 				};
 				list.sort(valueComparator);

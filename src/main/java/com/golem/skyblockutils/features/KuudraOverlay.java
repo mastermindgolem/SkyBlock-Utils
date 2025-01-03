@@ -125,7 +125,7 @@ public class KuudraOverlay {
 						case "HOLLOW_WAND":
 						case "TENTACLE_DYE":
 						case "ENRAGER": {
-							int price = LowestBin.getOrDefault(item_id, 0);
+							long price = LowestBin.getOrDefault(item_id, 0L);
 							displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
 							totalValue += price;
 							break;

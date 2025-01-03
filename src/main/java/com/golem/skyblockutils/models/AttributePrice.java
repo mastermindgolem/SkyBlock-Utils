@@ -26,9 +26,9 @@ public class AttributePrice {
 	public static final String[] all_attributes = new String[]{"arachno", "attack_speed", "combo", "elite", "ignition", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "mana_steal", "ender", "blazing", "undead", "warrior", "deadeye", "fortitude", "magic_find"};
 	public static final AttributeItemType[] all_kuudra_categories = AttributeItemType.values();
 	private static HashMap<String, AuctionAttributeItem> AllCombos = new HashMap<>();
-	public static HashMap<String, Integer> LowestBin = new HashMap<>();
+	public static HashMap<String, Long> LowestBin = new HashMap<>();
 	public static HashMap<AttributeItemType, HashMap<String, ArrayList<AuctionAttributeItem>>> AttributePrices = new HashMap<>();
-	public static HashMap<AttributeItemType, HashMap<String, ArrayList<Integer>>> LowestAttributePrices = new HashMap<>();
+	public static HashMap<AttributeItemType, HashMap<String, ArrayList<Long>>> LowestAttributePrices = new HashMap<>();
 	static final IChatComponent ErrorMessage = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
 	public static List<String> equipmentExcludeAttributes;
 	public static List<String> armorExcludeAttributes;
@@ -50,7 +50,7 @@ public class AttributePrice {
 					AttributeItemType itemType = item.getItemType();
 
 					if (!LowestBin.containsKey(item.item_id)) LowestBin.put(item.item_id, item.price);
-					if (LowestBin.getOrDefault(item.item_id, 0) > item.price)
+					if (LowestBin.getOrDefault(item.item_id, 0L) > item.price)
 						LowestBin.put(item.item_id, item.price);
 
 					if (itemType == null) continue;
@@ -63,7 +63,7 @@ public class AttributePrice {
 					for (String attr : item.attributes.keySet()) {
 						Attribute attribute = item.addAttribute(attr);
 
-						LowestAttributePrices.get(itemType).putIfAbsent(attribute.attribute, new ArrayList<>(Collections.nCopies(11, 0)));
+						LowestAttributePrices.get(itemType).putIfAbsent(attribute.attribute, new ArrayList<>(Collections.nCopies(11, 0L)));
 
 						for (int i = 0; i <= attribute.tier; i++) {
 							if (LowestAttributePrices.get(itemType).get(attribute.attribute).get(i) == 0) {
@@ -158,23 +158,23 @@ public class AttributePrice {
 
 		if (dev) ChatUtils.addChatMessage("Item ID: " + item_id);
 		if (dev) ChatUtils.addChatMessage("Item Type: " + item.item_type);
-		if (dev) ChatUtils.addChatMessage("Lowest Bin: " + LowestBin.getOrDefault(item_id, 0));
+		if (dev) ChatUtils.addChatMessage("Lowest Bin: " + LowestBin.getOrDefault(item_id, 0L));
 
 		if (!LowestAttributePrices.containsKey(item.item_type)) return null;
 		List<String> excludeAttributes = (AttributeUtils.isArmor(item_id) ? armorExcludeAttributes : equipmentExcludeAttributes);
 
 		String best_attribute = "";
 		int best_tier = 0;
-		int best_value = 0;
-		int added_value = 0;
+		long best_value = 0;
+		long added_value = 0;
 		int total_tiers = 0;
-		int value;
+		long value;
 
 		for (String attr_key : item.attributes.keySet()) {
 			if (excludeAttributes.contains(attr_key)) continue;
 			if (!LowestAttributePrices.get(item.item_type).containsKey(attr_key)) continue;
 			int attr_tier = item.attributes.get(attr_key);
-			ArrayList<Integer> items = LowestAttributePrices.get(item.item_type).get(attr_key);
+			ArrayList<Long> items = LowestAttributePrices.get(item.item_type).get(attr_key);
 			int min_tier = (item.item_type == Shard ? configFile.minShardTier : configFile.minArmorTier);
 			if (min_tier > 0) {
 				value = items.get(min_tier) << (attr_tier - 1);
@@ -197,7 +197,7 @@ public class AttributePrice {
 
 		AuctionAttributeItem comboitem = getComboValue(item.item_type, item.attributes.keySet());
 
-		int combo_value = (comboitem == null ? 0 : comboitem.price);
+		long combo_value = (comboitem == null ? 0 : comboitem.price);
 		if (dev) {
 			Kuudra.addChatMessage("Combo Value: " + combo_value);
 			Kuudra.addChatMessage("Best Attribute: " + best_attribute);
@@ -216,6 +216,7 @@ public class AttributePrice {
 				displayName = displayName.replace(r, "");
 
 		result.best_attribute = new Attribute(best_attribute, best_tier, best_value);
+		result.display_name = displayName;
 
 		if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1_000_000) {
 			result.top_display = "GR";
@@ -226,10 +227,10 @@ public class AttributePrice {
 		} else if (combo_value > configFile.min_godroll_price * 1000000 && combo_value > best_value) {
 			result.top_display = "GR";
 			result.bottom_display = 0;
-			result.display_string = String.join(" ", attrArray.stream().sorted().collect(Collectors.toList())) + " " + displayName;
+			result.display_string = String.join(" ", attrArray.stream().map(AttributePrice::ShortenedAttribute).sorted().collect(Collectors.toList())) + " " + displayName;
 			result.value = combo_value;
 			return result;
-		} else if (best_value > LowestBin.getOrDefault(item_id, 0)) {
+		} else if (best_value > LowestBin.getOrDefault(item_id, 0L)) {
 			result.top_display = ShortenedAttribute(best_attribute);
 			result.bottom_display = best_tier;
 			result.display_string = ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName;
@@ -239,19 +240,19 @@ public class AttributePrice {
 			result.top_display = ShortenedAttribute(attrArray.get(0));
 			result.bottom_display = item.attributes.get(attrArray.get(0));
 			result.display_string = ShortenedAttribute(attrArray.get(0)) + " " + item.attributes.get(attrArray.get(0)) + " " + displayName;
-			result.value = LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0);
+			result.value = LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0L);
 			return result;
-		} else if (AttributeUtils.isArmor(item_id) && salvageValue > LowestBin.getOrDefault(item_id, 0)) {
+		} else if (AttributeUtils.isArmor(item_id) && salvageValue > LowestBin.getOrDefault(item_id, 0L)) {
 			result.top_display = "SALV";
 			result.bottom_display = 0;
 			result.display_string = "SALV " + displayName;
 			result.value = salvageValue;
 			return result;
-		} else if (LowestBin.getOrDefault(item_id, 0) > 0 && item.attributes.size() > 0) {
+		} else if (LowestBin.getOrDefault(item_id, 0L) > 0 && item.attributes.size() > 0) {
 			result.top_display = "LBIN";
 			result.bottom_display = 0;
-			result.display_string = String.join(" ", attrArray.stream().sorted().collect(Collectors.toList())) + " " + displayName;
-			result.value = LowestBin.getOrDefault(item_id, 0);
+			result.display_string = "LBIN " + displayName;
+			result.value = LowestBin.getOrDefault(item_id, 0L);
 			return result;
 		}
 		return null;
