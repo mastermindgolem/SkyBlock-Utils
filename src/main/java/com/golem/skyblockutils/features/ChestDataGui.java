@@ -29,6 +29,7 @@ public class ChestDataGui extends GuiScreen {
     private GuiCheckBox showArmor;
     private GuiCheckBox showEquipment;
     private GuiButton sortOrder;
+    private GuiButton exit;
     LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
 
 
@@ -44,6 +45,7 @@ public class ChestDataGui extends GuiScreen {
         this.buttonList.add(this.showArmor = new GuiCheckBox(8, 425, 25, "Show Armor", true));
         this.buttonList.add(this.showEquipment = new GuiCheckBox(9, 525, 25, "Show Equipment", true));
         this.buttonList.add(this.sortOrder = new GuiButtonExt(10, 25, 50, 100, 20, "Sorting: Ascending"));
+        this.buttonList.add(this.exit = new GuiButtonExt(11, this.width - 50, 25, 50, 20, "Exit"));
 
         loadData();
 
@@ -140,6 +142,8 @@ public class ChestDataGui extends GuiScreen {
         else if (button == sortOrder) {
             displayStrings = sort(displayStrings, lastSort);
             sortOrder.displayString = Objects.equals(sortOrder.displayString, "Sorting: Ascending") ? "Sorting: Descending" : "Sorting: Ascending";
+        } else if (button == exit) {
+            this.mc.displayGuiScreen(null);
         }
 
     }
