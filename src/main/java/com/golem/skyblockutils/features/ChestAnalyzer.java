@@ -2,6 +2,7 @@ package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.ChatUtils;
+import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.event.ClickEvent;
@@ -13,11 +14,15 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.golem.skyblockutils.Main.mc;
 
 public class ChestAnalyzer {
 
@@ -45,6 +50,19 @@ public class ChestAnalyzer {
         ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Chest analyzer disabled.", true);
         ChatUtils.addChatMessage(EnumChatFormatting.YELLOW + "[Click this to view the chest data]", new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/analyzechests gui"));
 
+    }
+
+    @SubscribeEvent
+    public void onTick(RenderWorldLastEvent event) {
+        if (mc.theWorld == null || mc.thePlayer == null) return;
+        if (!analyzeChests) return;
+        for (BlockPos pos : chestData.keySet()) {
+            if (!(mc.theWorld.getTileEntity(pos) instanceof TileEntityChest)) continue;
+            TileEntityChest chest = (TileEntityChest) mc.theWorld.getTileEntity(pos);
+            RenderUtils.drawBlockBox(pos, Color.GREEN, 5, event.partialTicks);
+            BlockPos adjacent = getAdjacentChest(chest);
+            if (adjacent != null) RenderUtils.drawBlockBox(adjacent, Color.GREEN, 5, event.partialTicks);
+        }
     }
 
     @SubscribeEvent
