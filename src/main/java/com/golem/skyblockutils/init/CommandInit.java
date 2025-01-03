@@ -13,6 +13,7 @@ public class CommandInit {
 			new AttributeCommand(),
 			new EquipmentCommand(),
 			new VanquishedCommand(),
+			new MoltenCommand(),
 			new StatCommand(),
 			new UpgradeCommand(),
 			new SbuCommand(),

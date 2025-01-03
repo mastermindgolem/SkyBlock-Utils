@@ -26,14 +26,14 @@ import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 import static com.golem.skyblockutils.utils.AuctionHouse.CheckIfAuctionsSearched;
 import static com.golem.skyblockutils.utils.Colors.getRarityCode;
 
-public class VanquishedCommand extends CommandBase implements Help {
+public class MoltenCommand extends CommandBase implements Help {
     private int level;
 
     private final List<String> helpStrings;
 
-    private final AttributeItemType[] item_types = new AttributeItemType[] {MagmaNecklace, GhastCloak, BlazeBelt, GlowstoneGauntlet};
+    private final AttributeItemType[] item_types = new AttributeItemType[] {MoltenNecklace, MoltenCloak, MoltenBelt, MoltenBracelet};
 
-    public VanquishedCommand() {
+    public MoltenCommand() {
         helpStrings = new ArrayList<>();
     }
 
@@ -55,24 +55,24 @@ public class VanquishedCommand extends CommandBase implements Help {
     @Override
     public List<String> getHoverStrings() {
         return Arrays.asList(
-                EnumChatFormatting.BLUE + " ===================Vanquished Equipment help menu!=================== ",
+                EnumChatFormatting.BLUE + " ===================molten Equipment help menu!=================== ",
                 EnumChatFormatting.RESET + "\n",
-                example() + "                  Attribute price but for vanquished equipment                  ",
+                example() + "                  Attribute price but for molten equipment                  ",
                 EnumChatFormatting.RESET + "\n",
-                EnumChatFormatting.GOLD + "/vanquishedprice help" +
+                EnumChatFormatting.GOLD + "/moltenprice help" +
                         EnumChatFormatting.GRAY + " ⬅ Shows this message.",
                 EnumChatFormatting.RESET + "\n",
                 EnumChatFormatting.RESET + "\n",
-                EnumChatFormatting.GRAY + " " + EnumChatFormatting.STRIKETHROUGH + "/vanquishedprice ah W.I.P.",
+                EnumChatFormatting.GRAY + " " + EnumChatFormatting.STRIKETHROUGH + "/moltenprice ah W.I.P.",
                 EnumChatFormatting.RESET + "\n",
                 EnumChatFormatting.RESET + "\n",
-                EnumChatFormatting.GOLD + "/vanquishedprice attribute [level]" +
+                EnumChatFormatting.GOLD + "/moltenprice attribute [level]" +
                         EnumChatFormatting.GRAY  + " ⬅ Shows best price for attribute at any level, unless [level] is specified",
                 EnumChatFormatting.RESET + "\n",
-                example() + "E.g. /vanquishedprice veteran 1",
+                example() + "E.g. /moltenprice veteran 1",
                 EnumChatFormatting.RESET + "\n",
                 EnumChatFormatting.RESET + "\n",
-                EnumChatFormatting.GOLD + "/vanquishedprice attribute1 attribute2" +
+                EnumChatFormatting.GOLD + "/moltenprice attribute1 attribute2" +
                         EnumChatFormatting.GRAY + " ⬅ Shows cheapest equipment of specified combo",
                 EnumChatFormatting.RESET + "\n",
                 EnumChatFormatting.RESET + "\n",
@@ -91,11 +91,11 @@ public class VanquishedCommand extends CommandBase implements Help {
         return
                 EnumChatFormatting.GRAY + "▶ " +
                         EnumChatFormatting.GOLD + "/" +
-                        EnumChatFormatting.BOLD + "vanquishedprice" +
+                        EnumChatFormatting.BOLD + "moltenprice" +
                         EnumChatFormatting.RESET +
                         EnumChatFormatting.GOLD + "price attribute " +
                         EnumChatFormatting.AQUA +	"level" +
-                        example() +	"(Aliases: /vp)" +
+                        example() +	"(Aliases: /mp)" +
                         EnumChatFormatting.RESET + "\n";
     }
 
@@ -106,20 +106,19 @@ public class VanquishedCommand extends CommandBase implements Help {
 
     @Override
     public String getCommandName() {
-        return "vanquishedprice";
+        return "moltenprice";
     }
 
     @Override
     public List<String> getCommandAliases() {
         List<String> al = new ArrayList<>();
-        al.add("vp");
-        al.add("vanquishprice");
+        al.add("mp");
         return al;
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/vanquishedprice help for more information";
+        return "/moltenprice help for more information";
     }
 
     @Override
@@ -215,16 +214,12 @@ public class VanquishedCommand extends CommandBase implements Help {
             ChatUtils.addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()));
             if (items.size() < 5) {
                 for (AuctionAttributeItem item: items) {
-                    final IChatComponent msg = new ChatComponentText(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID) {
-                    }));
-                    mc.thePlayer.addChatMessage(msg);
+                    ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
                 }
             } else {
                 for (int i = 0; i < 5; i++) {
                     AuctionAttributeItem item = items.get(i);
-                    final IChatComponent msg = new ChatComponentText(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID) {
-                    }));
-                    mc.thePlayer.addChatMessage(msg);
+                    ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
                 }
             }
         }

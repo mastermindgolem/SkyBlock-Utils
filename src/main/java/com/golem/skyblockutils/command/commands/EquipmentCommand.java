@@ -1,7 +1,10 @@
 package com.golem.skyblockutils.command.commands;
 
+import com.golem.skyblockutils.models.AttributeItemType;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.models.AuctionAttributeItem;
 import com.golem.skyblockutils.utils.AttributeUtils;
+import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import logger.Logger;
@@ -15,13 +18,11 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.*;
+import static com.golem.skyblockutils.models.AttributeItemType.*;
 import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 import static com.golem.skyblockutils.utils.AuctionHouse.CheckIfAuctionsSearched;
 import static com.golem.skyblockutils.utils.Colors.getRarityCode;
@@ -31,7 +32,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 
 	private final List<String> helpStrings;
 
-	private final String[] item_types = new String[] {"MOLTEN_BELT", "MOLTEN_BRACELET", "MOLTEN_NECKLACE", "MOLTEN_CLOAK", "IMPLOSION_BELT", "GAUNTLET_OF_CONTAGION", "LAVA_SHELL_NECKLACE"};
+	private final AttributeItemType[] item_types = new AttributeItemType[] {LavaShellNecklace, ScourgeCloak, ImplosionBelt, GauntletOfContagion};
 
 	public EquipmentCommand() {
 		helpStrings = new ArrayList<>();
@@ -57,7 +58,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 		return Arrays.asList(
 			EnumChatFormatting.BLUE + " ===================Equipment help menu!=================== ",
 			EnumChatFormatting.RESET + "\n",
-			example() + "                  Attribute price but for equipment                  ",
+			example() + "                  Attribute price but for non-Molten equipment                  ",
 			EnumChatFormatting.RESET + "\n",
 			EnumChatFormatting.GOLD + "/equipmentprice help" +
 			EnumChatFormatting.GRAY + " ⬅ Shows this message.",
@@ -123,7 +124,6 @@ public class EquipmentCommand extends CommandBase implements Help {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
-	//		TODO:	Separate commands later! !!! <
 		if (args.length == 0) {
 			StringBuilder sb = new StringBuilder();
 			for (String str : getHoverStrings()) {
@@ -141,14 +141,9 @@ public class EquipmentCommand extends CommandBase implements Help {
 			if (CheckIfAuctionsSearched()) return;
 
 			addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase());
-			getAttributePrice(attribute1, item_types, 0);
+			getAttributePrice(attribute1, 0);
 
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1) {
-				@Override
-				public Action getAction() {
-					//custom behavior
-					return Action.RUN_COMMAND;
-				}
 			})));
 		}
 		if (args.length == 2) {
@@ -169,7 +164,7 @@ public class EquipmentCommand extends CommandBase implements Help {
 				if (CheckIfAuctionsSearched()) return;
 
 				addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + level);
-				getAttributePrice(attribute1, item_types, level);
+				getAttributePrice(attribute1, level);
 
 				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1 + " " + level) {
 					@Override
@@ -180,22 +175,16 @@ public class EquipmentCommand extends CommandBase implements Help {
 			} else {
 				String attribute2 = AttributeUtils.AttributeAliases(args[1]);
 				addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + attribute2.toUpperCase());
-				for (String key: item_types) {
-					JsonObject item = AttributePrice.getComboValue(key, new ArrayList<>(Arrays.asList(attribute1,attribute2)));
+				Set<String> attributeSet = new HashSet<>();
+				attributeSet.add(attribute1);
+				attributeSet.add(attribute2);
+				for (AttributeItemType key : item_types) {
+					AuctionAttributeItem item = AttributePrice.getComboValue(key, attributeSet);
 					if (item == null) continue;
 					Logger.debug(item);
-					final IChatComponent msg = new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + " - " + EnumChatFormatting.GREEN + coolFormat(item.get("starting_bid").getAsDouble(), 0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.get("uuid").getAsString()) {
-						public Action getAction() {
-							return Action.RUN_COMMAND;
-						}
-					}).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + "\n" + item.get("item_lore").getAsString()))));
-					mc.thePlayer.addChatMessage(msg);
+					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
 				}
 				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1 + " " + attribute2) {
-					@Override
-					public Action getAction() {
-						return Action.RUN_COMMAND;
-					}
 				})));
 			}
 		}
@@ -207,43 +196,31 @@ public class EquipmentCommand extends CommandBase implements Help {
 
 
 
-	public void getAttributePrice(String attribute, String[] keys, int level) {
-		for (String key: keys) {
+	public void getAttributePrice(String attribute, int level) {
+		for (AttributeItemType key : item_types) {
 			if (!AttributePrices.get(key).containsKey(attribute)) continue;
-			ArrayList<JsonObject> items = AttributePrices.get(key).get(attribute);
+			ArrayList<AuctionAttributeItem> items = AttributePrices.get(key).get(attribute);
 			if (items == null) continue;
 			if (level == 0) {
 				items = items.stream()
-						.filter(item -> item.get(attribute).getAsInt() >= configFile.minArmorTier)
+						.filter(item -> item.attributes.get(attribute) >= configFile.minArmorTier)
 						.collect(Collectors.toCollection(ArrayList::new));
 			} else {
 				items = items.stream()
-						.filter(item -> item.get(attribute).getAsInt() == level)
+						.filter(item -> item.attributes.get(attribute) == level)
 						.collect(Collectors.toCollection(ArrayList::new));
 			}
 
-
-			items.sort(Comparator.comparingDouble((JsonObject o) -> o.get("price_per_tier").getAsDouble()));
-			addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key));
+			items.sort(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attribute).price_per));
+			addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()));
 			if (items.size() < 5) {
-				for (JsonObject item: items) {
-					final IChatComponent msg = new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + " - " + EnumChatFormatting.YELLOW + coolFormat(item.get("price_per_tier").getAsDouble(), 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.get("starting_bid").getAsDouble(),0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.get("uuid").getAsString()) {
-						public Action getAction() {
-							return Action.RUN_COMMAND;
-						}
-					}).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + "\n" + item.get("item_lore").getAsString()))));
-					mc.thePlayer.addChatMessage(msg);
+				for (AuctionAttributeItem item: items) {
+					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
 				}
 			} else {
 				for (int i = 0; i < 5; i++) {
-					JsonObject item = items.get(i);
-					Logger.debug(item);
-					final IChatComponent msg = new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + " - " + EnumChatFormatting.YELLOW + coolFormat(item.get("price_per_tier").getAsDouble(), 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.get("starting_bid").getAsDouble(),0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.get("uuid").getAsString()) {
-						public Action getAction() {
-							return Action.RUN_COMMAND;
-						}
-					}).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(getRarityCode(item.get("tier").getAsString()) + item.get("item_name").getAsString() + "\n" + item.get("item_lore").getAsString()))));
-					mc.thePlayer.addChatMessage(msg);
+					AuctionAttributeItem item = items.get(i);
+					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
 				}
 			}
 		}
