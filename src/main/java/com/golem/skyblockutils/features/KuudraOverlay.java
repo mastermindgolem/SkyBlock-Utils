@@ -1,9 +1,13 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.events.InventoryChangeEvent;
+import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
+import com.golem.skyblockutils.utils.InventoryData;
+import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -20,7 +24,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.math.BigInteger;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,48 +38,51 @@ import static com.golem.skyblockutils.models.AttributePrice.LowestBin;
 public class KuudraOverlay {
 
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
-	public static int profit = 0;
 	public static int keyCost = 0;
-	public int xSize = 0;
-	public int guiLeft = 0;
-	public int guiTop = 0;
+	private int xSize = 0;
+	private int guiLeft = 0;
+	private int guiTop = 0;
 	public static boolean usedKismet = false;
 
+	private List<String> displayStrings = new ArrayList<>();
+	private long totalValue;
+	public static long totalProfit;
+	public static ArrayList<Integer> expectedProfit = new ArrayList<>();
+
+
 	@SubscribeEvent
-	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
+	public void onInventoryChange(InventoryChangeEvent event) {
 		try {
-			if (!(event.gui instanceof GuiChest)) return;
+			if (!(event.event.gui instanceof GuiChest)) return;
 			if (!configFile.kuudra_overlay) return;
 			if (configFile.customProfitOverlay == 0) return;
 
-			GuiChest gui = (GuiChest) event.gui;
+			GuiChest gui = (GuiChest) event.event.gui;
 			Container container = gui.inventorySlots;
 			if (!(container instanceof ContainerChest)) return;
 			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest")) return;
-			List<Slot> fullChestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
-			List<String> displayStrings = new ArrayList<>();
-			BigInteger totalValue = new BigInteger("0");
-			BigInteger totalProfit;
-
-
+			List<Slot> fullChestInventory = InventoryData.containerSlots;
+			displayStrings = new ArrayList<>();
+			totalValue = 0;
+			totalProfit = 0;
 
 			if (configFile.customProfitOverlay == 1) {
 				xSize = ((AccessorGuiContainer) gui).getXSize();
 				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
-			}
-			else if (configFile.customProfitOverlay == 2) {
+			} else if (configFile.customProfitOverlay == 2) {
 				xSize = (int) (ContainerOverlay.element.position.getX());
 				guiLeft = 0;
 				guiTop = (int) (ContainerOverlay.element.position.getY());
 			}
 
-
 			List<Slot> chestInventory = fullChestInventory.subList(0, 33);
+
 			for (Slot slot : chestInventory) {
 				try {
-					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane)) continue;
+					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
+						continue;
 					Matcher matcher = ESSENCE_PATTERN.matcher(slot.getStack().getDisplayName());
 					if (matcher.matches() && configFile.considerEssenceValue) {
 						int buy_price = 1000;
@@ -85,9 +92,10 @@ public class KuudraOverlay {
 							buy_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("sell_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 							sell_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 							amount = KuudraPetEssenceBonus(Integer.parseInt(matcher.group(2)));
-						} catch (Exception ignored) {}
+						} catch (Exception ignored) {
+						}
 						displayStrings.add(EnumChatFormatting.YELLOW + String.valueOf(amount) + "x " + EnumChatFormatting.LIGHT_PURPLE + matcher.group(1) + " Essence" + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(amount * (sell_price + buy_price) / 2F));
-						totalValue = totalValue.add(new BigInteger(String.valueOf(amount * (buy_price + sell_price) / 2)));
+						totalValue += (long) amount * (buy_price + sell_price) / 2;
 					}
 					if (Objects.equals(slot.getStack().getItem().getRegistryName(), Items.enchanted_book.getRegistryName())) {
 						NBTTagCompound enchants = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments");
@@ -98,10 +106,11 @@ public class KuudraOverlay {
 							String enchantString = "ENCHANTMENT_" + enchant.toUpperCase() + "_" + enchants.getInteger(enchant);
 							try {
 								price = bazaar.get("products").getAsJsonObject().get(enchantString).getAsJsonObject().get(sell_type).getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
-							} catch (Exception ignored) {}
+							} catch (Exception ignored) {
+							}
 
 							displayStrings.add(ToolTipListener.TitleCase(enchant + " " + enchants.getInteger(enchant)) + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-							totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
+							totalValue += price;
 
 						}
 
@@ -118,7 +127,7 @@ public class KuudraOverlay {
 						case "ENRAGER": {
 							int price = LowestBin.getOrDefault(item_id, 0);
 							displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-							totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
+							totalValue += price;
 							break;
 						}
 						case "MANDRAA":
@@ -130,14 +139,14 @@ public class KuudraOverlay {
 							} catch (Exception ignored) {
 							}
 							displayStrings.add(slot.getStack().getDisplayName() + ": " + EnumChatFormatting.GREEN + Main.formatNumber(price));
-							totalValue = totalValue.add(new BigInteger(String.valueOf(price)));
+							totalValue += price;
 							break;
 						}
 						default: {
 							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
 							if (valueData == null) break;
 							String displayString = valueData.get("display_string").getAsString() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(valueData.get("value").getAsBigInteger());
-							totalValue = totalValue.add(valueData.get("value").getAsBigInteger());
+							totalValue += valueData.get("value").getAsLong();
 							displayStrings.add(displayString);
 							break;
 						}
@@ -165,7 +174,8 @@ public class KuudraOverlay {
 						itemCost = Math.min(myceliumCost, redSandCost);
 						break;
 				}
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 
 			if (chestName.contains("Paid")) {
 				try {
@@ -195,10 +205,37 @@ public class KuudraOverlay {
 							usedKismet = true;
 						}
 					}
+					totalProfit = totalValue - keyCost;
 
-				} catch (Exception ignored) {}
+				} catch (Exception ignored) {
+				}
 			}
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SubscribeEvent
+	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
+		try {
+			if (!(event.gui instanceof GuiChest)) return;
+			if (!configFile.kuudra_overlay) return;
+			if (configFile.customProfitOverlay == 0) return;
+
+			GuiChest gui = (GuiChest) event.gui;
+			Container container = gui.inventorySlots;
+			if (!(container instanceof ContainerChest)) return;
+			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+			if (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest")) return;
+
+			if (expectedProfit.size() == 5) {
+				if (totalValue < expectedProfit.get(Kuudra.tier - 1) - bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt()) {
+					RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(50));
+				} else {
+					RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(31));
+				}
+			}
 
 			GlStateManager.disableLighting();
 
@@ -227,12 +264,8 @@ public class KuudraOverlay {
 					0xffffffff
 			);
 
-			totalProfit = totalValue.subtract(new BigInteger(String.valueOf(keyCost)));
-
-			profit = totalProfit.intValue();
-
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
-					(totalProfit.signum() > 0 ? EnumChatFormatting.DARK_GREEN + "Profit: " + EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED + "Loss: " + EnumChatFormatting.RED) + Main.formatNumber(totalProfit),
+					(totalProfit > 0 ? EnumChatFormatting.DARK_GREEN + "Profit: " + EnumChatFormatting.GREEN : EnumChatFormatting.DARK_RED + "Loss: " + EnumChatFormatting.RED) + Main.formatNumber(totalProfit),
 					guiLeft + xSize + 5,
 					guiTop + 25 + 10 * displayStrings.size(),
 					0xffffffff

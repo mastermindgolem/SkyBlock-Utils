@@ -40,7 +40,6 @@ public class ProfitOverlay {
     public void onMouseClick(SlotClickEvent event) {
         if (event.slotId != 31 && event.slotId != 50) return;
         if (time.getCurrentMS() - lastChestOpen < 60000) return;
-        lastChestOpen = time.getCurrentMS();
         String chestName = "";
         Container container = null;
         try {
@@ -55,12 +54,8 @@ public class ProfitOverlay {
             checkReroll(event);
             return;
         }
-        totalProfit += KuudraOverlay.profit;
-        try {
-            if (KuudraOverlay.usedKismet)
-                totalProfit -= bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
-        }
-        catch (Exception ignored) {}
+        lastChestOpen = time.getCurrentMS();
+        totalProfit += KuudraOverlay.totalProfit;
         chests++;
 
         if (!configFile.sendProfitData) return;
@@ -73,7 +68,7 @@ public class ProfitOverlay {
                 data.add("secondary", new JsonParser().parse(finalContainer.getInventory().get(12).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
                 data.add("primaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(11)));
                 data.add("secondaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(12)));
-                data.addProperty("profit", KuudraOverlay.profit);
+                data.addProperty("profit", KuudraOverlay.totalProfit);
                 data.addProperty("keyCost", KuudraOverlay.keyCost);
                 new RequestUtil().sendPostRequest("https://mastermindgolem.pythonanywhere.com/?profit=a", data);
             } catch (Exception ignored) {}
@@ -86,6 +81,7 @@ public class ProfitOverlay {
             String lore = event.slot.getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
             if (lore.contains("Click to reroll this chest!")) {
                 numRerolls++;
+                totalProfit -= bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.utils.InventoryData;
 import com.google.gson.JsonObject;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
@@ -18,7 +18,7 @@ public class AttributeOverlay {
 	public static void drawSlot(Slot slot) {
 		if (slot == null || !slot.getHasStack() || !Main.configFile.attribute_overlay) return;
 		try {
-			JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
+			JsonObject valueData = InventoryData.values.get(slot);
 			if (valueData == null) return;
 			if (Objects.equals(valueData.get("top_display").getAsString(), "LBIN") && !configFile.showLbinOverlay) return;
 
