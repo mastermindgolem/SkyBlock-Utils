@@ -1,121 +1,121 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.init.KeybindsInit;
+import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
-import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
+import com.golem.skyblockutils.utils.InventoryData;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.input.Mouse;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import static com.golem.skyblockutils.Main.configFile;
 
 public class ContainerValue {
-	public static boolean isActive = false;
+	List<String> renderStrings = new ArrayList<>();
+	private int xSize;
+	private int guiLeft;
+	private int guiTop;
+	private long totalValue;
+
+	private GuiCheckBox active;
+
+	@SubscribeEvent
+	public void onInventoryChange(InventoryChangeEvent event) {
+		try {
+			if (!(event.event.gui instanceof GuiChest)) return;
+			if (configFile.container_value == 0) return;
+
+			GuiChest gui = (GuiChest) event.event.gui;
+			Container container = gui.inventorySlots;
+			if (!(container instanceof ContainerChest)) return;
+			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+			if (chestName.contains("Paid Chest") || chestName.contains("Free Chest")) return;
+			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
+			totalValue = 0;
+
+			xSize = (int) (ContainerOverlay.element.position.getX() - 5);
+			guiLeft = 0;
+			guiTop = (int) (ContainerOverlay.element.position.getY() - 5);
+
+			if (configFile.container_value == 1) {
+				AccessorGuiContainer ac = (AccessorGuiContainer) gui;
+				xSize = ac.getXSize();
+				guiLeft = ac.getGuiLeft();
+				guiTop = ac.getGuiTop();
+			}
+
+			for (Slot slot : InventoryData.containerSlots.subList(0, InventoryData.containerSlots.size() - 36)) {
+				JsonObject value = InventoryData.values.get(slot);
+				if (value == null) continue;
+				String displayString = value.get("display_string").getAsString();
+				totalValue += value.get("value").getAsLong();
+				displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, value.get("value").getAsLong()));
+			}
+
+			displayStrings = sort(displayStrings);
+
+			for (String displayString : displayStrings.keySet()) {
+				int amount = displayStrings.get(displayString).quantity;
+				long value = displayStrings.get(displayString).price;
+				if (amount > 1) {
+					displayString = amount + "x " + displayString;
+				}
+
+				renderStrings.add(displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(value * amount));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@SubscribeEvent
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
-
 			if (!(event.gui instanceof GuiChest)) return;
-			if (!isActive) return;
 			if (configFile.container_value == 0) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;
 			if (!(container instanceof ContainerChest)) return;
 			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (chestName.contains("Paid Chest") || chestName.contains("Free Chest"))  return;
-			List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
-			LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
-			BigDecimal totalValue = new BigDecimal("0");
+			if (chestName.contains("Paid Chest") || chestName.contains("Free Chest")) return;
 
-
-			int xSize = (int) (ContainerOverlay.element.position.getX() - 5);
-			int guiLeft = 0;
-			int guiTop = (int) (ContainerOverlay.element.position.getY() - 5);
-
-			if (configFile.container_value == 1) {
-			AccessorGuiContainer ac = (AccessorGuiContainer) gui;
-				// Works for me for intellij and compiling! We needa fix ur intellij ngl
-				xSize = ac.getXSize();
-				guiLeft = ac.getGuiLeft();
-				guiTop = ac.getGuiTop();
+			if (active == null) {
+				active = new GuiCheckBox(999, 5, event.gui.height - 25, "SBU Container Value", false);
 			}
+			active.yPosition = event.gui.height - 25;
+			active.drawButton(Main.mc, 0, 0);
 
-			chestInventory = chestInventory.subList(0, chestInventory.size() - 36);
-			switch (configFile.dataSource) {
-				case 0:
-					for (Slot slot : chestInventory) {
-						try {
-							if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
-								continue;
-							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
-							if (valueData == null) continue;
-							String displayString = valueData.get("display_string").getAsString();
-							totalValue = totalValue.add(valueData.get("value").getAsBigDecimal());
-							displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
-							//RenderUtils.highlight(Color.GREEN, (GuiContainer) event.gui, slot);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					break;
-				case 1:
-					displayStrings = DescriptionHandler.displayStrings;
-					break;
-			}
+			if (active == null || !active.isChecked()) return;
 
-			displayStrings = sort(displayStrings);
-
-			if (configFile.dataSource == 0 && totalValue.compareTo(BigDecimal.ONE) < 0)  return;
-			long totalLbin = displayStrings.values().stream().mapToLong(displayString -> displayString.price * displayString.quantity).sum();
-			long totalMedian = displayStrings.values().stream().mapToLong(displayString -> displayString.median * displayString.quantity).sum();
-			if (configFile.dataSource == 1 && (totalLbin == 0 || totalMedian == 0))return;
+			if (totalValue <= 0)  return;
 
 			GlStateManager.disableLighting();
 			GlStateManager.translate(0, 0, 200);
 			int counter = 1;
 
-
-
 			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
-					(configFile.dataSource == 0 || !GameSettings.isKeyDown(KeybindsInit.getComboValue) ?
-							EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalLbin)
-							: EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalMedian)),
+					EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalValue),
 					guiLeft + xSize + 5,
 					guiTop + 5,
 					0xffffffff
 			);
 
-
-			for (String displayString : displayStrings.keySet()) {
-				int amount = displayStrings.get(displayString).quantity;
-				long value = displayStrings.get(displayString).price;
-				long median = displayStrings.get(displayString).median;
-				if (amount > 1) {
-					displayString = amount + "x " + displayString;
-				}
-
-				displayString = displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(GameSettings.isKeyDown(KeybindsInit.getComboValue) ? median * amount : value * amount);
-
-				//displayString = displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(value * amount);
-				//if (median > 0) displayString = displayString + EnumChatFormatting.GOLD + " (" + Main.formatNumber(median * amount) + ")";
+			for (String displayString : renderStrings) {
 				Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
 						displayString,
 						guiLeft + xSize + 5,
@@ -130,6 +130,17 @@ public class ContainerValue {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@SubscribeEvent
+	public void onGuiClick(GuiScreenEvent.MouseInputEvent.Pre event) {
+		if (active != null && Mouse.getEventButtonState()) {
+			int mouseX = Mouse.getEventX() * event.gui.width / Minecraft.getMinecraft().displayWidth;
+			int mouseY = event.gui.height - Mouse.getEventY() * event.gui.height / Minecraft.getMinecraft().displayHeight - 1;
+
+			active.mousePressed(Main.mc, mouseX, mouseY);
+
 		}
 	}
 
