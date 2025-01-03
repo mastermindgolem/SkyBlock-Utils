@@ -2,6 +2,7 @@ package com.golem.skyblockutils.utils;
 
 import com.golem.skyblockutils.NoteForDecompilers;
 import com.golem.skyblockutils.features.General.Elite500;
+import com.golem.skyblockutils.features.KuudraOverlay;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -49,6 +50,12 @@ public class AuctionHouse {
 							List<String> newElite = new ArrayList<>();
 							for (JsonElement e : temp) newElite.add(e.getAsString());
 							Elite500.elite500 = newElite;
+						}
+
+						if (result.has("expected_profit")) {
+							JsonArray temp = result.get("expected_profit").getAsJsonArray();
+							KuudraOverlay.expectedProfit.clear();
+							for (JsonElement o : temp) KuudraOverlay.expectedProfit.add(o.getAsInt());
 						}
 
 						AttributePrice.checkAuctions(auctions);
