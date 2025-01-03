@@ -46,7 +46,11 @@ public class ChatUtils {
 		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverChat)))));
 	}
 
-	public static void addChatMessage(String chat, ClickEvent event) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(event)));
+	public static void addChatMessage(String chat, ClickEvent clickEvent) {
+		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent)));
+	}
+
+	public static void addChatMessage(String chat, ClickEvent clickEvent, String hoverEvent) {
+		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverEvent)))));
 	}
 }
