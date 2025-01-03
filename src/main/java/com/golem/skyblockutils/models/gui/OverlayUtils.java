@@ -1,7 +1,5 @@
 package com.golem.skyblockutils.models.gui;
 
-import com.golem.skyblockutils.Main;
-import gg.essential.universal.UResolution;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,6 +15,10 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
 public class OverlayUtils {
 
 	static Pattern removeColorCodesPattern = Pattern.compile("§[0-9a-f]");
+
+	public static int getStringWidth(String displayString) {
+		return mc.fontRendererObj.getStringWidth(displayString);
+	}
 
 	public void renderDurabilityBar(int x, int y, Double percentFilled) {
 		double percent = Math.max(0.0, Math.min(percentFilled, 1.0));

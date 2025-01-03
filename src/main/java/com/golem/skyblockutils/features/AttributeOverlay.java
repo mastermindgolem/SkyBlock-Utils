@@ -5,7 +5,6 @@ import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.utils.InventoryData;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 
 import java.util.Objects;
@@ -34,22 +33,21 @@ public class AttributeOverlay {
 				Main.mc.fontRendererObj.drawString(valueData.top_display, 0, 0, 0x00FFFF);
 			});
 
+			matrixStack.scale(1.25, 1.25, 1.0);
+
+			if (valueData.bottom_display > 0) {
+				matrixStack.runWithGlobalState(() -> {
+					Main.mc.fontRendererObj.drawStringWithShadow(String.valueOf(valueData.bottom_display),
+							(17 - Main.mc.fontRendererObj.getStringWidth(String.valueOf(valueData.bottom_display))),
+							9,
+							0xFFFFFFFF
+					);
+				});
+			}
 			matrixStack.pop();
 			UGraphics.enableLighting();
 			UGraphics.enableDepth();
 			UGraphics.enableBlend();
-			if (valueData.bottom_display > 0) {
-				GlStateManager.disableLighting();
-				GlStateManager.disableDepth();
-				GlStateManager.disableBlend();
-				Main.mc.fontRendererObj.drawStringWithShadow(String.valueOf(valueData.bottom_display),
-						(float) (slot.xDisplayPosition + 17 - Main.mc.fontRendererObj.getStringWidth(String.valueOf(valueData.bottom_display))),
-						slot.yDisplayPosition + 9,
-						0xFFFFFFFF
-				);
-				GlStateManager.enableLighting();
-				GlStateManager.enableDepth();
-			}
 		} catch (Exception ignored) {
 		}
 
