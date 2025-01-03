@@ -1,7 +1,6 @@
 package com.golem.skyblockutils.init;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.ContainerValue;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.TimerOverlay;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.Minecraft;
@@ -18,7 +17,6 @@ import org.lwjgl.input.Keyboard;
 public class KeybindsInit {
 	public static KeyBinding openGUI;
 	public static KeyBinding getComboValue;
-	public static KeyBinding getContainerValue;
 	public static KeyBinding getPartyInfo;
 	public static KeyBinding timerButton;
 	public static final Minecraft mc = Minecraft.getMinecraft();
@@ -29,7 +27,6 @@ public class KeybindsInit {
 		KeyBinding[] keyBindings = {
 			openGUI = new KeyBinding("key.sbu_gui", Keyboard.KEY_V, "sbu"),
 			getComboValue = new KeyBinding("key.attribute_value", Keyboard.KEY_L, "sbu"),
-			getContainerValue = new KeyBinding("key.container_value", Keyboard.KEY_K, "sbu"),
 			getPartyInfo = new KeyBinding("key.get_party_info", Keyboard.KEY_O, "sbu"),
 			timerButton = new KeyBinding("key.timer", Keyboard.KEY_NONE, "sbu")
 		};
@@ -42,12 +39,6 @@ public class KeybindsInit {
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		if (GameSettings.isKeyDown(openGUI)) {
 			Main.display = Main.configFile.gui();
-		}
-		if (GameSettings.isKeyDown(getContainerValue)) {
-			ContainerValue.isActive = !ContainerValue.isActive;
-			Main.mc.thePlayer.addChatMessage(new ChatComponentText((ContainerValue.isActive ?
-					EnumChatFormatting.DARK_GREEN + "ENABLED" + EnumChatFormatting.GREEN + " Container Value for Attribute Items" :
-					EnumChatFormatting.DARK_RED + "DISABLED" + EnumChatFormatting.RED + " Container Value for Attribute Items")));
 		}
 		if (GameSettings.isKeyDown(timerButton)) {
 			TimerOverlay.active = !TimerOverlay.active;
