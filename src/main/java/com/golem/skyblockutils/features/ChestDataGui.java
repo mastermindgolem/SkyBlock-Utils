@@ -21,13 +21,14 @@ public class ChestDataGui extends GuiScreen {
     private int lastSort = 3;
     private GuiButton copyWithPrices;
     private GuiButton copyWithoutPrices;
-    private GuiButton itemNameSorting;
-    private GuiButton quantitySorting;
-    private GuiButton pricePerSorting;
-    private GuiButton valueSorting;
+    private GuiCheckBox itemNameSorting;
+    private GuiCheckBox quantitySorting;
+    private GuiCheckBox pricePerSorting;
+    private GuiCheckBox valueSorting;
     private GuiCheckBox showShards;
     private GuiCheckBox showArmor;
     private GuiCheckBox showEquipment;
+    private GuiCheckBox simplifyItems;
     private GuiButton sortOrder;
     private GuiButton exit;
     LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
@@ -43,13 +44,14 @@ public class ChestDataGui extends GuiScreen {
 
         this.buttonList.add(this.copyWithPrices = new GuiButtonExt(1, 25, 20, 100, 20, "Copy with Prices"));
         this.buttonList.add(this.copyWithoutPrices = new GuiButtonExt(2, 150, 20, 125, 20, "Copy without Prices"));
-        this.buttonList.add(this.itemNameSorting = new GuiButtonExt(3, 25, 75, 100, 20, "Item Name"));
-        this.buttonList.add(this.quantitySorting = new GuiButtonExt(4, 25, 100, 100, 20, "Quantity"));
-        this.buttonList.add(this.pricePerSorting = new GuiButtonExt(5, 25, 125, 100, 20, "Price Per"));
-        this.buttonList.add(this.valueSorting = new GuiButtonExt(6, 25, 150, 100, 20, "Value"));
+        this.buttonList.add(this.itemNameSorting = new GuiCheckBox(3, 25, 75, "Item Name", false));
+        this.buttonList.add(this.quantitySorting = new GuiCheckBox(4, 25, 100, "Quantity", false));
+        this.buttonList.add(this.pricePerSorting = new GuiCheckBox(5, 25, 125, "Price Per", false));
+        this.buttonList.add(this.valueSorting = new GuiCheckBox(6, 25, 150, "Value", true));
         this.buttonList.add(this.showShards = new GuiCheckBox(7, 300, 25, "Show Shards", true));
         this.buttonList.add(this.showArmor = new GuiCheckBox(8, 400, 25, "Show Armor", true));
         this.buttonList.add(this.showEquipment = new GuiCheckBox(9, 500, 25, "Show Equipment", true));
+        this.buttonList.add(this.simplifyItems = new GuiCheckBox(12, 600, 25, "Simplify Items", false));
         this.buttonList.add(this.sortOrder = new GuiButtonExt(10, 25, 50, 100, 20, "Sorting: Ascending"));
         this.buttonList.add(this.exit = new GuiButtonExt(11, this.width - 100, 20, 50, 20, "Exit"));
 
@@ -108,19 +110,39 @@ public class ChestDataGui extends GuiScreen {
                 } else {
                     if (!showEquipment.isChecked()) continue;
                 }
-                if (Arrays.asList("LBIN", "GR", "SALV").contains(valueData.top_display)) {
-                    displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
+                if (simplifyItems.isChecked()) {
+                    if (Arrays.asList("LBIN", "GR", "SALV").contains(valueData.top_display)) {
+                        displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
+                    } else {
+                        int tier = valueData.display_string.contains("Shard") ? 4 : 5;
+                        String display = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier + " " + valueData.display_name;
+                        if (displayStrings.get(display) == null) {
+                            if (tier > valueData.best_attribute.tier) {
+                                displayStrings.put(display, new DisplayString(0, valueData.value << (tier - valueData.best_attribute.tier)));
+                            } else {
+                                displayStrings.put(display, new DisplayString(0, valueData.value >> (valueData.best_attribute.tier - tier)));
+                            }
+                        }
+                        displayStrings.get(display).display_no_name = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier;
+                        displayStrings.get(display).quantity += (double) (1 << valueData.best_attribute.tier) / (1 << tier);
+                    }
                 } else {
-                    int tier = valueData.display_string.contains("Shard") ? 4 : 5;
-                    System.out.println(valueData);
-                    String display = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier + " " + valueData.display_name;
-                    if (displayStrings.get(display) == null) displayStrings.put(display, new DisplayString(0, valueData.value << (tier - valueData.best_attribute.tier)));
-                    displayStrings.get(display).display_no_name = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier;
-                    displayStrings.get(display).quantity += (double) (1 << valueData.best_attribute.tier) / (1 << tier);
+                    if (displayStrings.get(displayString) == null) {
+                        displayStrings.put(displayString, new DisplayString(0, valueData.value));
+                    }
+                    displayStrings.get(displayString).quantity++;
                 }
             }
         }
         displayStrings = ContainerValue.sort(displayStrings);
+    }
+
+    private void flipCheckBoxes(GuiCheckBox btn) {
+        for (GuiCheckBox box : Arrays.asList(itemNameSorting, quantitySorting, pricePerSorting, valueSorting)) {
+            if (box.id != btn.id) {
+                box.setIsChecked(false);
+            }
+        }
     }
 
     @Override
@@ -135,25 +157,29 @@ public class ChestDataGui extends GuiScreen {
         else if (button == itemNameSorting) {
             displayStrings = sort(displayStrings, 0);
             lastSort = 0;
+            flipCheckBoxes(itemNameSorting);
         }
         else if (button == quantitySorting) {
             displayStrings = sort(displayStrings, 1);
             lastSort = 1;
+            flipCheckBoxes(quantitySorting);
         }
         else if (button == pricePerSorting) {
             displayStrings = sort(displayStrings, 2);
             lastSort = 2;
+            flipCheckBoxes(pricePerSorting);
         }
         else if (button == valueSorting) {
             displayStrings = sort(displayStrings, 3);
             lastSort = 3;
+            flipCheckBoxes(valueSorting);
         }
-        else if (button == showShards || button == showArmor || button == showEquipment) {
+        else if (button == showShards || button == showArmor || button == showEquipment || button == simplifyItems) {
             loadData();
         }
         else if (button == sortOrder) {
-            displayStrings = sort(displayStrings, lastSort);
             sortOrder.displayString = Objects.equals(sortOrder.displayString, "Sorting: Ascending") ? "Sorting: Descending" : "Sorting: Ascending";
+            displayStrings = sort(displayStrings, lastSort);
         } else if (button == exit) {
             this.mc.displayGuiScreen(null);
         }
@@ -176,13 +202,13 @@ public class ChestDataGui extends GuiScreen {
                 }
                 shardSB.append("\n");
             } else if (s.contains("Helmet") || s.contains("Chestplate") || s.contains("Leggings") || s.contains("Boots")) {
-                armorSB.append(s).append(" x").append(amount);
+                armorSB.append(ds.display_no_name.replace("§.", "")).append(" x").append(amount);
                 if (withPrices) {
                     armorSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
                 armorSB.append("\n");
             } else {
-                equipSB.append(s).append(" x").append(amount);
+                equipSB.append(ds.display_no_name.replace("§.", "")).append(" x").append(amount);
                 if (withPrices) {
                     equipSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
@@ -190,7 +216,10 @@ public class ChestDataGui extends GuiScreen {
             }
         }
 
-        String clipboard = "Shards:\n" + shardSB + "\n\nArmor:\n" + armorSB + "\n\nEquipment:\n" + equipSB;
+        String clipboard = "";
+        if (shardSB.length() > 0) clipboard += "Shards:\n" + shardSB + "\n";
+        if (armorSB.length() > 0) clipboard += "Armor:\n" + armorSB + "\n";
+        if (equipSB.length() > 0) clipboard += "Equipment:\n" + equipSB;
 
         GuiScreen.setClipboardString(clipboard);
     }
