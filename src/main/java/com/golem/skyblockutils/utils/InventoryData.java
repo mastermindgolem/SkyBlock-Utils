@@ -3,7 +3,7 @@ package com.golem.skyblockutils.utils;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.models.AttributeItem;
 import com.golem.skyblockutils.models.AttributePrice;
-import com.google.gson.JsonObject;
+import com.golem.skyblockutils.models.AttributeValueResult;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class InventoryData {
     public static HashMap<Slot, AttributeItem> items = new HashMap<>();
-    public static HashMap<Slot, JsonObject> values = new HashMap<>();
+    public static HashMap<Slot, AttributeValueResult> values = new HashMap<>();
     public static List<Slot> containerSlots = new ArrayList<>();
     private static final HashMap<Slot, String> lastItemSignatures = new HashMap<>();
 

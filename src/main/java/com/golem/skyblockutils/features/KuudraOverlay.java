@@ -5,11 +5,11 @@ import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -143,10 +143,10 @@ public class KuudraOverlay {
 							break;
 						}
 						default: {
-							JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
+							AttributeValueResult valueData = AttributePrice.AttributeValue(slot.getStack());
 							if (valueData == null) break;
-							String displayString = valueData.get("display_string").getAsString() + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(valueData.get("value").getAsBigInteger());
-							totalValue += valueData.get("value").getAsLong();
+							String displayString = valueData.display_string + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(valueData.value);
+							totalValue += valueData.value;
 							displayStrings.add(displayString);
 							break;
 						}

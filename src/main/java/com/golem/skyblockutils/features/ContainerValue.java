@@ -3,10 +3,10 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
+import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.golem.skyblockutils.utils.InventoryData;
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -58,14 +58,16 @@ public class ContainerValue {
 			}
 
 			for (Slot slot : InventoryData.containerSlots.subList(0, InventoryData.containerSlots.size() - 36)) {
-				JsonObject value = InventoryData.values.get(slot);
+				AttributeValueResult value = InventoryData.values.get(slot);
 				if (value == null) continue;
-				String displayString = value.get("display_string").getAsString();
-				totalValue += value.get("value").getAsLong();
-				displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, value.get("value").getAsLong()));
+				String displayString = value.display_string;
+				totalValue += value.value;
+				displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, value.value));
 			}
 
 			displayStrings = sort(displayStrings);
+
+			renderStrings.clear();
 
 			for (String displayString : displayStrings.keySet()) {
 				int amount = displayStrings.get(displayString).quantity;

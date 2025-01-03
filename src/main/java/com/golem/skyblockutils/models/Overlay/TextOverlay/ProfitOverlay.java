@@ -66,8 +66,8 @@ public class ProfitOverlay {
                 data.addProperty("tier", Kuudra.tier);
                 data.add("primary", new JsonParser().parse(finalContainer.getInventory().get(11).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
                 data.add("secondary", new JsonParser().parse(finalContainer.getInventory().get(12).serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").toString()));
-                data.add("primaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(11)));
-                data.add("secondaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(12)));
+                data.add("primaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(11)).toJson());
+                data.add("secondaryData", AttributePrice.AttributeValue(finalContainer.getInventory().get(12)).toJson());
                 data.addProperty("profit", KuudraOverlay.totalProfit);
                 data.addProperty("keyCost", KuudraOverlay.keyCost);
                 new RequestUtil().sendPostRequest("https://mastermindgolem.pythonanywhere.com/?profit=a", data);

@@ -2,8 +2,8 @@ package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.DisplayString;
-import com.google.gson.JsonObject;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.init.Blocks;
@@ -13,7 +13,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 public class ChestDataGui extends GuiScreen {
@@ -88,15 +87,15 @@ public class ChestDataGui extends GuiScreen {
 
         displayStrings = new LinkedHashMap<>();
 
-        BigDecimal totalValue = new BigDecimal("0");
+        long totalValue = 0;
 
         for (List<Slot> slots : ChestAnalyzer.chestData.values()) {
             for (Slot slot : slots) {
                 if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
                     continue;
-                JsonObject valueData = AttributePrice.AttributeValue(slot.getStack());
+                AttributeValueResult valueData = AttributePrice.AttributeValue(slot.getStack());
                 if (valueData == null) continue;
-                String displayString = valueData.get("display_string").getAsString();
+                String displayString = valueData.display_string;
                 if (displayString.contains("Shard")) {
                     if (!showShards.isChecked()) continue;
                 } else if (displayString.contains("Helmet") || displayString.contains("Chestplate") || displayString.contains("Leggings") || displayString.contains("Boots")) {
@@ -104,8 +103,8 @@ public class ChestDataGui extends GuiScreen {
                 } else {
                     if (!showEquipment.isChecked()) continue;
                 }
-                totalValue = totalValue.add(valueData.get("value").getAsBigDecimal());
-                displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.get("value").getAsLong()));
+                totalValue += valueData.value;
+                displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
             }
         }
         displayStrings = ContainerValue.sort(displayStrings);

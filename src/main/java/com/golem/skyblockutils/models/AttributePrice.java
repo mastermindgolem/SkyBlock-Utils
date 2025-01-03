@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
+import org.w3c.dom.Attr;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -132,10 +133,10 @@ public class AttributePrice {
 	}
 
 
-	public static JsonObject AttributeValue(ItemStack item) {
+	public static AttributeValueResult AttributeValue(ItemStack item) {
 		return AttributeValue(item, false);
 	}
-	public static JsonObject AttributeValue(ItemStack itemStack, boolean dev) {
+	public static AttributeValueResult AttributeValue(ItemStack itemStack, boolean dev) {
 		AttributeItem item = new AttributeItem(itemStack.getDisplayName(), "", itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes"));
 
 		if (item.item_type == null) return null;
@@ -143,13 +144,9 @@ public class AttributePrice {
 		return AttributeValue(item, dev);
 	}
 
-	public static JsonObject AttributeValue(AttributeItem item, boolean dev) {
+	public static AttributeValueResult AttributeValue(AttributeItem item, boolean dev) {
 
-		JsonObject result = new JsonObject();
-		result.addProperty("top_display", "");
-		result.addProperty("bottom_display", 0);
-		result.addProperty("display_string", "");
-		result.addProperty("value", 0);
+		AttributeValueResult result = new AttributeValueResult();
 
 		if (item.item_type == null) return null;
 
@@ -218,41 +215,43 @@ public class AttributePrice {
 			for (String r : new String[]{"Terror ", "Aurora ", "Crimson ", "Fervor ", "Hollow ", "Molten ", "Gauntlet of ", "Attribute "})
 				displayName = displayName.replace(r, "");
 
+		result.best_attribute = new Attribute(best_attribute, best_tier, best_value);
+
 		if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1_000_000) {
-			result.addProperty("top_display", "GR");
-			result.addProperty("bottom_display", 0);
-			result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + item.attributes.get(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + item.attributes.get(attrArray.get(1)) + " " + displayName);
-			result.addProperty("value", added_value);
+			result.top_display = "GR";
+			result.bottom_display = 0;
+			result.display_string = String.join(" ", attrArray.stream().map(o -> ShortenedAttribute(o) + " " + item.attributes.get(o)).collect(Collectors.toList())) + " " + displayName;
+			result.value = added_value;
 			return result;
 		} else if (combo_value > configFile.min_godroll_price * 1000000 && combo_value > best_value) {
-			result.addProperty("top_display", "GR");
-			result.addProperty("bottom_display", 0);
-			result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + ShortenedAttribute(attrArray.get(1)) + " " + displayName);
-			result.addProperty("value", combo_value);
+			result.top_display = "GR";
+			result.bottom_display = 0;
+			result.display_string = String.join(" ", attrArray.stream().sorted().collect(Collectors.toList())) + " " + displayName;
+			result.value = combo_value;
 			return result;
 		} else if (best_value > LowestBin.getOrDefault(item_id, 0)) {
-			result.addProperty("top_display", ShortenedAttribute(best_attribute));
-			result.addProperty("bottom_display", best_tier);
-			result.addProperty("display_string", ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName);
-			result.addProperty("value", best_value);
+			result.top_display = ShortenedAttribute(best_attribute);
+			result.bottom_display = best_tier;
+			result.display_string = ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName;
+			result.value = best_value;
 			return result;
 		} else if (item.item_type == Shard) {
-			result.addProperty("top_display", ShortenedAttribute(attrArray.get(0)));
-			result.addProperty("bottom_display", item.attributes.get(attrArray.get(0)));
-			result.addProperty("display_string", ShortenedAttribute(attrArray.get(0)) + " " + item.attributes.get(attrArray.get(0)) + " " + displayName);
-			result.addProperty("value", LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0));
+			result.top_display = ShortenedAttribute(attrArray.get(0));
+			result.bottom_display = item.attributes.get(attrArray.get(0));
+			result.display_string = ShortenedAttribute(attrArray.get(0)) + " " + item.attributes.get(attrArray.get(0)) + " " + displayName;
+			result.value = LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0);
 			return result;
 		} else if (AttributeUtils.isArmor(item_id) && salvageValue > LowestBin.getOrDefault(item_id, 0)) {
-			result.addProperty("top_display", "SALV");
-			result.addProperty("bottom_display", 0);
-			result.addProperty("display_string", "SALV " + displayName);
-			result.addProperty("value", salvageValue);
+			result.top_display = "SALV";
+			result.bottom_display = 0;
+			result.display_string = "SALV " + displayName;
+			result.value = salvageValue;
 			return result;
 		} else if (LowestBin.getOrDefault(item_id, 0) > 0 && item.attributes.size() > 0) {
-			result.addProperty("top_display", "LBIN");
-			result.addProperty("bottom_display", 0);
-			result.addProperty("display_string", "LBIN " + displayName);
-			result.addProperty("value", LowestBin.getOrDefault(item_id, 0));
+			result.top_display = "LBIN";
+			result.bottom_display = 0;
+			result.display_string = String.join(" ", attrArray.stream().sorted().collect(Collectors.toList())) + " " + displayName;
+			result.value = LowestBin.getOrDefault(item_id, 0);
 			return result;
 		}
 		return null;

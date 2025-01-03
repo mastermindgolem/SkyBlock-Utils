@@ -1,10 +1,7 @@
 package com.golem.skyblockutils.command.commands;
 
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
-import com.golem.skyblockutils.models.AttributeArmorType;
-import com.golem.skyblockutils.models.AttributeItemType;
-import com.golem.skyblockutils.models.AttributePrice;
-import com.golem.skyblockutils.models.AuctionAttributeItem;
+import com.golem.skyblockutils.models.*;
 import com.golem.skyblockutils.utils.AttributeUtils;
 import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
@@ -145,9 +142,9 @@ public class AttributeCommand extends CommandBase implements Help {
 		String attribute1;
 		if (args.length == 1) {
 			if (Objects.equals(args[0], "info")) {
-				JsonObject result = AttributePrice.AttributeValue(mc.thePlayer.getHeldItem(), true);
+				AttributeValueResult result = AttributePrice.AttributeValue(mc.thePlayer.getHeldItem(), true);
 				if (result != null) {
-					result.entrySet().forEach(e -> Kuudra.addChatMessage(e.getKey() + ": " + e.getValue()));
+					Kuudra.addChatMessage(result.toString());
 				}
 				return;
 			}
