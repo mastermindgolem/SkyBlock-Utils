@@ -1,89 +1,79 @@
 package com.golem.skyblockutils.features;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import com.golem.skyblockutils.events.InventoryChangeEvent;
+import com.golem.skyblockutils.models.AttributeItem;
+import com.golem.skyblockutils.models.AttributeItemType;
+import com.golem.skyblockutils.utils.InventoryData;
+import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.List;
+import java.awt.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.models.AttributeItemType.*;
 
 public class CombineHelper {
 
+    private Set<Slot> highlightSlots = new HashSet<>();
 
-    private final String[] pieces = {
-            "HELMET",
-            "CHESTPLATE",
-            "LEGGINGS",
-            "BOOTS",
-            "MOLTEN_NECKLACE",
-            "MOLTEN_CLOAK",
-            "MOLTEN_BELT",
-            "MOLTEN_BRACELET"
+    private final AttributeItemType[] pieces = {
+            Helmet, Chestplate, Leggings, Boots, MoltenNecklace, MoltenCloak, MoltenBelt, MoltenBracelet, Shard
     };
 
     private final String[] attributes = {"", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "ignition", "combo", "attack_speed", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "ender", "mana_steal", "blazing", "elite", "arachno", "undead", "warrior", "deadeye", "fortitude", "magic_find"};
 
-    public String getItemId(NBTTagCompound extraAttributes) {
-        String itemId = extraAttributes.getString("id");
-        itemId = itemId.split(":")[0];
-        return itemId;
-    }
-
-    public int getAttributeLevel(NBTTagCompound extraAttributes) {
-        try {
-            NBTTagCompound shards = extraAttributes.getCompoundTag("attributes");
-            return shards.getInteger(attributes[configFile.combineAttribute]);
-        } catch (NullPointerException e) {
-            return 0;
-        }
-    }
-
     @SubscribeEvent
-    public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (!(event.gui instanceof GuiChest)) return;
-        GuiChest gui = (GuiChest) event.gui;
+    public void onInventoryChange(InventoryChangeEvent event) {
+        highlightSlots.clear();
+        if (!(event.event.gui instanceof GuiChest)) return;
+        GuiChest gui = (GuiChest) event.event.gui;
         Container container = gui.inventorySlots;
         if (!(container instanceof ContainerChest)) return;
         String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
         if (!chestName.contains("Attribute Fusion")) return;
-        List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
 
-        for (String piece : pieces) {
+        for (AttributeItemType piece : pieces) {
             for (int level = 1; level < 10; level++) {
                 Slot slot1 = null;
-                for (Slot slot : chestInventory) {
-                    if (!slot.getHasStack()) continue;
-                    if (slot.slotNumber < 53) continue;
-                    ItemStack item = slot.getStack();
-                    NBTTagCompound itemNbt;
-                    try {
-                        itemNbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
-                    } catch (NullPointerException e) {
-                        // Possible bugs where items don't have nbt, ignore the item.
-                        return;
-                    }
-                    String name = getItemId(itemNbt);
-                    if ((name.contains("CRIMSON") || name.contains("AURORA") || name.contains("FERVOR") || name.contains("HOLLOW") || name.contains("TERROR") || name.equals(piece)) && name.contains(piece)) {
-                        if (getAttributeLevel(itemNbt) == level) {
+                for (Map.Entry<Slot, AttributeItem> entry : InventoryData.items.entrySet()) {
+                    if (piece == entry.getValue().item_type) {
+                        if (entry.getValue().attributes.getOrDefault(attributes[configFile.combineAttribute], 0) == level) {
                             if (slot1 == null) {
-                                slot1 = slot;
+                                slot1 = entry.getKey();
                             } else {
-                                Gui.drawRect(slot1.xDisplayPosition, slot1.yDisplayPosition, slot1.xDisplayPosition + 16, slot1.yDisplayPosition + 16, 0x11FCF3);
-                                Gui.drawRect(slot.xDisplayPosition, slot.yDisplayPosition, slot.xDisplayPosition + 16, slot.yDisplayPosition + 16, 0x11FCF3);
+                                highlightSlots.add(slot1);
+                                highlightSlots.add(entry.getKey());
                             }
 
                         }
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onGuiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
+        if (!(event.gui instanceof GuiChest)) return;
+        if (configFile.combineAttribute == 0) return;
+
+        GuiChest gui = (GuiChest) event.gui;
+        Container container = gui.inventorySlots;
+        if (!(container instanceof ContainerChest)) return;
+        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
+        if (!chestName.contains("Attribute Fusion")) return;
+
+        for (Slot slot : highlightSlots) {
+            RenderUtils.highlight(Color.GREEN, gui, slot);
+//            Gui.drawRect(slot.xDisplayPosition, slot.yDisplayPosition, slot.xDisplayPosition + 16, slot.yDisplayPosition + 16, 0x11FCF3);
         }
     }
 }
