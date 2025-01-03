@@ -46,14 +46,6 @@ public class Config extends Vigilant
 	)
 	public int time_between_checks = 5;
 
-	@Property(
-			type = PropertyType.SWITCH,
-			name = "Show Item Value",
-			description = "Show's approximate item value in lore, based on Cofl data.",
-			category = "General",
-			subcategory = "Auction House"
-	)
-	public boolean showItemValue = true;
 	@Property(type = PropertyType.SWITCH, name = "Hide Sack Message", description = "Hides the message that shows how many items were added/removed from sack", category = "General", subcategory = "General")
 	public boolean hideSackMessage = false;
 	@Property(type = PropertyType.SWITCH, name = "Elite 500", description = "Shows ranking of player if they are in the Elite 500 (Top 500 SB Level)", category = "General", subcategory = "General")
