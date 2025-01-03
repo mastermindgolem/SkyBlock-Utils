@@ -15,6 +15,7 @@ import com.golem.skyblockutils.features.KuudraFight.Waypoints;
 import com.golem.skyblockutils.features.Mining.Corpses;
 import com.golem.skyblockutils.features.Mining.FossilFinder;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
+import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import net.minecraftforge.common.MinecraftForge;
@@ -35,7 +36,7 @@ public class EventInit {
 				new CombineHelper(),
 				new EnderPearl(),
 				new LocationUtils(),
-				new DescriptionHandler(),
+				new InventoryData(),
 				new ChatWaypoints(),
 				new AutoUpdater(),
 				new Perspective(),
