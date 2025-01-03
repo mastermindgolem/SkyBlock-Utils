@@ -94,7 +94,13 @@ public class InventoryData {
         if (!slot.getHasStack()) return "invalid";
 
         ItemStack stack = slot.getStack();
-        return stack.getDisplayName();
+        try {
+            AttributeItem item = new AttributeItem(stack.getDisplayName(), getItemLore(stack), stack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes"));
+            return item.toString();
+        } catch (Exception ignored) {
+            return stack.getDisplayName();
+        }
+
     }
 
     public String getItemLore(ItemStack item) {
