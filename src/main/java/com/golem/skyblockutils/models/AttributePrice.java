@@ -334,6 +334,8 @@ public class AttributePrice {
 				return "TH";
 			case "infection":
 				return "INF";
+			case "hunter":
+				return "HUN";
 			default:
 				Logger.warn(attribute);
 				try {
