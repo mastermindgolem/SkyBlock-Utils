@@ -28,7 +28,6 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,9 +61,7 @@ public class Kuudra {
         overview = new ArrayList<>();
     }
 
-    @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        if (mc.thePlayer == null || mc.theWorld == null || event.phase == TickEvent.Phase.START) return;
+    public void getKuudraTier() {
         Scoreboard scoreboard = Minecraft.getMinecraft().thePlayer.getWorldScoreboard();
 
         ScoreObjective sidebarObjective = scoreboard.getObjectiveInDisplaySlot(1);
@@ -114,6 +111,7 @@ public class Kuudra {
             splits[1] = (float) Main.time.getCurrentMS();
             addChatMessage(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
+            getKuudraTier();
 
             supplyWaypoints.put(Waypoints.supply1, 101);
             supplyWaypoints.put(Waypoints.supply2, 101);
