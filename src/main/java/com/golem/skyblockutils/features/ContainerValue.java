@@ -7,6 +7,9 @@ import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
 import com.golem.skyblockutils.utils.InventoryData;
+import com.golem.skyblockutils.utils.RenderUtils;
+import com.golem.skyblockutils.utils.rendering.Renderable;
+import com.golem.skyblockutils.utils.rendering.RenderableString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,18 +22,21 @@ import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Mouse;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 import static com.golem.skyblockutils.Main.configFile;
 
 public class ContainerValue {
-	List<String> renderStrings = new ArrayList<>();
+	List<Renderable> renderStrings = new ArrayList<>();
 	private int xSize;
 	private int guiLeft;
 	private int guiTop;
 	private long totalValue;
 
 	private GuiCheckBox active;
+	public static boolean mousePressed = false;
 
 	@SubscribeEvent
 	public void onInventoryChange(InventoryChangeEvent event) {
@@ -62,21 +68,35 @@ public class ContainerValue {
 				if (value == null) continue;
 				String displayString = value.display_string;
 				totalValue += value.value;
-				displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, value.value));
+
+				if (displayStrings.containsKey(displayString)) {
+					displayStrings.get(displayString).quantity++;
+				} else {
+					displayStrings.put(displayString, new DisplayString(1, value.value, value.value, slot));
+				}
 			}
 
 			displayStrings = sort(displayStrings);
 
 			renderStrings.clear();
 
-			for (String displayString : displayStrings.keySet()) {
-				int amount = (int) displayStrings.get(displayString).quantity;
-				long value = displayStrings.get(displayString).price;
+			for (Map.Entry<String, DisplayString> entry : displayStrings.entrySet()) {
+				String displayString = entry.getKey();
+				DisplayString display = entry.getValue();
+				int amount = (int) display.quantity;
+				long value = display.price;
 				if (amount > 1) {
 					displayString = amount + "x " + displayString;
 				}
 
-				renderStrings.add(displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(value * amount));
+				String ds = displayString + EnumChatFormatting.YELLOW + ": " + EnumChatFormatting.GREEN + Main.formatNumber(value * amount);
+
+				final Slot slot = display.slot;
+
+				renderStrings.add(new RenderableString(ds, 0, 0)
+						.onHover(() -> RenderUtils.highlight(Color.GREEN, gui, slot))
+						.onClick(() -> clickSlot(slot, 0, 1))
+				);
 			}
 
 		} catch (Exception e) {
@@ -106,29 +126,26 @@ public class ContainerValue {
 
 			if (totalValue <= 0)  return;
 
-			GlStateManager.disableLighting();
-			GlStateManager.translate(0, 0, 200);
 			int counter = 1;
 
-			Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
+			Renderable totalValueRenderable = new RenderableString(
 					EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalValue),
 					guiLeft + xSize + 5,
-					guiTop + 5,
-					0xffffffff
+					guiTop + 5
 			);
 
-			for (String displayString : renderStrings) {
-				Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow(
-						displayString,
-						guiLeft + xSize + 5,
-						guiTop + 5 + 10*counter,
-						0xffffffff
-				);
+			GlStateManager.translate(0, 0, 5);
+
+			totalValueRenderable.render(event);
+
+			for (Renderable renderable : renderStrings) {
+				renderable.setPosition(guiLeft + xSize + 5, guiTop + 5 + 10*counter);
+				renderable.render(event);
 				counter++;
 			}
 
 
-			GlStateManager.translate(0, 0, -200);
+			GlStateManager.translate(0, 0, -5);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -212,6 +229,10 @@ public class ContainerValue {
 		if (entry.contains("Contagion")) return 8;
 		if (entry.contains("Implosion Belt")) return 9;
 		return 10;
+	}
+
+	private void clickSlot(Slot slot, int type, int mode) {
+		Main.mc.playerController.windowClick(Main.mc.thePlayer.openContainer.windowId, slot.slotNumber, type, mode, Main.mc.thePlayer);
 	}
 
 }
