@@ -111,7 +111,7 @@ public class ChestDataGui extends GuiScreen {
                     if (!showEquipment.isChecked()) continue;
                 }
                 if (simplifyItems.isChecked()) {
-                    if (Arrays.asList("LBIN", "GR", "SALV").contains(valueData.top_display)) {
+                    if (Arrays.asList("LBIN", "GR", "SAL").contains(valueData.top_display)) {
                         displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
                     } else {
                         int tier = valueData.display_string.contains("Shard") ? 4 : 5;

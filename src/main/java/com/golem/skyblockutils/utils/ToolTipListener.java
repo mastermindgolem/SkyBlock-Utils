@@ -53,7 +53,10 @@ public class ToolTipListener {
 		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && !event.toolTip.isEmpty() && !shards.getKeySet().isEmpty()) {
 			String[] s = shards.getKeySet().toArray(new String[0]);
 			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched) && shards.getKeySet().size() > 1) {
-				AuctionAttributeItem comboitem = AttributePrice.getComboValue(AttributeUtils.getItemType(name), shards.getKeySet());
+				AttributeItemType item_type = AttributeUtils.getItemType(name);
+				AuctionAttributeItem comboitem = AttributeUtils.isArmor(name)
+						? AttributePrice.getComboValue(item_type, AttributeUtils.getArmorVariation(name), shards.getKeySet())
+						: AttributePrice.getComboValue(item_type, shards.getKeySet());
 				if (comboitem == null) {
 					comboprice = 0;
 				} else {

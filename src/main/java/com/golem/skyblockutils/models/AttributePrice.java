@@ -13,8 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-import org.w3c.dom.Attr;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -127,8 +128,6 @@ public class AttributePrice {
 
 		String combo = armor_type.getID() + "_" + item_type.getID() + "_" + attributes.stream().sorted().collect(Collectors.joining("_"));
 
-		System.out.println(combo);
-
 		return AllCombos.get(combo);
 	}
 
@@ -171,9 +170,10 @@ public class AttributePrice {
 		long value;
 
 		for (String attr_key : item.attributes.keySet()) {
+			int attr_tier = item.attributes.get(attr_key);
+			total_tiers += 1 << attr_tier;
 			if (excludeAttributes.contains(attr_key)) continue;
 			if (!LowestAttributePrices.get(item.item_type).containsKey(attr_key)) continue;
-			int attr_tier = item.attributes.get(attr_key);
 			ArrayList<Long> items = LowestAttributePrices.get(item.item_type).get(attr_key);
 			int min_tier = (item.item_type == Shard ? configFile.minShardTier : configFile.minArmorTier);
 			if (min_tier > 0) {
@@ -183,7 +183,6 @@ public class AttributePrice {
 			}
 			if (dev) Kuudra.addChatMessage(attr_key + " " + attr_tier + " value : " + value);
 			added_value += value;
-			total_tiers += 1 << attr_tier;
 			if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
 				continue;
 			if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(attr_key))
@@ -195,7 +194,9 @@ public class AttributePrice {
 			}
 		}
 
-		AuctionAttributeItem comboitem = getComboValue(item.item_type, item.attributes.keySet());
+		AuctionAttributeItem comboitem = AttributeUtils.isArmor(item_id)
+				? getComboValue(item.item_type, AttributeUtils.getArmorVariation(item_id), item.attributes.keySet())
+				: getComboValue(item.item_type, item.attributes.keySet());
 
 		long combo_value = (comboitem == null ? 0 : comboitem.price);
 		if (dev) {
@@ -243,7 +244,7 @@ public class AttributePrice {
 			result.value = LowestBin.getOrDefault("ATTRIBUTE_SHARD", 0L);
 			return result;
 		} else if (AttributeUtils.isArmor(item_id) && salvageValue > LowestBin.getOrDefault(item_id, 0L)) {
-			result.top_display = "SALV";
+			result.top_display = "SAL";
 			result.bottom_display = 0;
 			result.display_string = "SALV " + displayName;
 			result.value = salvageValue;
