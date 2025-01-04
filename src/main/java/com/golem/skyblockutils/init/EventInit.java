@@ -47,7 +47,8 @@ public class EventInit {
 				new ChannelHandlerInput(),
 				new FossilFinder(),
 				new Corpses(),
-				new ChestAnalyzer()
+				new ChestAnalyzer(),
+				new SellingHelper()
 		//new TrackKills()
 		};
 
