@@ -6,6 +6,7 @@ import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,6 +23,7 @@ import java.util.List;
 public class InventoryData {
     public static HashMap<Slot, AttributeItem> items = new HashMap<>();
     public static HashMap<Slot, AttributeValueResult> values = new HashMap<>();
+    public static String chestName = "";
     public static List<Slot> containerSlots = new ArrayList<>();
     private static final HashMap<Slot, String> lastItemSignatures = new HashMap<>();
 
@@ -32,6 +34,7 @@ public class InventoryData {
             values.clear();
             lastItemSignatures.clear();
             containerSlots.clear();
+            chestName = "";
         }
     }
 
@@ -41,13 +44,14 @@ public class InventoryData {
 
         GuiContainer guiChest = (GuiContainer) event.gui;
         List<Slot> slots = guiChest.inventorySlots.inventorySlots;
+        if (guiChest instanceof GuiChest) {
+            chestName = ((ContainerChest) guiChest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
+        }
         boolean shouldUpdate = false;
 
-        // Check if slots structure changed
         if (containerSlots.size() != slots.size()) {
             shouldUpdate = true;
         } else {
-            // Check if any slot contents changed
             for (Slot slot : slots) {
                 String currentSignature = getItemSignature(slot);
                 String lastSignature = lastItemSignatures.get(slot);

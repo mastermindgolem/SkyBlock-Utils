@@ -6,11 +6,11 @@ import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiCont
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.DisplayString;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
+import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.rendering.Renderable;
 import com.golem.skyblockutils.utils.rendering.RenderableString;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
@@ -18,9 +18,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.List;
@@ -34,9 +32,6 @@ public class ContainerValue {
 	private int guiLeft;
 	private int guiTop;
 	private long totalValue;
-
-	private GuiCheckBox active;
-	public static boolean mousePressed = false;
 
 	@SubscribeEvent
 	public void onInventoryChange(InventoryChangeEvent event) {
@@ -109,20 +104,9 @@ public class ContainerValue {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
 			if (configFile.container_value == 0) return;
+			if (InventoryData.chestName.contains("Paid Chest") || InventoryData.chestName.contains("Free Chest")) return;
 
-			GuiChest gui = (GuiChest) event.gui;
-			Container container = gui.inventorySlots;
-			if (!(container instanceof ContainerChest)) return;
-			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-			if (chestName.contains("Paid Chest") || chestName.contains("Free Chest")) return;
-
-			if (active == null) {
-				active = new GuiCheckBox(999, 5, event.gui.height - 25, "SBU Container Value", false);
-			}
-			active.yPosition = event.gui.height - 25;
-			active.drawButton(Main.mc, 0, 0);
-
-			if (active == null || !active.isChecked()) return;
+			if (!ButtonManager.isChecked("containerValue")) return;
 
 			if (totalValue <= 0)  return;
 
@@ -149,17 +133,6 @@ public class ContainerValue {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-	}
-
-	@SubscribeEvent
-	public void onGuiClick(GuiScreenEvent.MouseInputEvent.Pre event) {
-		if (active != null && Mouse.getEventButtonState()) {
-			int mouseX = Mouse.getEventX() * event.gui.width / Minecraft.getMinecraft().displayWidth;
-			int mouseY = event.gui.height - Mouse.getEventY() * event.gui.height / Minecraft.getMinecraft().displayHeight - 1;
-
-			active.mousePressed(Main.mc, mouseX, mouseY);
-
 		}
 	}
 

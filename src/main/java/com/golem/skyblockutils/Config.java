@@ -545,6 +545,10 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Corpse Locator", description = "Highlights any corpses visible on screen with a waypoint", category = "Mining", subcategory = "Corpse")
 	public boolean corpseLocator = false;
 
+	@Property(type = PropertyType.SWITCH, name = "Selling Helper", description = "Features that help you sort loot quicker", category = "Selling", subcategory = "Auction")
+	public boolean sellingHelper = false;
+	@Property(type = PropertyType.SWITCH, name = "Auction Helper", description = "Features that help you auction loot quicker", category = "Selling", subcategory = "Auction")
+	public boolean auctionHelper = false;
 
 	public Config() {
 		super(new File(Config.configFolder + "config.toml"), "SkyblockUtils", new JVMAnnotationPropertyCollector(),
@@ -554,7 +558,7 @@ public class Config extends Vigilant
 		this.CONFIG_FILE = new File(Config.configFolder + "config.toml");
 		this.initialize();
 
-		try { // it does exist
+		try {
 			addDependency("MoveSplits", "splitsOverlay");
 			addDependency("MoveFishingOverlay", "fishingOverlay");
 			addDependency("MoveMainAlert", "mainAlert");
@@ -584,7 +588,7 @@ public class Config extends Vigilant
 
 		}
 
-		private final List<String> categories = Arrays.asList("General", "Kuudra", "Mining", "Dungeons", "Crimson Isles", "Overlays");
+		private final List<String> categories = Arrays.asList("General", "Kuudra", "Mining", "Dungeons", "Crimson Isles", "Overlays", "Selling");
 		@NotNull
 		@Override
 		public Comparator<? super Map.Entry<String, ? extends List<PropertyData>>> getSubcategoryComparator() {

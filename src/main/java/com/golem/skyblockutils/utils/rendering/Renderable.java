@@ -1,6 +1,6 @@
 package com.golem.skyblockutils.utils.rendering;
 
-import com.golem.skyblockutils.features.ContainerValue;
+import com.golem.skyblockutils.models.gui.ButtonManager;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import org.lwjgl.input.Mouse;
 
@@ -31,8 +31,8 @@ public abstract class Renderable {
             if (onHover != null) {
                 onHover.run();
             }
-            if (!ContainerValue.mousePressed && Mouse.getEventButtonState() && Mouse.getEventButton() == 0 && onClick != null) {
-                ContainerValue.mousePressed = true;
+            if (!ButtonManager.mousePressed && Mouse.getEventButtonState() && Mouse.getEventButton() == 0 && onClick != null) {
+                ButtonManager.mousePressed = true;
                     onClick.run();
             }
         } else {
@@ -40,7 +40,7 @@ public abstract class Renderable {
         }
 
         if (!Mouse.getEventButtonState()) {
-            ContainerValue.mousePressed = false;
+            ButtonManager.mousePressed = false;
         }
     }
 

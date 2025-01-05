@@ -6,8 +6,6 @@ import com.golem.skyblockutils.models.AttributeItemType;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -34,11 +32,7 @@ public class CombineHelper {
     public void onInventoryChange(InventoryChangeEvent event) {
         highlightSlots.clear();
         if (!(event.event.gui instanceof GuiChest)) return;
-        GuiChest gui = (GuiChest) event.event.gui;
-        Container container = gui.inventorySlots;
-        if (!(container instanceof ContainerChest)) return;
-        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-        if (!chestName.contains("Attribute Fusion")) return;
+        if (!InventoryData.chestName.contains("Attribute Fusion")) return;
 
         for (AttributeItemType piece : pieces) {
             for (int level = 1; level < 10; level++) {
@@ -64,15 +58,10 @@ public class CombineHelper {
     public void onGuiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
         if (configFile.combineAttribute == 0) return;
-
-        GuiChest gui = (GuiChest) event.gui;
-        Container container = gui.inventorySlots;
-        if (!(container instanceof ContainerChest)) return;
-        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-        if (!chestName.contains("Attribute Fusion")) return;
+        if (!InventoryData.chestName.contains("Attribute Fusion")) return;
 
         for (Slot slot : highlightSlots) {
-            RenderUtils.highlight(Color.GREEN, gui, slot);
+            RenderUtils.highlight(Color.GREEN, (GuiChest) event.gui, slot);
 //            Gui.drawRect(slot.xDisplayPosition, slot.yDisplayPosition, slot.xDisplayPosition + 16, slot.yDisplayPosition + 16, 0x11FCF3);
         }
     }

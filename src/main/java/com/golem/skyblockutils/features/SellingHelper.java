@@ -2,11 +2,10 @@ package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.models.AttributeValueResult;
+import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -15,21 +14,18 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Objects;
 
+import static com.golem.skyblockutils.Main.configFile;
+
 public class SellingHelper {
 
-    private boolean highlightSellMethod = true;
-    private HashMap<Slot, SellMethod> highlightSlots = new HashMap<>();
+    private final HashMap<Slot, SellMethod> highlightSlots = new HashMap<>();
 
     @SubscribeEvent
     public void onInventoryChange(InventoryChangeEvent event) {
         if (!(event.event.gui instanceof GuiChest)) return;
-        GuiChest gui = (GuiChest) event.event.gui;
-        Container container = gui.inventorySlots;
-        if (!(container instanceof ContainerChest)) return;
-        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-        if (chestName.contains("Paid Chest") || chestName.contains("Free Chest")) return;
+        if (InventoryData.chestName.contains("Paid Chest") || InventoryData.chestName.contains("Free Chest")) return;
 
-        if (highlightSellMethod) highlightSellMethod();
+        if (configFile.sellingHelper) highlightSellMethod();
     }
 
     private void highlightSellMethod() {
@@ -51,12 +47,9 @@ public class SellingHelper {
     @SubscribeEvent
     public void onGuiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
+        if (InventoryData.chestName.contains("Paid Chest") || InventoryData.chestName.contains("Free Chest")) return;
         GuiChest gui = (GuiChest) event.gui;
-        Container container = gui.inventorySlots;
-        if (!(container instanceof ContainerChest)) return;
-        String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
-        if (chestName.contains("Paid Chest") || chestName.contains("Free Chest")) return;
-        if (highlightSellMethod) {
+        if (ButtonManager.isChecked("sellMethod")) {
             highlightSlots.forEach((slot, method) -> {
                 switch (method) {
                     case SALVAGE:
