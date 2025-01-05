@@ -52,7 +52,12 @@ public class SellingHelper {
 
         if (InventoryData.containerSlots.size() < 36) return;
         slots = InventoryData.containerSlots.subList(InventoryData.containerSlots.size() - 36, InventoryData.containerSlots.size()).stream().filter(Slot::getHasStack).collect(Collectors.toList());
-        highlightInvSlots.addAll(slots.stream().filter(slot -> slot.getHasStack() && possibleSimilarities.containsAll(getSignature(slot))).collect(Collectors.toList()));
+        highlightInvSlots.addAll(slots.stream().filter(slot -> {
+            if (!slot.getHasStack()) return false;
+            Set<String> signatures = getSignature(slot);
+            if (signatures.isEmpty()) return false;
+            return possibleSimilarities.containsAll(signatures);
+        }).collect(Collectors.toList()));
     }
 
     public static void addChest(TileEntityChest chest, List<Slot> slots) {
@@ -67,7 +72,7 @@ public class SellingHelper {
 
         if (slots.isEmpty()) return possible;
 
-        List<Set<String>> slotSignatures = slots.stream().map(SellingHelper::getSignature).collect(Collectors.toList());
+        List<Set<String>> slotSignatures = slots.stream().map(SellingHelper::getSignature).filter(o -> !o.isEmpty()).collect(Collectors.toList());
 
         if (slotSignatures.isEmpty()) return possible;
         possible = slotSignatures.get(0);
@@ -104,7 +109,7 @@ public class SellingHelper {
             if (slot.inventory != mc.thePlayer.inventory) continue;
 
             Set<String> signatures = getSignature(slot);
-            signatures.forEach(o -> {
+            signatures.stream().filter(o -> !o.isEmpty()).forEach(o -> {
                 if (chestFilters.containsKey(o)) highlightChests.add(chestFilters.get(o));
             });
         }
