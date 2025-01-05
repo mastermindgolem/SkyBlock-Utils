@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models.gui;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.utils.LocationUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -10,6 +11,7 @@ import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.configFile;
 
@@ -32,7 +34,7 @@ public class ButtonManager {
         if (configFile.container_value != 0) activeBoxes.add("containerValue");
         if (configFile.sellingHelper) activeBoxes.add("sellMethod");
         if (configFile.auctionHelper) activeBoxes.add("auctionHelper");
-        if (configFile.sortingHelper) activeBoxes.add("sortingHelper");
+        if (configFile.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) activeBoxes.add("sortingHelper");
 
         int y = event.gui.height - 25;
 

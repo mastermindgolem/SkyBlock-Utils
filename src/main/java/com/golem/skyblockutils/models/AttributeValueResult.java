@@ -9,6 +9,7 @@ public class AttributeValueResult {
     public long value;
     public Attribute best_attribute;
     public String display_name;
+    public String item_id;
 
     public AttributeValueResult() {
         this.top_display = "";

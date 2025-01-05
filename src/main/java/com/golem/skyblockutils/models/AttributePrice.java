@@ -218,6 +218,7 @@ public class AttributePrice {
 
 		result.best_attribute = new Attribute(best_attribute, best_tier, best_value);
 		result.display_name = displayName;
+		result.item_id = item_id;
 
 		if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1_000_000) {
 			result.top_display = "GR";
