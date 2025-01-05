@@ -20,7 +20,7 @@ import static com.golem.skyblockutils.models.AttributeItemType.*;
 
 public class CombineHelper {
 
-    private Set<Slot> highlightSlots = new HashSet<>();
+    private final Set<Slot> highlightSlots = new HashSet<>();
 
     private final AttributeItemType[] pieces = {
             Helmet, Chestplate, Leggings, Boots, MoltenNecklace, MoltenCloak, MoltenBelt, MoltenBracelet, Shard
@@ -32,7 +32,7 @@ public class CombineHelper {
     public void onInventoryChange(InventoryChangeEvent event) {
         highlightSlots.clear();
         if (!(event.event.gui instanceof GuiChest)) return;
-        if (!InventoryData.chestName.contains("Attribute Fusion")) return;
+        if (!InventoryData.currentChestName.contains("Attribute Fusion")) return;
 
         for (AttributeItemType piece : pieces) {
             for (int level = 1; level < 10; level++) {
@@ -58,7 +58,7 @@ public class CombineHelper {
     public void onGuiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
         if (configFile.combineAttribute == 0) return;
-        if (!InventoryData.chestName.contains("Attribute Fusion")) return;
+        if (!InventoryData.currentChestName.contains("Attribute Fusion")) return;
 
         for (Slot slot : highlightSlots) {
             RenderUtils.highlight(Color.GREEN, (GuiChest) event.gui, slot);

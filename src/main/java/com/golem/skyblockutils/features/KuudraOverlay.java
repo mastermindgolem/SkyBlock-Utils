@@ -57,7 +57,7 @@ public class KuudraOverlay {
 			if (!configFile.kuudra_overlay) return;
 			if (configFile.customProfitOverlay == 0) return;
 
-			if (!InventoryData.chestName.contains("Paid Chest") && !InventoryData.chestName.contains("Free Chest")) return;
+			if (!InventoryData.currentChestName.contains("Paid Chest") && !InventoryData.currentChestName.contains("Free Chest")) return;
 			List<Slot> fullChestInventory = InventoryData.containerSlots;
 			displayStrings = new ArrayList<>();
 			totalValue = 0;
@@ -175,7 +175,7 @@ public class KuudraOverlay {
 			} catch (Exception ignored) {
 			}
 
-			if (InventoryData.chestName.contains("Paid")) {
+			if (InventoryData.currentChestName.contains("Paid")) {
 				try {
 					String keySlotLore = chestInventory.get(31).getStack().getTagCompound().getCompoundTag("display").getTagList("Lore", 8).toString();
 					keyCost += bazaar.get("products").getAsJsonObject().get("CORRUPTED_NETHER_STAR").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt() * 2;

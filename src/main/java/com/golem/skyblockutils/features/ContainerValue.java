@@ -104,7 +104,7 @@ public class ContainerValue {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
 			if (configFile.container_value == 0) return;
-			if (InventoryData.chestName.contains("Paid Chest") || InventoryData.chestName.contains("Free Chest")) return;
+			if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
 
 			if (!ButtonManager.isChecked("containerValue")) return;
 
@@ -141,7 +141,7 @@ public class ContainerValue {
 		List<Map.Entry<String, DisplayString>> list = new ArrayList<>(map.entrySet());
 
 		// Define a custom comparator to compare values in descending order
-		Comparator<Map.Entry<String, DisplayString>> valueComparator = null;
+		Comparator<Map.Entry<String, DisplayString>> valueComparator;
 		switch (configFile.containerSorting) {
 			case 0:
 				valueComparator = (entry1, entry2) -> {

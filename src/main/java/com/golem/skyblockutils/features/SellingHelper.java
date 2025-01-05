@@ -3,7 +3,10 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.gui.ButtonManager;
-import com.golem.skyblockutils.utils.*;
+import com.golem.skyblockutils.utils.AttributeUtils;
+import com.golem.skyblockutils.utils.InventoryData;
+import com.golem.skyblockutils.utils.LocationUtils;
+import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
@@ -36,7 +39,7 @@ public class SellingHelper {
         highlightSlots.clear();
         highlightInvSlots.clear();
         if (event.event.gui instanceof GuiContainer) {
-            if (InventoryData.chestName.contains("Paid Chest") || InventoryData.chestName.contains("Free Chest")) return;
+            if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
             if (configFile.sellingHelper) highlightSellMethod();
             if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
             if (configFile.sortingHelper) checkForSimilarItems();
@@ -75,7 +78,7 @@ public class SellingHelper {
         List<Set<String>> slotSignatures = slots.stream().map(SellingHelper::getSignature).filter(o -> !o.isEmpty()).collect(Collectors.toList());
 
         if (slotSignatures.isEmpty()) return possible;
-        possible = slotSignatures.get(0);
+        possible = new HashSet<>(slotSignatures.get(0));
         slotSignatures.forEach(possible::retainAll);
 
         return possible;
@@ -141,7 +144,7 @@ public class SellingHelper {
     @SubscribeEvent
     public void onGuiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
-        if (InventoryData.chestName.contains("Paid Chest") || InventoryData.chestName.contains("Free Chest")) return;
+        if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
         GuiChest gui = (GuiChest) event.gui;
         if (ButtonManager.isChecked("sellMethod")) {
             highlightSlots.forEach((slot, method) -> {

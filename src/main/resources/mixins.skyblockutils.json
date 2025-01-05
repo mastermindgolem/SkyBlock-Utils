@@ -6,6 +6,7 @@
   "refmap": "mixins.skyblockutils.refmap.json",
   "client": [
     "minecraft.client.AccessorGuiContainer",
+    "minecraft.client.AccessorGuiEditSign",
     "minecraft.client.MixinGuiContainer",
     "minecraft.client.MixinGuiScreen"
   ]

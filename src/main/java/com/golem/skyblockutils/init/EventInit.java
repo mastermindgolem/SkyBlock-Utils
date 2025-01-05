@@ -50,7 +50,8 @@ public class EventInit {
 				new Corpses(),
 				new ChestAnalyzer(),
 				new SellingHelper(),
-				new ButtonManager()
+				new ButtonManager(),
+				new AuctionHelper()
 		//new TrackKills()
 		};
 
