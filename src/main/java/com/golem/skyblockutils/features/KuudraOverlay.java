@@ -228,7 +228,7 @@ public class KuudraOverlay {
 			if (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest")) return;
 
 			if (expectedProfit.size() == 5) {
-				if (totalValue < expectedProfit.get(Kuudra.tier - 1) - bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt()) {
+				if (!usedKismet && totalValue < expectedProfit.get(Kuudra.tier - 1) - bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt()) {
 					RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(50));
 				} else {
 					RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(31));
