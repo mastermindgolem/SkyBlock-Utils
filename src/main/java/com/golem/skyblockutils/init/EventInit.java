@@ -15,6 +15,7 @@ import com.golem.skyblockutils.features.KuudraFight.Waypoints;
 import com.golem.skyblockutils.features.Mining.Corpses;
 import com.golem.skyblockutils.features.Mining.FossilFinder;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
+import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
@@ -48,7 +49,8 @@ public class EventInit {
 				new FossilFinder(),
 				new Corpses(),
 				new ChestAnalyzer(),
-				new SellingHelper()
+				new SellingHelper(),
+				new ButtonManager()
 		//new TrackKills()
 		};
 
