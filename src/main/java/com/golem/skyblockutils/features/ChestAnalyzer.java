@@ -1,9 +1,10 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.utils.ChatUtils;
+import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.RenderUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.inventory.Container;
@@ -13,7 +14,6 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -21,7 +21,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
+import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
 
 public class ChestAnalyzer {
@@ -79,27 +81,33 @@ public class ChestAnalyzer {
     }
 
     @SubscribeEvent
-    public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
+    public void onInventoryChange(InventoryChangeEvent event) {
         if (lastOpenedChest == null) return;
-        if (!analyzeChests) return;
-        if (!(event.gui instanceof GuiChest)) return;
-        if (chestData.containsKey(lastOpenedChest.getPos())) return;
-        if (getAdjacentChest(lastOpenedChest) != null && chestData.containsKey(getAdjacentChest(lastOpenedChest))) return;
+        if (!(event.event.gui instanceof GuiChest)) return;
+        if (!analyzeChests && !configFile.sortingHelper) return;
 
-        GuiChest gui = (GuiChest) event.gui;
+        GuiChest gui = (GuiChest) event.event.gui;
         Container container = gui.inventorySlots;
+        List<Slot> chestInventory = container.inventorySlots;
         if (!(container instanceof ContainerChest)) return;
-
-        List<Slot> chestInventory = ((GuiChest) Minecraft.getMinecraft().currentScreen).inventorySlots.inventorySlots;
         if (getAdjacentChest(lastOpenedChest) != null) {
             chestInventory = chestInventory.subList(0, 54);
         } else {
             chestInventory = chestInventory.subList(0, 27);
         }
-        chestData.put(lastOpenedChest.getPos(), chestInventory);
+        if (analyzeChests) {
+            if (!chestData.containsKey(lastOpenedChest.getPos())) {
+                if (getAdjacentChest(lastOpenedChest) == null || !chestData.containsKey(getAdjacentChest(lastOpenedChest))) {
+                    chestData.put(lastOpenedChest.getPos(), chestInventory);
+                }
+            }
+        }
+        if (configFile.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) {
+            SellingHelper.addChest(lastOpenedChest, chestInventory);
+        }
     }
 
-    private BlockPos getAdjacentChest(TileEntityChest chest) {
+    public static BlockPos getAdjacentChest(TileEntityChest chest) {
         if (chest.adjacentChestXNeg != null) {
             return chest.getPos().offset(EnumFacing.WEST);
         } else if (chest.adjacentChestXPos != null) {

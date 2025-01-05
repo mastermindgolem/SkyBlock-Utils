@@ -29,7 +29,7 @@ public class InventoryData {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        if (event.gui == null || event.gui instanceof GuiChest) {
+        if (event.gui instanceof GuiContainer) {
             items.clear();
             values.clear();
             lastItemSignatures.clear();
