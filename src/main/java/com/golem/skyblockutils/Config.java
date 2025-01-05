@@ -144,8 +144,6 @@ public class Config extends Vigilant
 	public boolean showKuudraBossBar = false;
 	@Property(type = PropertyType.SWITCH, name = "Display Kuudra Outline", description = "Creates a box around Kuudra in Phase 4.", category = "Kuudra", subcategory = "Boss")
 	public boolean showKuudraOutline = false;
-	@Property(type = PropertyType.SWITCH, name = "Draw Line to Kuudra", description = "Draws a line to Kuudra in Phase 4.", category = "Kuudra", subcategory = "Boss")
-	public boolean showKuudraLine = false;
 
 	@Property(type = PropertyType.SWITCH, name = "Show Splits at End of Run", description = "Sends time of each phase in chat at the end of the run.", category = "Kuudra", subcategory = "Boss")
 	public boolean showSplits = false;
@@ -441,12 +439,6 @@ public class Config extends Vigilant
 			category = "General",
 			subcategory = "Containers")
 	public boolean compactContainerValue = true;
-	@Property(type = PropertyType.SWITCH,
-			name = "Sell Shards as Equipment",
-			description = "Use Equipment prices to price attribute shards",
-			category = "General",
-			subcategory = "Containers")
-	public boolean shardEquipmentPricing = true;
 	@Property(type = PropertyType.SELECTOR,
 			name = "Sorting of Container Value",
 			description = "Decide how container value display is sorted.",
@@ -545,10 +537,13 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Corpse Locator", description = "Highlights any corpses visible on screen with a waypoint", category = "Mining", subcategory = "Corpse")
 	public boolean corpseLocator = false;
 
-	@Property(type = PropertyType.SWITCH, name = "Selling Helper", description = "Features that help you sort loot quicker", category = "Selling", subcategory = "Auction")
+	@Property(type = PropertyType.SWITCH, name = "Selling Helper", description = "Features that help you sell loot quicker", category = "Selling", subcategory = "Auction")
 	public boolean sellingHelper = false;
 	@Property(type = PropertyType.SWITCH, name = "Auction Helper", description = "Features that help you auction loot quicker", category = "Selling", subcategory = "Auction")
 	public boolean auctionHelper = false;
+
+	@Property(type = PropertyType.SWITCH, name = "Sorting Helper", description = "Features that help you sort loot quicker", category = "Selling", subcategory = "Auction")
+	public boolean sortingHelper = false;
 
 	public Config() {
 		super(new File(Config.configFolder + "config.toml"), "SkyblockUtils", new JVMAnnotationPropertyCollector(),

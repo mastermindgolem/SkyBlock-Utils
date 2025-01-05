@@ -14,7 +14,7 @@ import java.util.HashMap;
 import static com.golem.skyblockutils.Main.configFile;
 
 public class ButtonManager {
-    private static HashMap<String, GuiCheckBox> checkBoxes = new HashMap<>();
+    private static final HashMap<String, GuiCheckBox> checkBoxes = new HashMap<>();
     public static boolean mousePressed = false;
     ArrayList<String> activeBoxes = new ArrayList<>();
 
@@ -22,15 +22,17 @@ public class ButtonManager {
         checkBoxes.put("containerValue", new GuiCheckBox(0, 5, 0, "Container Value", false));
         checkBoxes.put("sellMethod", new GuiCheckBox(1, 5, 0, "Highlight Sell Method", false));
         checkBoxes.put("auctionHelper", new GuiCheckBox(2, 5, 0, "Auction Helper", false));
+        checkBoxes.put("sortingHelper", new GuiCheckBox(3, 5, 0, "Sorting Helper", false));
     }
 
     @SubscribeEvent
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
         activeBoxes.clear();
-        if (configFile.container_value != 0) activeBoxes.add("containerValue");;
+        if (configFile.container_value != 0) activeBoxes.add("containerValue");
         if (configFile.sellingHelper) activeBoxes.add("sellMethod");
         if (configFile.auctionHelper) activeBoxes.add("auctionHelper");
+        if (configFile.sortingHelper) activeBoxes.add("sortingHelper");
 
         int y = event.gui.height - 25;
 
