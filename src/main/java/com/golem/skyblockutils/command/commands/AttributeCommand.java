@@ -5,7 +5,6 @@ import com.golem.skyblockutils.models.*;
 import com.golem.skyblockutils.utils.AttributeUtils;
 import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -180,8 +179,6 @@ public class AttributeCommand extends CommandBase implements Help {
 				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[EQUIPMENT]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1 + " " + level) {
 				})));
 			} else {
-
-
 				String attribute2 = AttributeUtils.AttributeAliases(args[1]);
 				Set<String> attributeSet = new HashSet<>();
 				attributeSet.add(attribute1);
@@ -190,7 +187,7 @@ public class AttributeCommand extends CommandBase implements Help {
 				for (AttributeArmorType key : item_types) {
 					addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()));
 					for (AttributeItemType key2 : armor_types) {
-						AuctionAttributeItem item = AttributePrice.getComboValue(key2, key, attributeSet);
+						AuctionAttributeItem item = AttributePrice.getComboItem(key2, key, attributeSet);
 						if (item == null) continue;
 						ChatUtils.addChatMessage(ToolTipListener.TitleCase(key2.getDisplay()) + ": " + getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
 					}

@@ -3,6 +3,7 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.utils.ChatUtils;
+import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.LocationUtils;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -102,6 +103,9 @@ public class ChestAnalyzer {
                 }
             }
         }
+
+        if (!Objects.equals(InventoryData.currentChestName, "Large Chest") && !Objects.equals(InventoryData.currentChestName, "Small Chest")) return;
+
         if (configFile.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) {
             SellingHelper.addChest(lastOpenedChest, chestInventory);
         }

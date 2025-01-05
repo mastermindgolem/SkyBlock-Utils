@@ -14,7 +14,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 
-import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +29,7 @@ public class AttributePrice {
 	public static HashMap<String, Long> LowestBin = new HashMap<>();
 	public static HashMap<AttributeItemType, HashMap<String, ArrayList<AuctionAttributeItem>>> AttributePrices = new HashMap<>();
 	public static HashMap<AttributeItemType, HashMap<String, ArrayList<Long>>> LowestAttributePrices = new HashMap<>();
+	private static HashMap<String, Long> skyHelperPrices = new HashMap<>();
 	static final IChatComponent ErrorMessage = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
 	public static List<String> equipmentExcludeAttributes;
 	public static List<String> armorExcludeAttributes;
@@ -85,13 +85,39 @@ public class AttributePrice {
 			equipmentExcludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
 			armorExcludeAttributes = Arrays.asList(configFile.attributesToExcludeArmor.split(", "));
 			priorityAttributes = Arrays.asList(configFile.priorityAttributes.split(", "));
-			System.out.println("Fetched " + AllCombos.size() + " combos!");
 		}).start();
 
 	}
 
+	public static void processSkyHelperPrices(JsonObject prices) {
+		for (Map.Entry<String, JsonElement> entry : prices.entrySet()) {
+			String item = entry.getKey();
+			if (!item.contains("_roll_")) continue;
+			if (item.startsWith("hot") || item.startsWith("burning") || item.startsWith("fiery") || item.startsWith("infernal")) continue;
+			if (item.startsWith("kuudra_")) {
+				skyHelperPrices.put(item, entry.getValue().getAsLong());
+				continue;
+			}
+			String item_id = item.split("_roll_")[0].toUpperCase();
+			AttributeItemType item_type = AttributeUtils.getItemType(item_id);
+			if (item_type == null) continue;
+			item = item.replaceAll("_roll_", "_");
+			skyHelperPrices.put(item, entry.getValue().getAsLong());
+		}
+	}
 
-	public static AuctionAttributeItem getComboValue(AttributeItemType item_type, Set<String> attributes) {
+	public static long getComboValue(AttributeItemType item_type, Set<String> attributes) {
+		if (item_type == null) return 0L;
+		return skyHelperPrices.getOrDefault((item_type.getID() + "_" + attributes.stream().sorted().collect(Collectors.joining("_"))).toLowerCase(), 0L);
+	}
+
+	public static long getComboValue(AttributeItemType item_type, AttributeArmorType armor_type, Set<String> attributes) {
+		if (item_type == null || armor_type == null) return 0L;
+		return skyHelperPrices.getOrDefault((armor_type.getID() + "_" + item_type.getID() + "_" + attributes.stream().sorted().collect(Collectors.joining("_"))).toLowerCase(), 0L);
+	}
+
+
+	public static AuctionAttributeItem getComboItem(AttributeItemType item_type, Set<String> attributes) {
 		Set<String> combosKeys = AllCombos.keySet();
 		if (combosKeys.isEmpty()) {
 			long currentTimeMillis = time.getCurrentMS();
@@ -111,7 +137,7 @@ public class AttributePrice {
 		return AllCombos.get(combo);
 	}
 
-	public static AuctionAttributeItem getComboValue(AttributeItemType item_type, AttributeArmorType armor_type, Set<String> attributes) {
+	public static AuctionAttributeItem getComboItem(AttributeItemType item_type, AttributeArmorType armor_type, Set<String> attributes) {
 		Set<String> combosKeys = AllCombos.keySet();
 		if (combosKeys.isEmpty()) {
 			long currentTimeMillis = time.getCurrentMS();
@@ -140,10 +166,10 @@ public class AttributePrice {
 
 		if (item.item_type == null) return null;
 
-		return AttributeValue(item, dev);
+		return AttributeValue(item, dev, false);
 	}
 
-	public static AttributeValueResult AttributeValue(AttributeItem item, boolean dev) {
+	public static AttributeValueResult AttributeValue(AttributeItem item, boolean dev, boolean skyHelper) {
 
 		AttributeValueResult result = new AttributeValueResult();
 
@@ -194,11 +220,9 @@ public class AttributePrice {
 			}
 		}
 
-		AuctionAttributeItem comboitem = AttributeUtils.isArmor(item_id)
+		long combo_value = AttributeUtils.isArmor(item_id)
 				? getComboValue(item.item_type, AttributeUtils.getArmorVariation(item_id), item.attributes.keySet())
 				: getComboValue(item.item_type, item.attributes.keySet());
-
-		long combo_value = (comboitem == null ? 0 : comboitem.price);
 		if (dev) {
 			Kuudra.addChatMessage("Combo Value: " + combo_value);
 			Kuudra.addChatMessage("Best Attribute: " + best_attribute);

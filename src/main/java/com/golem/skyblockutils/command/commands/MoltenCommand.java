@@ -178,9 +178,8 @@ public class MoltenCommand extends CommandBase implements Help {
                 attributeSet.add(attribute1);
                 attributeSet.add(attribute2);
                 for (AttributeItemType key : item_types) {
-                    AuctionAttributeItem item = AttributePrice.getComboValue(key, attributeSet);
+                    AuctionAttributeItem item = AttributePrice.getComboItem(key, attributeSet);
                     if (item == null) continue;
-                    Logger.debug(item);
                     ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
                 }
                 mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[ARMOR]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + attribute1 + " " + attribute2) {

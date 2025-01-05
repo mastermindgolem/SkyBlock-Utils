@@ -40,6 +40,7 @@ public class AuctionHouse {
 					}
 				}
 				String urlString = "https://mastermindgolem.pythonanywhere.com/?auctions=mb";
+				String skyHelperPrices = "https://raw.githubusercontent.com/SkyHelperBot/Prices/master/prices.json";
 				new Thread(() -> {
 					try {
 						JsonObject result = new RequestUtil().sendGetRequest(urlString).getJsonAsObject();
@@ -67,6 +68,9 @@ public class AuctionHouse {
 							sell_price = bazaar.get("products").getAsJsonObject().get("ESSENCE_CRIMSON").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 						} catch (Exception ignored) {}
 						ESSENCE_VALUE = (buy_price + sell_price) / 2F;
+
+						AttributePrice.processSkyHelperPrices(new RequestUtil().sendGetRequest(skyHelperPrices).getJsonAsObject());
+
 						Logger.info("Fetched auctions!");
 					} catch (NullPointerException ignored) {
 						Logger.error("Nom");

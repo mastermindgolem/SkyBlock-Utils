@@ -2,8 +2,6 @@ package com.golem.skyblockutils.utils;
 
 import com.golem.skyblockutils.init.KeybindsInit;
 import com.golem.skyblockutils.models.AttributeItemType;
-import com.golem.skyblockutils.models.AttributePrice;
-import com.golem.skyblockutils.models.AuctionAttributeItem;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,8 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.Arrays;
 
 import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.models.AttributePrice.LowestAttributePrices;
-import static com.golem.skyblockutils.models.AttributePrice.all_attributes;
+import static com.golem.skyblockutils.models.AttributePrice.*;
 
 public class ToolTipListener {
 	private long comboprice = -1;
@@ -54,14 +51,9 @@ public class ToolTipListener {
 			String[] s = shards.getKeySet().toArray(new String[0]);
 			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched) && shards.getKeySet().size() > 1) {
 				AttributeItemType item_type = AttributeUtils.getItemType(name);
-				AuctionAttributeItem comboitem = AttributeUtils.isArmor(name)
-						? AttributePrice.getComboValue(item_type, AttributeUtils.getArmorVariation(name), shards.getKeySet())
-						: AttributePrice.getComboValue(item_type, shards.getKeySet());
-				if (comboitem == null) {
-					comboprice = 0;
-				} else {
-					comboprice = comboitem.price;
-				}
+				comboprice = AttributeUtils.isArmor(name) && item_type != null
+						? getComboValue(item_type, AttributeUtils.getArmorVariation(name), shards.getKeySet())
+						: getComboValue(item_type, shards.getKeySet());
 				previousItemSearched = name;
 				previousAttributesSearched = s;
 			}
