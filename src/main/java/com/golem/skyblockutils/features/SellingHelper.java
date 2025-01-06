@@ -79,8 +79,6 @@ public class SellingHelper {
 
         if (slotSignatures.isEmpty()) return possible;
 
-        slotSignatures.forEach(System.out::println);
-
         possible = new HashSet<>(slotSignatures.get(0));
         slotSignatures.forEach(possible::retainAll);
         return possible;

@@ -205,7 +205,7 @@ public class AttributePrice {
 			if (min_tier > 0) {
 				value = items.get(min_tier) << (attr_tier - 1);
 			} else {
-				value = items.get(1) << (attr_tier - 1);
+				value = items.get(attr_tier) << (attr_tier - 1);
 			}
 			if (dev) Kuudra.addChatMessage(attr_key + " " + attr_tier + " value : " + value);
 			added_value += value;
