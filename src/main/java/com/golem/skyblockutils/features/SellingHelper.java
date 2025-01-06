@@ -3,10 +3,8 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.gui.ButtonManager;
-import com.golem.skyblockutils.utils.AttributeUtils;
-import com.golem.skyblockutils.utils.InventoryData;
-import com.golem.skyblockutils.utils.LocationUtils;
-import com.golem.skyblockutils.utils.RenderUtils;
+import com.golem.skyblockutils.utils.*;
+import lombok.Getter;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Items;
@@ -30,7 +28,7 @@ public class SellingHelper {
 
     private final HashMap<Slot, SellMethod> highlightSlots = new HashMap<>();
     private final Set<Slot> highlightInvSlots = new HashSet<>();
-    private final Set<String> possibleSimilarities = new HashSet<>();
+    private final Set<Signature> possibleSimilarities = new HashSet<>();
     private static final HashMap<String, TileEntityChest> chestFilters = new HashMap<>();
 
     @SubscribeEvent
@@ -57,30 +55,34 @@ public class SellingHelper {
         slots = InventoryData.containerSlots.subList(InventoryData.containerSlots.size() - 36, InventoryData.containerSlots.size()).stream().filter(Slot::getHasStack).collect(Collectors.toList());
         highlightInvSlots.addAll(slots.stream().filter(slot -> {
             if (!slot.getHasStack()) return false;
-            Set<String> signatures = getSignature(slot);
+            Set<Signature> signatures = getSignature(slot);
             if (signatures.isEmpty()) return false;
-            return possibleSimilarities.containsAll(signatures);
+            return signatures.stream().anyMatch(possibleSimilarities::contains);
         }).collect(Collectors.toList()));
     }
 
     public static void addChest(TileEntityChest chest, List<Slot> slots) {
-        String similarity = getSimilarity(slots).stream().findFirst().orElse(null);
-        if (similarity == null) return;
-        chestFilters.put(similarity, chest);
+        Set<Signature> similarity = getSimilarity(slots);
+        String sim = similarity.stream().max(Comparator.comparingInt(Signature::getLevel)).map(Signature::getSignature).orElse(null);
+        if (sim == null) return;
+        chestFilters.put(sim, chest);
     }
 
-    private static Set<String> getSimilarity(List<Slot> slots) {
-        Set<String> possible = new HashSet<>();
+    private static Set<Signature> getSimilarity(List<Slot> slots) {
+        Set<Signature> possible = new HashSet<>();
+        if (slots.stream().allMatch(Slot::getHasStack)) return possible;
         slots = slots.stream().filter(Slot::getHasStack).collect(Collectors.toList());
 
         if (slots.isEmpty()) return possible;
 
-        List<Set<String>> slotSignatures = slots.stream().map(SellingHelper::getSignature).filter(o -> !o.isEmpty()).collect(Collectors.toList());
+        List<Set<Signature>> slotSignatures = slots.stream().map(SellingHelper::getSignature).filter(o -> !o.isEmpty()).collect(Collectors.toList());
 
         if (slotSignatures.isEmpty()) return possible;
+
+        slotSignatures.forEach(System.out::println);
+
         possible = new HashSet<>(slotSignatures.get(0));
         slotSignatures.forEach(possible::retainAll);
-
         return possible;
     }
 
@@ -111,10 +113,10 @@ public class SellingHelper {
             if (!slot.getHasStack()) continue;
             if (slot.inventory != mc.thePlayer.inventory) continue;
 
-            Set<String> signatures = getSignature(slot);
-            signatures.stream().filter(o -> !o.isEmpty()).forEach(o -> {
-                if (chestFilters.containsKey(o)) highlightChests.add(chestFilters.get(o));
-            });
+            Set<Signature> signatures = getSignature(slot);
+
+            signatures.stream().filter(o -> chestFilters.containsKey(o.signature)).max(Comparator.comparingInt(Signature::getLevel)).ifPresent(o -> highlightChests.add(chestFilters.get(o.signature)));
+
         }
         for (TileEntityChest pos : highlightChests) {
             RenderUtils.drawBlockBox(pos.getPos(), Color.GREEN, 5, event.partialTicks);
@@ -123,22 +125,33 @@ public class SellingHelper {
         }
     }
 
-    private static Set<String> getSignature(Slot slot) {
+    private static Set<Signature> getSignature(Slot slot) {
+        Set<Signature> signatures = new HashSet<>();
         if (slot.getStack().getItem().getRegistryName().equals(Items.enchanted_book.getRegistryName())) {
             try {
                 NBTTagCompound enchants = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments");
-                return enchants.getKeySet().stream().map(o -> "enchantment_" + o).collect(Collectors.toSet());
+                for (String enchant : enchants.getKeySet()) {
+                    signatures.add(new Signature(enchant, 5));
+                }
             } catch (NullPointerException ignored) {}
         }
 
         AttributeValueResult result = InventoryData.values.get(slot);
-        if (result == null) return new HashSet<>();
+        if (result == null) return signatures;
         if (AttributeUtils.isArmor(result.item_id)) {
-            return Collections.singleton("armor_" + result.best_attribute.attribute);
+            signatures.add(new Signature(AttributeUtils.getItemType(result.item_id) + "_" + result.best_attribute.attribute, 4));
+            signatures.add(new Signature("armor_" + result.best_attribute.attribute, 3));
+            signatures.add(new Signature("attribute_armor", 2));
+            return signatures;
         } else if (result.item_id.equals("ATTRIBUTE_SHARD")) {
-            return Collections.singleton("shard_" + result.top_display.toLowerCase());
+            signatures.add(new Signature("attribute_shard", 2));
+            signatures.add(new Signature("shard_" + result.top_display.toLowerCase(), 3));
+            return signatures;
         }
-        return Collections.singleton("attribute_" + result.best_attribute.attribute);
+        signatures.add(new Signature(result.item_id + "_" + result.best_attribute.attribute, 4));
+        signatures.add(new Signature("attribute_item_" + result.best_attribute.attribute, 3));
+        signatures.add(new Signature("attribute_item", 2));
+        return signatures;
     }
 
     @SubscribeEvent
@@ -170,5 +183,34 @@ public class SellingHelper {
         SALVAGE,
         AUCTION_CHEAP,
         AUCTION_EXPENSIVE
+    }
+
+    @Getter
+    private static class Signature {
+        private final String signature;
+        private final int level;
+
+        public Signature(String signature, int level) {
+            this.signature = signature;
+            this.level = level;
+        }
+
+        @Override
+        public String toString() {
+            return signature + " " + level;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Signature signature1 = (Signature) obj;
+            return Objects.equals(signature, signature1.signature);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(signature, level);
+        }
     }
 }
