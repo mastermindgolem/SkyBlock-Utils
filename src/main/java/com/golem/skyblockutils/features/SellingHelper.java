@@ -28,12 +28,12 @@ public class SellingHelper {
 
     private final HashMap<Slot, SellMethod> highlightSlots = new HashMap<>();
     private final Set<Slot> highlightInvSlots = new HashSet<>();
-    private final Set<Signature> possibleSimilarities = new HashSet<>();
+    private Signature similarity = null;
     private static final HashMap<String, TileEntityChest> chestFilters = new HashMap<>();
 
     @SubscribeEvent
     public void onInventoryChange(InventoryChangeEvent event) {
-        possibleSimilarities.clear();
+        similarity = null;
         highlightSlots.clear();
         highlightInvSlots.clear();
         if (event.event.gui instanceof GuiContainer) {
@@ -47,18 +47,27 @@ public class SellingHelper {
     private void checkForSimilarItems() {
         List<Slot> slots = InventoryData.containerSlots.subList(0, InventoryData.containerSlots.size() - 36);
 
-        possibleSimilarities.addAll(getSimilarity(slots));
+        similarity = getSimilarity(slots).stream().max(Comparator.comparingInt(Signature::getLevel)).orElse(null);
 
-        if (possibleSimilarities.isEmpty()) return;
+        if (similarity == null) return;
 
         if (InventoryData.containerSlots.size() < 36) return;
         slots = InventoryData.containerSlots.subList(InventoryData.containerSlots.size() - 36, InventoryData.containerSlots.size()).stream().filter(Slot::getHasStack).collect(Collectors.toList());
-        highlightInvSlots.addAll(slots.stream().filter(slot -> {
-            if (!slot.getHasStack()) return false;
+        for (Slot slot : slots) {
+            if (!slot.getHasStack()) continue;
             Set<Signature> signatures = getSignature(slot);
-            if (signatures.isEmpty()) return false;
-            return signatures.stream().anyMatch(possibleSimilarities::contains);
-        }).collect(Collectors.toList()));
+            for (Signature sig : signatures.stream()
+                    .sorted(Collections.reverseOrder(Comparator.comparing(Signature::getLevel)))
+                    .collect(Collectors.toList())) {
+                if (Objects.equals(sig.signature, similarity.signature)) {
+                    highlightInvSlots.add(slot);
+                    break;
+                }
+                if (chestFilters.containsKey(sig.signature)) {
+                    break;
+                }
+            }
+        }
     }
 
     public static void addChest(TileEntityChest chest, List<Slot> slots) {
@@ -113,8 +122,16 @@ public class SellingHelper {
 
             Set<Signature> signatures = getSignature(slot);
 
-            signatures.stream().filter(o -> chestFilters.containsKey(o.signature)).max(Comparator.comparingInt(Signature::getLevel)).ifPresent(o -> highlightChests.add(chestFilters.get(o.signature)));
-
+            int highestLevel = 0;
+            String highestSig = null;
+            for (Signature sig : signatures) {
+                if (!chestFilters.containsKey(sig.signature)) continue;
+                if (sig.level > highestLevel) {
+                    highestLevel = sig.level;
+                    highestSig = sig.signature;
+                }
+            }
+            highlightChests.add(chestFilters.get(highestSig));
         }
         for (TileEntityChest pos : highlightChests) {
             RenderUtils.drawBlockBox(pos.getPos(), Color.GREEN, 5, event.partialTicks);
