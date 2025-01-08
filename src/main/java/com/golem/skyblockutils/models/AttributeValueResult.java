@@ -20,6 +20,11 @@ public class AttributeValueResult {
         this.display_name = "";
     }
 
+    public AttributeValueResult(String display_string, long value) {
+        this.display_string = display_string;
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return "top_display: " + top_display + "\n" +

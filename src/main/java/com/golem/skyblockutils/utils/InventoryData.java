@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.golem.skyblockutils.models.AttributePrice.LowestBin;
+
 public class InventoryData {
     public static HashMap<Slot, AttributeItem> items = new HashMap<>();
     public static HashMap<Slot, AttributeValueResult> values = new HashMap<>();
@@ -86,7 +88,11 @@ public class InventoryData {
                 NBTTagCompound itemNbt = itemStack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
                 AttributeItem item = new AttributeItem(itemStack.getDisplayName(), getItemLore(itemStack), itemNbt);
                 if (item.item_type == null) {
-                    continue;
+                    if (LowestBin.containsKey(item.item_id)) {
+                        items.put(slot, item);
+                        values.put(slot, new AttributeValueResult(item.item_name, LowestBin.get(item.item_id)));
+                        ;
+                    }
                 }
                 items.put(slot, item);
                 values.put(slot, AttributePrice.AttributeValue(item, false, false));

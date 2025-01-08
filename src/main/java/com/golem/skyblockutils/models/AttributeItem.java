@@ -23,6 +23,7 @@ public class AttributeItem {
         if (!ExtraAttributes.hasKey("attributes")) return;
         this.item_type = AttributeUtils.getItemType(ExtraAttributes.getString("id"));
         this.item_id = ExtraAttributes.getString("id");
+        this.item_name = item_name;
         if (this.item_type == null) return;
 
         NBTTagCompound attributeData = ExtraAttributes.getCompoundTag("attributes");
@@ -36,7 +37,6 @@ public class AttributeItem {
         } else {
             this.comboString = null;
         }
-        this.item_name = item_name;
         this.item_lore = item_name + "\n" + item_lore;
         this.uuid = ExtraAttributes.getString("uuid");
     }
