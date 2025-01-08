@@ -45,12 +45,15 @@ public class CombineHelper {
                             } else {
                                 highlightSlots.add(slot1);
                                 highlightSlots.add(entry.getKey());
+                                break;
                             }
 
                         }
                     }
                 }
+                if (highlightSlots.size() == 2) break;
             }
+            if (highlightSlots.size() == 2) break;
         }
     }
 
