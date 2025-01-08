@@ -34,6 +34,7 @@ public class AttributePrice {
 	public static List<String> equipmentExcludeAttributes;
 	public static List<String> armorExcludeAttributes;
 	public static List<String> priorityAttributes;
+	public static Set<String> expensiveAttributes = new HashSet<>();
 
 
 	public static void checkAuctions(JsonArray auctions) {
@@ -81,10 +82,17 @@ public class AttributePrice {
 					error.printStackTrace();
 				}
 			}
-
 			equipmentExcludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
 			armorExcludeAttributes = Arrays.asList(configFile.attributesToExcludeArmor.split(", "));
 			priorityAttributes = Arrays.asList(configFile.priorityAttributes.split(", "));
+
+			expensiveAttributes = LowestAttributePrices.get(Shard).entrySet().stream()
+					.filter(entry -> !entry.getValue().isEmpty())
+					.sorted((e1, e2) -> Long.compare(e2.getValue().get(0), e1.getValue().get(0)))
+					.limit(5)
+					.map(Map.Entry::getKey)
+					.collect(Collectors.toSet());
+
 		}).start();
 
 	}

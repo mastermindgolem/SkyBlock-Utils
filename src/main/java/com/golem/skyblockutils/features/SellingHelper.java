@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.events.InventoryChangeEvent;
+import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.*;
@@ -28,6 +29,7 @@ public class SellingHelper {
 
     private final HashMap<Slot, SellMethod> highlightSlots = new HashMap<>();
     private final Set<Slot> highlightInvSlots = new HashSet<>();
+    private final HashMap<TileEntityChest, Color> highlightChests = new HashMap<>();
     private Signature similarity = null;
     private static final HashMap<String, TileEntityChest> chestFilters = new HashMap<>();
 
@@ -36,11 +38,40 @@ public class SellingHelper {
         similarity = null;
         highlightSlots.clear();
         highlightInvSlots.clear();
+        highlightChests.clear();
         if (event.event.gui instanceof GuiContainer) {
             if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
             if (configFile.sellingHelper) highlightSellMethod();
             if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
-            if (configFile.sortingHelper) checkForSimilarItems();
+            if (configFile.sortingHelper) {
+                checkForSimilarItems();
+                addChestsToHighlight();
+            }
+        }
+    }
+
+    private void addChestsToHighlight() {
+        for (Slot slot : InventoryData.containerSlots) {
+            if (!slot.getHasStack()) continue;
+            if (slot.inventory != mc.thePlayer.inventory) continue;
+
+            Set<Signature> signatures = getSignature(slot);
+
+            int highestLevel = 0;
+            String highestSig = null;
+            for (Signature sig : signatures) {
+                if (!chestFilters.containsKey(sig.signature)) continue;
+                if (sig.level > highestLevel) {
+                    highestLevel = sig.level;
+                    highestSig = sig.signature;
+                }
+            }
+            if (highestSig == null) continue;
+            if (AttributePrice.expensiveAttributes.stream().anyMatch(highestSig::contains)) {
+                highlightChests.put(chestFilters.get(highestSig), Color.RED);
+            } else {
+                highlightChests.put(chestFilters.get(highestSig), Color.GREEN);
+            }
         }
     }
 
@@ -73,7 +104,11 @@ public class SellingHelper {
     public static void addChest(TileEntityChest chest, List<Slot> slots) {
         Set<Signature> similarity = getSimilarity(slots);
         String sim = similarity.stream().max(Comparator.comparingInt(Signature::getLevel)).map(Signature::getSignature).orElse(null);
-        if (sim == null) return;
+        if (sim == null) {
+            chestFilters.entrySet().removeIf(entry -> entry.getValue().equals(chest));
+            return;
+        }
+//        ChatUtils.addUpdatingMessage("Added chest containing " + sim);
         chestFilters.put(sim, chest);
     }
 
@@ -114,29 +149,10 @@ public class SellingHelper {
         if (!ButtonManager.isChecked("sortingHelper")) return;
         if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
 
-        ArrayList<TileEntityChest> highlightChests = new ArrayList<>();
-
-        for (Slot slot : InventoryData.containerSlots) {
-            if (!slot.getHasStack()) continue;
-            if (slot.inventory != mc.thePlayer.inventory) continue;
-
-            Set<Signature> signatures = getSignature(slot);
-
-            int highestLevel = 0;
-            String highestSig = null;
-            for (Signature sig : signatures) {
-                if (!chestFilters.containsKey(sig.signature)) continue;
-                if (sig.level > highestLevel) {
-                    highestLevel = sig.level;
-                    highestSig = sig.signature;
-                }
-            }
-            highlightChests.add(chestFilters.get(highestSig));
-        }
-        for (TileEntityChest pos : highlightChests) {
-            RenderUtils.drawBlockBox(pos.getPos(), Color.GREEN, 5, event.partialTicks);
-            BlockPos adjacent = ChestAnalyzer.getAdjacentChest(pos);
-            if (adjacent != null) RenderUtils.drawBlockBox(adjacent, Color.GREEN, 5, event.partialTicks);
+        for (Map.Entry<TileEntityChest, Color> entry : highlightChests.entrySet()) {
+            RenderUtils.drawBlockBox(entry.getKey().getPos(), entry.getValue(), 5, event.partialTicks);
+            BlockPos adjacent = ChestAnalyzer.getAdjacentChest(entry.getKey());
+            if (adjacent != null) RenderUtils.drawBlockBox(adjacent, entry.getValue(), 5, event.partialTicks);
         }
     }
 

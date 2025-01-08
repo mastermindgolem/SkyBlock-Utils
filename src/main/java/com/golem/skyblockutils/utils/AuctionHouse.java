@@ -22,6 +22,7 @@ public class AuctionHouse {
 	public static boolean isRunning = false;
 	public static long lastErrorMessage = 0;
 	public static double ESSENCE_VALUE = 0;
+	private RequestUtil requestUtil = new RequestUtil();
 
 
 	@NoteForDecompilers("a session variable does not mean i am trying to rat you. I am simply getting the player's info.")
@@ -43,7 +44,7 @@ public class AuctionHouse {
 				String skyHelperPrices = "https://raw.githubusercontent.com/SkyHelperBot/Prices/master/prices.json";
 				new Thread(() -> {
 					try {
-						JsonObject result = new RequestUtil().sendGetRequest(urlString).getJsonAsObject();
+						JsonObject result = requestUtil.sendGetRequest(urlString).getJsonAsObject();
 						auctions = result.get("auctions").getAsJsonArray();
 						if (result.has("elite")) {
 							JsonArray temp = result.get("elite").getAsJsonArray();
@@ -60,7 +61,7 @@ public class AuctionHouse {
 						}
 
 						AttributePrice.checkAuctions(auctions);
-						bazaar = new RequestUtil().sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
+						bazaar = requestUtil.sendGetRequest("https://api.hypixel.net/skyblock/bazaar").getJsonAsObject();
 						int buy_price = 1000;
 						int sell_price = 1000;
 						try {
@@ -69,7 +70,7 @@ public class AuctionHouse {
 						} catch (Exception ignored) {}
 						ESSENCE_VALUE = (buy_price + sell_price) / 2F;
 
-						AttributePrice.processSkyHelperPrices(new RequestUtil().sendGetRequest(skyHelperPrices).getJsonAsObject());
+						AttributePrice.processSkyHelperPrices(requestUtil.sendGetRequest(skyHelperPrices).getJsonAsObject());
 
 						Logger.info("Fetched auctions!");
 					} catch (NullPointerException ignored) {

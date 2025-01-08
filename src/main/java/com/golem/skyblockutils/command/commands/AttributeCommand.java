@@ -1,5 +1,7 @@
 package com.golem.skyblockutils.command.commands;
 
+import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.ChestDataGui;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.*;
 import com.golem.skyblockutils.utils.AttributeUtils;
@@ -125,7 +127,6 @@ public class AttributeCommand extends CommandBase implements Help {
 
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
-//			Separate commands later!
 		if (args.length == 0) {
 			StringBuilder sb = new StringBuilder();
 			for (String str : getHoverStrings()) {
@@ -135,9 +136,6 @@ public class AttributeCommand extends CommandBase implements Help {
 			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(getHelpMessage()).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hover)))));
 		}
 
-
-
-		//Check all tiers
 		String attribute1;
 		if (args.length == 1) {
 			if (Objects.equals(args[0], "info")) {
