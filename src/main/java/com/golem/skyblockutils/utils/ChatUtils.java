@@ -53,4 +53,8 @@ public class ChatUtils {
 	public static void addChatMessage(String chat, ClickEvent clickEvent, String hoverEvent) {
 		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverEvent)))));
 	}
+
+	public static void addUpdatingMessage(String chat) {
+		mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(chat), 65536);
+	}
 }
