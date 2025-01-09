@@ -27,9 +27,9 @@ public class ProfitOverlay {
     private static int chests = 0;
     public static long totalTime = 0;
     public static int totalRuns = 0;
-    public static long start = 0;
+    public static long runStartTime = 0;
     public static int numRerolls = 0;
-    public static long end = 0;
+    public static long runEndTime = 0;
     public static long lastChestOpen = 0;
 
     public static int renderWidth(String text) {
@@ -155,8 +155,8 @@ public class ProfitOverlay {
     public static void reset() {
         totalProfit = 0;
         chests = 0;
-        start = 0;
-        end = 0;
+        runStartTime = 0;
+        runEndTime = 0;
         totalTime = 0;
         totalRuns = 0;
     }

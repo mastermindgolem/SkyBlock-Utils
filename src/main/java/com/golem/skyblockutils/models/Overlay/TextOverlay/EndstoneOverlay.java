@@ -1,9 +1,10 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
-import com.golem.skyblockutils.models.gui.*;
+import com.golem.skyblockutils.models.gui.GuiElement;
+import com.golem.skyblockutils.models.gui.MoveGui;
 import com.golem.skyblockutils.utils.TimeHelper;
-import net.minecraft.client.renderer.GlStateManager;
+import com.golem.skyblockutils.utils.rendering.RenderableString;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -15,18 +16,15 @@ import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
 
 public class EndstoneOverlay {
-
     public static GuiElement element = new GuiElement("Endstone Overlay", 50, 20);
-
     private static final TimeHelper time = new TimeHelper();
-
     private final DecimalFormat formatter = new DecimalFormat("0.00");
     private static long lastUse = 0;
+    private final RenderableString display;
 
-    public static int renderWidth(String text) {
-        return mc.fontRendererObj.getStringWidth(text);
+    public EndstoneOverlay() {
+        display = new RenderableString("", 0, 0);
     }
-
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
@@ -38,41 +36,35 @@ public class EndstoneOverlay {
     public void onRenderOverlay(RenderGameOverlayEvent event) {
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
-        TextStyle textStyle = TextStyle.fromInt(1);
-
-        if (configFile.testGui && (configFile.endstoneTimer == 1 || (configFile.endstoneTimer == 2 && Kuudra.currentPhase > 0) || (configFile.endstoneTimer == 3 && Kuudra.currentPhase == 4))) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+        if (configFile.testGui && (configFile.endstoneTimer == 1 ||
+                (configFile.endstoneTimer == 2 && Kuudra.currentPhase > 0) ||
+                (configFile.endstoneTimer == 3 && Kuudra.currentPhase == 4))) {
 
             double buffLeft = lastUse + 5000 - time.getCurrentMS();
-            String string1;
+            String displayText;
             if (buffLeft < 0) {
-                string1 = EnumChatFormatting.DARK_RED + "Endstone Buff: Inactive";
+                displayText = EnumChatFormatting.DARK_RED + "Endstone Buff: Inactive";
             } else {
-                string1 = EnumChatFormatting.YELLOW + "Endstone Buff: " + EnumChatFormatting.GREEN + formatter.format(buffLeft/1000) + "s";
+                displayText = EnumChatFormatting.YELLOW + "Endstone Buff: " +
+                        EnumChatFormatting.GREEN + formatter.format(buffLeft/1000) + "s";
             }
-            
-            OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
 
-            element.setWidth(renderWidth(string1));
-            element.setHeight(10);
+            display.setText(displayText)
+                    .setScale(element.position.getScale());
+            display.render();
 
-            GlStateManager.popMatrix();
+            element.setWidth(display.getWidth());
+            element.setHeight(display.getHeight());
+
         } else if (mc.currentScreen instanceof MoveGui) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
-            String string1 = EnumChatFormatting.DARK_RED + "Endstone Buff: Inactive";
+            display.setText(EnumChatFormatting.DARK_RED + "Endstone Buff: Inactive")
+                    .setScale(element.position.getScale());
+            display.render();
 
-            OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
+            element.setWidth(display.getWidth());
+            element.setHeight(display.getHeight());
 
-            element.setWidth(renderWidth(string1));
-            element.setHeight(10);
-
-            GlStateManager.popMatrix();
         }
     }
-
 }

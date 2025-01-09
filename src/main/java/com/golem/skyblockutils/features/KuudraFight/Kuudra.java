@@ -101,11 +101,18 @@ public class Kuudra {
             //AlertOverlay.text = "";
             splits[0] = (float) Main.time.getCurrentMS();
             partyMembers = new ArrayList<>();
-            if (ProfitOverlay.start == 0) ProfitOverlay.start = time.getCurrentMS();
+            ProfitOverlay.runStartTime = time.getCurrentMS();
 
+            //Account for DT if less than 5 mins
+            if (ProfitOverlay.runStartTime - ProfitOverlay.runEndTime < 300000) {
+                ProfitOverlay.totalTime += ProfitOverlay.runStartTime - ProfitOverlay.runEndTime;
+            }
 
             stunner = false;
         }
+
+        if (splits[0] == 0) return;
+
         if (message.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             currentPhase = 1;
             splits[1] = (float) Main.time.getCurrentMS();
@@ -124,8 +131,10 @@ public class Kuudra {
                 //AlertOverlay.text = EnumChatFormatting.RED + "NO TAP";
                 AlertOverlay.newAlert(EnumChatFormatting.RED + "NO TAP", 20);
             }
-
         }
+
+        if (splits[1] == 0) return;
+
         if (message.equals("[NPC] Elle: OMG! Great work collecting my supplies!")) {
             currentPhase = 2;
             splits[2] = (float) Main.time.getCurrentMS();
@@ -138,8 +147,10 @@ public class Kuudra {
             supplyWaypoints.put(Waypoints.supply4, -1);
             supplyWaypoints.put(Waypoints.supply5, -1);
             supplyWaypoints.put(Waypoints.supply6, -1);
-
         }
+
+        if (splits[2] == 0) return;
+
         if (message.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!")) {
             currentPhase = 3;
             splits[3] = (float) Main.time.getCurrentMS();
@@ -153,6 +164,9 @@ public class Kuudra {
             supplyWaypoints.put(Waypoints.supply5, -1);
             supplyWaypoints.put(Waypoints.supply6, -1);
         }
+
+        if (splits[3] == 0) return;
+
         if (message.equals("[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!")) {
             currentPhase = 4;
             stunner = false;
@@ -160,6 +174,9 @@ public class Kuudra {
             addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[1]/60000F));
         }
+
+        if (splits[4] == 0) return;
+
         if (message.contains("DEFEAT") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
@@ -170,7 +187,7 @@ public class Kuudra {
             overview.add(EnumChatFormatting.DARK_RED + "BOSS FAILED");
             mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
             overview = new ArrayList<>();
-            ProfitOverlay.end = time.getCurrentMS();
+            ProfitOverlay.runEndTime = time.getCurrentMS();
             ProfitOverlay.totalTime += splits[5] - splits[0];
             ProfitOverlay.totalRuns++;
         }
@@ -188,8 +205,8 @@ public class Kuudra {
                 mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
             }
             overview = new ArrayList<>();
-            ProfitOverlay.end = time.getCurrentMS();
-            ProfitOverlay.totalTime += splits[5] - splits[0];
+            ProfitOverlay.runEndTime = time.getCurrentMS();
+            ProfitOverlay.totalTime += (long) (splits[5] - splits[0]);
             ProfitOverlay.totalRuns++;
             JsonObject splitsData = new JsonObject();
             List<Float> splits2 = new ArrayList<>();
