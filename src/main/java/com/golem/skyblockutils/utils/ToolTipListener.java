@@ -1,8 +1,6 @@
 package com.golem.skyblockutils.utils;
 
-import com.golem.skyblockutils.init.KeybindsInit;
-import com.golem.skyblockutils.models.AttributeItemType;
-import net.minecraft.client.settings.GameSettings;
+import com.golem.skyblockutils.Main;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
@@ -10,10 +8,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.Arrays;
-
 import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.models.AttributePrice.*;
 
 public class ToolTipListener {
 	private long comboprice = -1;
@@ -29,85 +24,18 @@ public class ToolTipListener {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onItemToolTipEvent(ItemTooltipEvent event) {
+		if (!configFile.showValueInLore) return;
 		ItemStack item = event.itemStack;
-		NBTTagCompound itemNbt;
-		try {
-			itemNbt = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
-		} catch (NullPointerException e) {
-			return;
-		}
-
-		if (!itemNbt.hasKey("attributes")) return;
-
-		String name = getItemId(itemNbt);
-
-		NBTTagCompound shards;
-		try {
-			shards = itemNbt.getCompoundTag("attributes");
-		} catch (NullPointerException e) {
-			return;
-		}
-		if (GameSettings.isKeyDown(KeybindsInit.getComboValue) && !event.toolTip.isEmpty() && !shards.getKeySet().isEmpty()) {
-			String[] s = shards.getKeySet().toArray(new String[0]);
-			if (comboprice == -1 || !name.equals(previousItemSearched) || !Arrays.equals(s, previousAttributesSearched) && shards.getKeySet().size() > 1) {
-				AttributeItemType item_type = AttributeUtils.getItemType(name);
-				comboprice = AttributeUtils.isArmor(name) && item_type != null
-						? getComboValue(item_type, AttributeUtils.getArmorVariation(name), shards.getKeySet())
-						: getComboValue(item_type, shards.getKeySet());
-				previousItemSearched = name;
-				previousAttributesSearched = s;
-			}
-			StringBuilder newToolTip = new StringBuilder();
-			if (shards.getKeySet().size() > 1) {
-				String ToolTipString = EnumChatFormatting.GOLD + "Combo Value: " + EnumChatFormatting.GREEN + String.format("%,d", comboprice);
-				newToolTip.append(ToolTipString);
-			}
-			long attributeprice;
-			AttributeItemType key = AttributeUtils.getItemType(name);
-			if (key == null) {
-				event.toolTip.add(newToolTip.toString());
-				return;
-			}
-			try {
-				for (String attribute : all_attributes) {
-					if (!shards.getKeySet().contains(attribute)) continue;
-					if (!LowestAttributePrices.get(key).containsKey(attribute)) continue;
-					int min_tier = (key == AttributeItemType.Shard ? configFile.minShardTier : configFile.minArmorTier);
-					attributeprice = LowestAttributePrices.get(key).get(attribute).get(min_tier) << (shards.getInteger(attribute) - 1);
-					String ToolTipString1 = EnumChatFormatting.GOLD + TitleCase(attribute) + " " + shards.getInteger(attribute) + ": " + EnumChatFormatting.GREEN + String.format("%,d", attributeprice);
-					if (newToolTip.length() == 0) newToolTip = new StringBuilder(ToolTipString1);
-					else newToolTip.append("\n").append(ToolTipString1);
-
-				}
-			} catch (NullPointerException e) {
-				e.printStackTrace();
-			}
-			if (itemNbt.hasKey("boss_tier")) {
-				String obtainedString = EnumChatFormatting.GOLD + "Obtained in ";
-				switch (itemNbt.getInteger("boss_tier")) {
-					case 1:
-						newToolTip.append("\n").append(obtainedString).append(EnumChatFormatting.YELLOW).append("Basic");
-						break;
-					case 2:
-						newToolTip.append("\n").append(obtainedString).append(EnumChatFormatting.YELLOW).append("Hot");
-						break;
-					case 3:
-						newToolTip.append("\n").append(obtainedString).append(EnumChatFormatting.YELLOW).append("Burning");
-						break;
-					case 4:
-						newToolTip.append("\n").append(obtainedString).append(EnumChatFormatting.YELLOW).append("Fiery");
-						break;
-					case 5:
-						newToolTip.append("\n").append(obtainedString).append(EnumChatFormatting.YELLOW).append("Infernal");
-						break;
-				}
-			}
-			event.toolTip.add(newToolTip.toString());
-		}
-
-
-
+		InventoryData.values.forEach((key, value) -> {
+            if (!key.getHasStack()) return;
+            if (value == null) return;
+            if (value.value == 0) return;
+            if (key.getStack().equals(item)) {
+                event.toolTip.add(EnumChatFormatting.GOLD + "SBU Value: " + EnumChatFormatting.GREEN + Main.formatNumber(value.value));
+            }
+        });
 	}
+
 	public static String TitleCase(String text) {
 		text = text.replace("_"," ");
 		if (text.isEmpty()) {
