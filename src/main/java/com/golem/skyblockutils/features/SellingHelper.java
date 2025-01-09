@@ -106,8 +106,8 @@ public class SellingHelper {
     public static void addChest(TileEntityChest chest, List<Slot> slots) {
         Set<Signature> similarity = getSimilarity(slots);
         String sim = similarity.stream().max(Comparator.comparingInt(Signature::getLevel)).map(Signature::getSignature).orElse(null);
+        chestFilters.entrySet().removeIf(entry -> entry.getValue().equals(chest));
         if (sim == null) {
-            chestFilters.entrySet().removeIf(entry -> entry.getValue().equals(chest));
             return;
         }
 //        ChatUtils.addUpdatingMessage("Added chest containing " + sim);
