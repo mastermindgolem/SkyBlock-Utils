@@ -33,7 +33,7 @@ public class Main
 	private AuctionHouse all_auctions;
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
-	public static final String VERSION = "1.0.5.Beta.3";
+	public static final String VERSION = "1.1.0";
 	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
@@ -132,29 +132,6 @@ public class Main
 	private static String formatWithSuffix(double number, double divisor, String suffix) {
 		double quotient = number / divisor;
 		return String.format("%.1f%s", quotient, suffix);
-	}
-
-	public static String formatNumber(BigInteger number) {
-		BigInteger thousand = BigInteger.valueOf(1000);
-		BigInteger million = BigInteger.valueOf(1000000);
-		BigInteger billion = BigInteger.valueOf(1000000000);
-
-		String prefix = "";
-
-		if (number.compareTo(BigInteger.ZERO) < 0) {
-			prefix = "-";
-			number = (BigInteger.ZERO).subtract(number);
-		}
-
-		if (number.compareTo(thousand) < 0) {
-			return prefix + number;
-		} else if (number.compareTo(million) < 0) {
-			return prefix + formatWithSuffix(number, thousand, "k");
-		} else if (number.compareTo(billion) < 0) {
-			return prefix + formatWithSuffix(number, million, "m");
-		} else {
-			return prefix + formatWithSuffix(number, billion, "b");
-		}
 	}
 
 	private static String formatWithSuffix(BigInteger number, BigInteger divisor, String suffix) {
