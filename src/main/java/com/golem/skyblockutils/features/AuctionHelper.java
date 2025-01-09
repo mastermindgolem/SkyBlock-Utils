@@ -97,6 +97,18 @@ public class AuctionHelper {
     }
 
     private void setSign(Long price) {
+        try {
+            long undercut1 = 0;
+            long undercut2 = 0;
+            if (!Objects.equals(configFile.undercutCoins, "")) {
+                undercut1 = Integer.parseInt(configFile.undercutCoins);
+            }
+            if (!Objects.equals(configFile.undercutPercent, "")) {
+                undercut2 = Integer.parseInt(configFile.undercutPercent) * price / 100;
+            }
+            if (undercut1 != 0 && undercut2 != 0) price -= Math.min(undercut1, undercut2);
+            else price -= Math.max(undercut1, undercut2);
+        } catch (NumberFormatException ignored) {}
         sign.signText[0] = new ChatComponentText(String.valueOf(price));
     }
 

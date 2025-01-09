@@ -545,6 +545,10 @@ public class Config extends Vigilant
 	public boolean highlightSellMethod = false;
 	@Property(type = PropertyType.SWITCH, name = "Show Value in Auction Sign", description = "Shows various values of the item in the auctioning sign. Click a line to enter its price in the sign", category = "Selling", subcategory = "Auction")
 	public boolean auctionHelper = false;
+	@Property(type = PropertyType.TEXT, name = "Undercut By Coins", description = "Undercut by how many coins, empty = off", category = "Selling", subcategory = "Auction")
+	public String undercutCoins = "";
+	@Property(type = PropertyType.TEXT, name = "Undercut By Percent", description = "Undercut by a certain %, empty = off", category = "Selling", subcategory = "Auction")
+	public String undercutPercent = "";
 	@Property(type = PropertyType.SWITCH, name = "Sorting Helper", description = "Helps you sort your loot by telling you which chests to open and what items to put in.", category = "Selling", subcategory = "Auction")
 	public boolean sortingHelper = false;
 
