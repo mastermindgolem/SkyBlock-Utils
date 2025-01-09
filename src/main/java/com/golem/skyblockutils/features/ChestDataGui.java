@@ -71,7 +71,6 @@ public class ChestDataGui extends GuiScreen {
         long totalLbin = displayStrings.values().stream().mapToLong(displayString -> (long) (displayString.price * displayString.quantity)).sum();
 
         this.drawString(this.fontRendererObj, EnumChatFormatting.YELLOW + "Total Value: " + EnumChatFormatting.GREEN + Main.formatNumber(totalLbin), this.width - 200, 30, 0xffffffff);
-        this.drawString(this.fontRendererObj, EnumChatFormatting.YELLOW + "Sorting", 25, 50, 0xffffffff);
 
         this.drawString(this.fontRendererObj, EnumChatFormatting.BLUE + "Item", this.width / 5, 50, 0xffffffff);
         this.drawString(this.fontRendererObj, EnumChatFormatting.BLUE + "Quantity", 2 * this.width / 5, 50, 0xffffffff);
