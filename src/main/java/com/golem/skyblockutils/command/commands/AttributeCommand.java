@@ -24,11 +24,12 @@ import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.models.AttributeItemType.*;
 import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 import static com.golem.skyblockutils.utils.AuctionHouse.CheckIfAuctionsSearched;
+import static com.golem.skyblockutils.utils.ChatUtils.messagesSent;
 import static com.golem.skyblockutils.utils.Colors.getRarityCode;
 
 public class AttributeCommand extends CommandBase implements Help {
+	private static final String AUCTIONS_HEADER = EnumChatFormatting.AQUA + "Auctions for ";
 	private int level;
-
 	private final List<String> helpStrings;
 
 	private final AttributeArmorType[] item_types = AttributeArmorType.values();
@@ -38,6 +39,9 @@ public class AttributeCommand extends CommandBase implements Help {
 	public AttributeCommand() {
 		helpStrings = new ArrayList<>();
 	}
+
+
+	private final Integer firstMessageID = "sbu".hashCode();
 
 	@Override
 	public Help getHelp() {
@@ -137,11 +141,15 @@ public class AttributeCommand extends CommandBase implements Help {
 		}
 
 		String attribute1;
+
+		for (int i = 0; i < messagesSent; ++i) mc.ingameGUI.getChatGUI().deleteChatLine(firstMessageID + i);
+		messagesSent = 0;
+
 		if (args.length == 1) {
 			if (Objects.equals(args[0], "info")) {
 				AttributeValueResult result = AttributePrice.AttributeValue(mc.thePlayer.getHeldItem(), true);
 				if (result != null) {
-					Kuudra.addChatMessage(result.toString());
+					ChatUtils.addChatMessage(result.toString());
 				}
 				return;
 			}
@@ -149,11 +157,8 @@ public class AttributeCommand extends CommandBase implements Help {
 
 			if (CheckIfAuctionsSearched()) return;
 
-			addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase());
+			ChatUtils.addChatMessage(AUCTIONS_HEADER + EnumChatFormatting.BOLD + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase(), firstMessageID + messagesSent++);
 			getAttributePrice(attribute1, new AttributeItemType[]{Shard, Helmet, Chestplate, Leggings, Boots}, 0);
-
-			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[EQUIPMENT]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1) {
-			})));
 		}
 		if (args.length == 2) {
 			attribute1 = AttributeUtils.AttributeAliases(args[0]);
@@ -164,36 +169,37 @@ public class AttributeCommand extends CommandBase implements Help {
 				combo = true;
 			}
 			if (auctions.size() == 0) {
-				final IChatComponent msg = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem.");
-				mc.thePlayer.addChatMessage(msg);
+				ChatUtils.addChatMessage(EnumChatFormatting.RED + "Auctions not checked yet.", firstMessageID + messagesSent++);
 				return;
 			}
 			if (!combo) {
 				if (CheckIfAuctionsSearched()) return;
 
-				addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.BOLD + "" + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + level);
+				ChatUtils.addChatMessage(AUCTIONS_HEADER + EnumChatFormatting.BOLD + "" + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + level, firstMessageID + messagesSent++);
 				getAttributePrice(attribute1, new AttributeItemType[]{Shard, Helmet, Chestplate, Leggings, Boots}, level);
 
-				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[EQUIPMENT]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1 + " " + level) {
-				})));
 			} else {
 				String attribute2 = AttributeUtils.AttributeAliases(args[1]);
 				Set<String> attributeSet = new HashSet<>();
 				attributeSet.add(attribute1);
 				attributeSet.add(attribute2);
-				addChatMessage(EnumChatFormatting.AQUA + "Auctions for " + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + attribute2.toUpperCase());
+				ChatUtils.addChatMessage(AUCTIONS_HEADER + EnumChatFormatting.DARK_BLUE + attribute1.toUpperCase() + " " + attribute2.toUpperCase(), firstMessageID + messagesSent++);
 				for (AttributeArmorType key : item_types) {
-					addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()));
+					ChatUtils.addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()), firstMessageID + messagesSent++);
 					for (AttributeItemType key2 : armor_types) {
 						AuctionAttributeItem item = AttributePrice.getComboItem(key2, key, attributeSet);
 						if (item == null) continue;
-						ChatUtils.addChatMessage(ToolTipListener.TitleCase(key2.getDisplay()) + ": " + getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
+						ChatUtils.addChatMessage(ToolTipListener.TitleCase(key2.getDisplay()) + ": " + getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore, firstMessageID + messagesSent++);
 					}
 				}
-				mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "[EQUIPMENT]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + attribute1 + " " + attribute2) {
-				})));
 			}
 		}
+
+		mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(
+				new ChatComponentText(EnumChatFormatting.GREEN + "[Armor] ").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/attributeprice " + String.join(" ", args)))).appendSibling(
+				new ChatComponentText(EnumChatFormatting.YELLOW + " [Molten Eq] ").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/moltenprice " + String.join(" ", args))))).appendSibling(
+				new ChatComponentText(EnumChatFormatting.YELLOW + " [Other Eq]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/equipmentprice " + String.join(" ", args)))))
+		, firstMessageID + messagesSent++);
 
 	}
 
@@ -205,35 +211,27 @@ public class AttributeCommand extends CommandBase implements Help {
 			ArrayList<AuctionAttributeItem> items = AttributePrices.get(key).get(attribute);
 			if (items == null) continue;
 			if (level == 0) {
-				items = items.stream()
-					.filter(item -> item.attributes.get(attribute) >= (key.equals(Shard) ? configFile.minShardTier : configFile.minArmorTier))
-					.collect(Collectors.toCollection(ArrayList::new));
+				items.removeIf(item -> item.attributes.get(attribute) < (key.equals(Shard) ? configFile.minShardTier : configFile.minArmorTier));
 			} else {
-				items = items.stream()
-					.filter(item -> item.attributes.get(attribute) == level)
-					.collect(Collectors.toCollection(ArrayList::new));
+				items.removeIf(item -> item.attributes.get(attribute) != level);
 			}
 
 
 			items.sort(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attribute).price_per));
-			addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()));
+			ChatUtils.addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()), firstMessageID + messagesSent++);
 			if (items.size() < 5) {
 				for (AuctionAttributeItem item: items) {
-					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
+					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore, firstMessageID + messagesSent++);
 				}
 			} else {
 				for (int i = 0; i < 5; i++) {
 					AuctionAttributeItem item = items.get(i);
-					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore);
-
+					ChatUtils.addChatMessage(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attribute).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + coolFormat(item.price,0), new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID), getRarityCode(item.tier) + item.item_lore, firstMessageID + messagesSent++);
 				}
 			}
 		}
 	}
 
-	public void addChatMessage(String string) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(string));
-	}
 
 	private static String trimString(String str) {
 		StringBuilder trimmed = new StringBuilder();

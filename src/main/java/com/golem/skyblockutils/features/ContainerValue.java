@@ -10,7 +10,6 @@ import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.rendering.Renderable;
-import com.golem.skyblockutils.utils.rendering.RenderableItem;
 import com.golem.skyblockutils.utils.rendering.RenderableString;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -94,8 +93,6 @@ public class ContainerValue {
 						.onClick(() -> clickSlot(slot, 0, 1))
 				);
 			}
-
-			if (Main.mc.thePlayer.getHeldItem() != null) renderStrings.add(new RenderableItem(Main.mc.thePlayer.getHeldItem(), 50, 50));
 
 		} catch (Exception e) {
 			e.printStackTrace();

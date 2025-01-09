@@ -18,6 +18,7 @@ import static com.golem.skyblockutils.Main.mc;
 public class ChatUtils {
 	public static final String PRIMARY_COLOR = "§7";
 	public static final String SECONDARY_COLOR = "§1";
+	public static int messagesSent = 0;
 	private static final String PREFIX = PRIMARY_COLOR + "[" + SECONDARY_COLOR + Main.MODID + PRIMARY_COLOR + "] ";
 
 	public static void send(final String s) {
@@ -46,12 +47,24 @@ public class ChatUtils {
 		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverChat)))));
 	}
 
+	public static void addChatMessage(String chat, int id) {
+		mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(chat), id);
+	}
+
 	public static void addChatMessage(String chat, ClickEvent clickEvent) {
 		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent)));
 	}
 
+	public static void addChatMessage(String chat, ClickEvent clickEvent, int id) {
+		mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent)), id);
+	}
+
 	public static void addChatMessage(String chat, ClickEvent clickEvent, String hoverEvent) {
 		mc.thePlayer.addChatMessage(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverEvent)))));
+	}
+
+	public static void addChatMessage(String chat, ClickEvent clickEvent, String hoverEvent, int id) {
+		mc.ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText(chat).setChatStyle(new ChatStyle().setChatClickEvent(clickEvent).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverEvent)))), id);
 	}
 
 	public static void addUpdatingMessage(String chat) {
