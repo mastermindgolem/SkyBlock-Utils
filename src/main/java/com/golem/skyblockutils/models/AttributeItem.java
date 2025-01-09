@@ -20,10 +20,10 @@ public class AttributeItem {
     public String uuid;
 
     public AttributeItem(String item_name, String item_lore, NBTTagCompound ExtraAttributes) {
-        if (!ExtraAttributes.hasKey("attributes")) return;
         this.item_type = AttributeUtils.getItemType(ExtraAttributes.getString("id"));
         this.item_id = ExtraAttributes.getString("id");
         this.item_name = item_name;
+        if (!ExtraAttributes.hasKey("attributes")) return;
         if (this.item_type == null) return;
 
         NBTTagCompound attributeData = ExtraAttributes.getCompoundTag("attributes");

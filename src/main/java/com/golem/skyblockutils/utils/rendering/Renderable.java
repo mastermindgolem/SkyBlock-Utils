@@ -1,13 +1,18 @@
 package com.golem.skyblockutils.utils.rendering;
 
 import com.golem.skyblockutils.models.gui.ButtonManager;
+import lombok.Getter;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import org.lwjgl.input.Mouse;
 
 public abstract class Renderable {
+    @Getter
     protected int x;
+    @Getter
     protected int y;
     protected boolean visible = true;
+    @Getter
+    protected float scale = 1.0f;
     protected boolean underline = false;
     protected Runnable onClick;
     protected Runnable onHover;
@@ -18,6 +23,7 @@ public abstract class Renderable {
     }
 
     public abstract void render(int mouseX, int mouseY);
+    public abstract void render();
     public abstract void render(GuiScreenEvent.BackgroundDrawnEvent event);
 
     public abstract int getWidth();
@@ -25,6 +31,8 @@ public abstract class Renderable {
 
     public void handleMouse(int mouseX, int mouseY) {
         if (!visible) return;
+
+        if (onClick == null && onHover == null) return;
 
         if (isHovered(mouseX, mouseY)) {
             underline = true;
@@ -49,13 +57,12 @@ public abstract class Renderable {
                 mouseY >= y && mouseY <= y + getHeight();
     }
 
-    public void setPosition(int x, int y) {
+    public Renderable setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+        return this;
     }
 
-    public int getX() { return x; }
-    public int getY() { return y; }
     public boolean isVisible() { return visible; }
 
     public Renderable setVisible(boolean visible) {
@@ -70,6 +77,11 @@ public abstract class Renderable {
 
     public Renderable onHover(Runnable onHover) {
         this.onHover = onHover;
+        return this;
+    }
+
+    public Renderable setScale(float scale) {
+        this.scale = scale;
         return this;
     }
 }

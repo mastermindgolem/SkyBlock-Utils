@@ -16,6 +16,13 @@ public class RenderableItem extends Renderable {
         this.itemStack = itemStack;
         this.bordered = false;
     }
+
+    public RenderableItem(ItemStack itemStack, int x, int y, float scale) {
+        super(x, y);
+        this.itemStack = itemStack;
+        this.scale = scale;
+    }
+
     public RenderableItem(ItemStack itemStack, int x, int y, boolean bordered) {
         super(x, y);
         this.itemStack = itemStack;
@@ -34,11 +41,24 @@ public class RenderableItem extends Renderable {
     public void render(int mouseX, int mouseY) {
         if (!visible || itemStack == null) return;
         GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, 1);
         if (bordered) {
             RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, 0x80000000, 0x80000000);
         }
         Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
         handleMouse(mouseX, mouseY);
+        GlStateManager.popMatrix();
+    }
+
+    @Override
+    public void render() {
+        if (!visible || itemStack == null) return;
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, 1);
+        if (bordered) {
+            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, 0x80000000, 0x80000000);
+        }
+        Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
         GlStateManager.popMatrix();
     }
 

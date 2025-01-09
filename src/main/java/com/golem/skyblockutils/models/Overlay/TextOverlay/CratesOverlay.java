@@ -2,11 +2,12 @@ package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
-import com.golem.skyblockutils.models.gui.*;
+import com.golem.skyblockutils.models.gui.GuiElement;
+import com.golem.skyblockutils.models.gui.MoveGui;
 import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.TabUtils;
+import com.golem.skyblockutils.utils.rendering.RenderableString;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityGiantZombie;
 import net.minecraft.entity.monster.EntityMagmaCube;
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
 import static com.golem.skyblockutils.Main.*;
 
 public class CratesOverlay {
-    public static GuiElement element = new GuiElement("Crates Overlay", 50, 20);
+    public static GuiElement element = new GuiElement("Crates Overlay", 50, 70);
 
     public static HashMap<Integer, BlockPos> phase1 = new HashMap<>();
     public static HashMap<String, Boolean> phase0 = new HashMap<>();
@@ -36,7 +37,7 @@ public class CratesOverlay {
     public static HashMap<String, Integer> playerInfo = new HashMap<>();
     private static List<String> heldCrates = new ArrayList<>();
     private static boolean inPeak = false;
-
+    private static final List<RenderableString> renderStrings = new ArrayList<>();
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
@@ -46,7 +47,6 @@ public class CratesOverlay {
                 playerInfo.put(name, playerInfo.getOrDefault(name, 0) + 1);
                 Kuudra.overview.add(EnumChatFormatting.BLUE + name + EnumChatFormatting.AQUA + " picked up supply at: " + SplitsOverlay.format(time.getCurrentMS()/60000F - Kuudra.splits[1]/60000F));
             }
-
         }
         if (message.equals("Your Fresh Tools Perk bonus doubles your building speed for the next 5 seconds!")) {
             if (configFile.freshAlert) {
@@ -81,15 +81,10 @@ public class CratesOverlay {
                 if (!Kuudra.partyMembers.contains(player) && player.length() > 2) Kuudra.partyMembers.add(player);
             } catch (Exception ignored) {}
         }
-
-        //if (time.getCurrentMS() - lastFresh > 5000 && Objects.equals(AlertOverlay.text, EnumChatFormatting.DARK_GREEN + "FRESH TOOLS")) AlertOverlay.text = "";
-
-
     }
 
     @SubscribeEvent
     public void RenderEvent(RenderWorldLastEvent event) {
-
         if (Kuudra.currentPhase != 1) return;
 
         Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
@@ -97,7 +92,6 @@ public class CratesOverlay {
         double viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * event.partialTicks;
         double viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * event.partialTicks;
 
-        //List<Entity> entities = Main.mc.theWorld.getEntitiesWithinAABB(Entity.class, Main.mc.thePlayer.getEntityBoundingBox().expand(100, 100, 100));
         List<Entity> entities = Kuudra.getAllEntitiesInRange();
         heldCrates = new ArrayList<>();
 
@@ -106,178 +100,199 @@ public class CratesOverlay {
                 phase1.put(entity.getEntityId(), entity.getPosition());
                 if (configFile.crateWaypoints) RenderUtils.renderBeaconBeam(entity.posX - viewerX -1.5, entity.posY - viewerY, entity.posZ - viewerZ +2, 0xFF0000, 1.0F, event.partialTicks);
             }
-            /*
-            if (entity instanceof EntityPlayer) {
-                if (((EntityPlayer) entity).getHeldItem() == null) continue;
-                if (!Objects.equals(((EntityPlayer) entity).getHeldItem().getItem().getRegistryName(), Blocks.chest.getRegistryName())) continue;
-                double dist = Double.MAX_VALUE;
-                int closest = 0;
-                for (Map.Entry<Integer, BlockPos> entry : crates.entrySet()) {
-                    if (entity.getPosition().distanceSq(entry.getValue()) < dist) {
-                        dist = entity.getPosition().distanceSq(entry.getValue());
-                        closest = entry.getKey();
-                    }
-                }
-                if (closest != 0) crates.remove(closest);
-                heldCrates.add(entity.getName());
-            }
-
-             */
         }
-        /*
-        if (Main.mc.thePlayer.getHeldItem() != null && Objects.equals(mc.thePlayer.getHeldItem().getItem().getRegistryName(), Blocks.chest.getRegistryName())) {
-            double dist = Double.MAX_VALUE;
-            int closest = 0;
-            for (Map.Entry<Integer, BlockPos> entry : crates.entrySet()) {
-                if (Main.mc.thePlayer.getPosition().distanceSq(entry.getValue()) < dist) {
-                    dist = Main.mc.thePlayer.getPosition().distanceSq(entry.getValue());
-                    closest = entry.getKey();
-                }
-            }
-            if (closest != 0) crates.remove(closest);
-            heldCrates.add(Main.mc.thePlayer.getName());
-        }
-
-         */
 
         Iterator<Map.Entry<Integer, BlockPos>> iterator = phase1.entrySet().iterator();
-
         while (iterator.hasNext()) {
             Map.Entry<Integer, BlockPos> entry = iterator.next();
             int entityID = entry.getKey();
             BlockPos blockPos = entry.getValue();
 
             Entity entity = mc.theWorld.getEntityByID(entityID);
-
             if (entity == null && blockPos.distanceSq(mc.thePlayer.getPosition()) < 32*32) {
-                iterator.remove(); // Remove the entry from the map
+                iterator.remove();
             }
         }
+    }
 
+    private void updateRenderStrings(int phase) {
+        renderStrings.clear();
+        int yOffset = 0;
+
+        switch (phase) {
+            case 0:
+                renderStrings.add(new RenderableString(EnumChatFormatting.YELLOW + "Ready Up:", element.position.getX(), element.position.getY()));
+                yOffset = 10;
+                for (String player : Kuudra.partyMembers) {
+                    String status = phase0.getOrDefault(player, false) ?
+                            EnumChatFormatting.GREEN + "READY" :
+                            EnumChatFormatting.RED + "NOT READY";
+                    renderStrings.add(new RenderableString(
+                            player + ": " + status,
+                            element.position.getX(),
+                            element.position.getY() + yOffset
+                    ));
+                    yOffset += 10;
+                }
+                break;
+
+            case 1:
+                renderStrings.add(new RenderableString(EnumChatFormatting.YELLOW + "Supplies:", element.position.getX(), element.position.getY()));
+                yOffset = 10;
+
+                for (Map.Entry<Integer, BlockPos> entry : phase1.entrySet()) {
+                    renderStrings.add(new RenderableString(
+                            EnumChatFormatting.RED + findClosestLabel(entry.getValue()),
+                            element.position.getX(),
+                            element.position.getY() + yOffset
+                    ));
+                    yOffset += 10;
+                }
+
+                for (String heldCrate : heldCrates) {
+                    renderStrings.add(new RenderableString(
+                            EnumChatFormatting.YELLOW + heldCrate,
+                            element.position.getX(),
+                            element.position.getY() + yOffset
+                    ));
+                    yOffset += 10;
+                }
+
+                for (Map.Entry<String, Integer> entry : playerInfo.entrySet()) {
+                    renderStrings.add(new RenderableString(
+                            entry.getKey() + EnumChatFormatting.WHITE + ": " +
+                                    EnumChatFormatting.YELLOW + entry.getValue(),
+                            element.position.getX(),
+                            element.position.getY() + yOffset
+                    ));
+                    yOffset += 10;
+                }
+                break;
+
+            case 2:
+                renderStrings.add(new RenderableString(EnumChatFormatting.YELLOW + "Build:", element.position.getX(), element.position.getY()));
+                yOffset = 10;
+
+                for (String player : Kuudra.partyMembers) {
+                    String freshStatus;
+                    if (time.getCurrentMS() - phase2.getOrDefault(player, 0L) < 5000) {
+                        freshStatus = EnumChatFormatting.GREEN + SplitsOverlay.format(
+                                (5000 - time.getCurrentMS() + phase2.getOrDefault(player, 0L))/60000F
+                        );
+                    } else {
+                        freshStatus = EnumChatFormatting.RED + "No Fresh";
+                    }
+
+                    renderStrings.add(new RenderableString(
+                            player + ": " + freshStatus,
+                            element.position.getX(),
+                            element.position.getY() + yOffset
+                    ));
+                    yOffset += 10;
+                }
+                break;
+
+            case 4:
+            case 5:
+                renderStrings.add(new RenderableString(EnumChatFormatting.YELLOW + "Kuudra Kill:", element.position.getX(), element.position.getY()));
+                yOffset = 10;
+
+                for (int i = 1; i < phase4.size(); i++) {
+                    float dmg = (phase4.get(i-1) - phase4.get(i)) * 9600;
+                    if (dmg < 100000 || dmg > 240_000_000) continue;
+
+                    renderStrings.add(new RenderableString(
+                            EnumChatFormatting.YELLOW + "Peak " + i + ": " +
+                                    EnumChatFormatting.RESET + Main.formatNumber(dmg),
+                            element.position.getX(),
+                            element.position.getY() + yOffset
+                    ));
+                    yOffset += 10;
+
+                    String overviewString = EnumChatFormatting.BLUE + "Peak " + i +
+                            " damage: " + EnumChatFormatting.RESET + Main.formatNumber(dmg);
+                    if (!Kuudra.overview.contains(overviewString)) {
+                        Kuudra.overview.add(overviewString);
+                    }
+                }
+                break;
+        }
+
+        // Update all strings with current scale
+        for (RenderableString rs : renderStrings) {
+            rs.setScale(element.position.getScale());
+        }
+    }
+
+    private void handleKuudraBossLogic() {
+        EntityMagmaCube kuudra = Kuudra.boss;
+        if (kuudra == null) return;
+
+        if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() / kuudra.getMaxHealth() > 0.01) return;
+
+        boolean currentPeak = kuudra.posY < 25;
+
+        if (currentPeak != inPeak) {
+            if (configFile.showKuudraLocation) {
+                if (kuudra.posX < -128) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
+                if (kuudra.posX > -72) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
+                if (kuudra.posZ < -132) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
+                if (kuudra.posZ > -84) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
+            }
+            inPeak = currentPeak;
+            if (inPeak) {
+                if (!phase4.isEmpty() && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
+                phase4.add(kuudra.getHealth());
+            }
+        }
     }
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !configFile.runInfo) return;
 
-        TextStyle textStyle = TextStyle.fromInt(1);
-
         if (mc.currentScreen instanceof MoveGui) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
-
-            String string = EnumChatFormatting.YELLOW + "Supplies: ";
-            OverlayUtils.drawString(0, 0, string, textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 10, EnumChatFormatting.RED + "Triangle", textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 20, EnumChatFormatting.RED + "Square", textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 30, EnumChatFormatting.RED + "X", textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 40, "Player1: 3", textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 50, "Player2: 2", textStyle, Alignment.Left);
-            OverlayUtils.drawString(0, 60, "Player3: 1", textStyle, Alignment.Left);
-
-            element.setHeight(70);
-
-            GlStateManager.popMatrix();
+            updateMoveGuiPreview();
             return;
         }
 
         if (!configFile.testGui) return;
 
+        updateRenderStrings(Kuudra.currentPhase);
 
-        if (Kuudra.currentPhase == 0) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+        for (RenderableString rs : renderStrings) {
+            rs.render();
+        }
 
-            int counter = 1;
-            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Ready Up:", textStyle, Alignment.Left);
-            for (String player : Kuudra.partyMembers) {
-                OverlayUtils.drawString(0, 10*counter, player + ": " + (phase0.getOrDefault(player, false) ? EnumChatFormatting.GREEN + "READY" : EnumChatFormatting.RED + "NOT READY"), textStyle, Alignment.Left);
-                counter++;
-            }
+        if (Kuudra.currentPhase == 4 || Kuudra.currentPhase == 5) {
+            handleKuudraBossLogic();
+        }
+    }
 
-            GlStateManager.popMatrix();
-        } else if (Kuudra.currentPhase == 1) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
+    private void updateMoveGuiPreview() {
+        renderStrings.clear();
+        int yOffset = 0;
 
+        String[] previewText = {
+                EnumChatFormatting.YELLOW + "Supplies: ",
+                EnumChatFormatting.RED + "Triangle",
+                EnumChatFormatting.RED + "Square",
+                EnumChatFormatting.RED + "X",
+                EnumChatFormatting.WHITE + "Player1: " + EnumChatFormatting.YELLOW + "3",
+                EnumChatFormatting.WHITE + "Player2: " + EnumChatFormatting.YELLOW + "2",
+                EnumChatFormatting.WHITE + "Player3: " + EnumChatFormatting.YELLOW + "1"
+        };
 
-            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Supplies:", textStyle, Alignment.Left);
+        for (String text : previewText) {
+            renderStrings.add(new RenderableString(text, element.position.getX(),
+                    element.position.getY() + yOffset, element.position.getScale()));
+            yOffset += 10;
+        }
 
-            int counter = 1;
-            for (Map.Entry<Integer, BlockPos> entry : phase1.entrySet()) {
-                OverlayUtils.drawString(0, counter * 10, EnumChatFormatting.RED + findClosestLabel(entry.getValue()), textStyle, Alignment.Left);
-                counter++;
-            }
-            for (String heldCrate : heldCrates) {
-                OverlayUtils.drawString(0, counter * 10, EnumChatFormatting.YELLOW + heldCrate, textStyle, Alignment.Left);
-                counter++;
-            }
-            for (Map.Entry<String, Integer> entry : playerInfo.entrySet()) {
-                OverlayUtils.drawString(0, counter * 10, entry.getKey() + EnumChatFormatting.WHITE + ": " + EnumChatFormatting.YELLOW + entry.getValue(), textStyle, Alignment.Left);
-                counter++;
-            }
+        element.setHeight(70);
 
-            GlStateManager.popMatrix();
-        } else if (Kuudra.currentPhase == 2) {
-
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
-
-            int counter = 1;
-            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Build:", textStyle, Alignment.Left);
-            for (String player : Kuudra.partyMembers) {
-                if (time.getCurrentMS() - phase2.getOrDefault(player, 0L) < 5000) {
-                    OverlayUtils.drawString(0, 10*counter, player + ": " + EnumChatFormatting.GREEN + SplitsOverlay.format((5000 - time.getCurrentMS() + phase2.getOrDefault(player, 0L))/60000F), textStyle, Alignment.Left);
-                } else {
-                    OverlayUtils.drawString(0, 10*counter, player + ": " + EnumChatFormatting.RED + "No Fresh", textStyle, Alignment.Left);
-                }
-                counter++;
-            }
-            GlStateManager.popMatrix();
-        } else if (Kuudra.currentPhase == 4 || Kuudra.currentPhase == 5) {
-
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
-            GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
-
-
-            int counter = 1;
-            OverlayUtils.drawString(0, 0, EnumChatFormatting.YELLOW + "Kuudra Kill:", textStyle, Alignment.Left);
-            for (int i = 1; i < phase4.size(); i++) {
-                float dmg = (phase4.get(i-1) - phase4.get(i)) * 12000;
-                if (dmg < 100000 || dmg > 300_000_000) continue;
-                OverlayUtils.drawString(0, 10 * counter, EnumChatFormatting.YELLOW + "Peak " + counter + ": " + EnumChatFormatting.RESET + Main.formatNumber(dmg), textStyle, Alignment.Left);
-                String string = EnumChatFormatting.BLUE + "Peak " + counter + " damage: " + EnumChatFormatting.RESET + Main.formatNumber(dmg);
-                if (!Kuudra.overview.contains(string)) Kuudra.overview.add(string);
-                counter++;
-            }
-
-            EntityMagmaCube kuudra = Kuudra.boss;
-
-            if (kuudra.posY > 45 && kuudra.getHealth() / kuudra.getMaxHealth() < 0.24 && kuudra.getHealth() / kuudra.getMaxHealth() > 0.01) return;
-
-            boolean currentPeak = kuudra.posY < 25;
-
-
-            if (currentPeak != inPeak) {
-                if (configFile.showKuudraLocation) {
-                    if (kuudra.posX < -128) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
-                    if (kuudra.posX > -72) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
-                    if (kuudra.posZ < -132) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
-                    if (kuudra.posZ > -84) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
-                }
-                inPeak = currentPeak;
-                if (inPeak) {
-                    if (!phase4.isEmpty() && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
-                    phase4.add(kuudra.getHealth());
-                }
-
-            }
-            GlStateManager.popMatrix();
+        for (RenderableString rs : renderStrings) {
+            rs.render();
         }
     }
 

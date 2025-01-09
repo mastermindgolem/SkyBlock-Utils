@@ -49,10 +49,10 @@ public class AttributePrice {
 					JsonObject auc = auction.getAsJsonObject();
 
 					AuctionAttributeItem item = new AuctionAttributeItem(auc);
+					if (item.price == 0) continue;
 					AttributeItemType itemType = item.getItemType();
-
 					if (!LowestBin.containsKey(item.item_id)) LowestBin.put(item.item_id, item.price);
-					if (LowestBin.getOrDefault(item.item_id, 0L) > item.price)
+					if (LowestBin.get(item.item_id) > item.price)
 						LowestBin.put(item.item_id, item.price);
 
 					if (itemType == null) continue;
@@ -92,6 +92,8 @@ public class AttributePrice {
 					.limit(5)
 					.map(Map.Entry::getKey)
 					.collect(Collectors.toSet());
+
+			System.out.println(LowestBin);
 
 		}).start();
 

@@ -1,5 +1,6 @@
 package com.golem.skyblockutils.utils.rendering;
 
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -9,6 +10,7 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 
 public class RenderableString extends Renderable {
+    @Getter
     private String text;
     private int color = 0xFFFFFF;
     private boolean shadow = true;
@@ -16,6 +18,12 @@ public class RenderableString extends Renderable {
     public RenderableString(String text, int x, int y) {
         super(x, y);
         this.text = text;
+    }
+
+    public RenderableString(String text, int x, int y, float scale) {
+        super(x, y);
+        this.text = text;
+        this.scale = scale;
     }
 
 
@@ -27,11 +35,23 @@ public class RenderableString extends Renderable {
         render(mouseX, mouseY);
     }
 
+    @Override
+    public void render() {
+        if (!visible) return;
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, 1);
+        Minecraft.getMinecraft().fontRendererObj.drawString(text, x, y, color, shadow);
+        if (underline) Gui.drawRect(x, y + getHeight(), x + getWidth(), y + getHeight() + 1, Color.WHITE.getRGB());
+        GlStateManager.popMatrix();
+    }
+
+
 
     @Override
     public void render(int mouseX, int mouseY) {
         if (!visible) return;
         GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, 1);
         Minecraft.getMinecraft().fontRendererObj.drawString(text, x, y, color, shadow);
         if (underline) Gui.drawRect(x, y + getHeight(), x + getWidth(), y + getHeight() + 1, Color.WHITE.getRGB());
         GlStateManager.popMatrix();
