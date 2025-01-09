@@ -92,9 +92,6 @@ public class AttributePrice {
 					.limit(5)
 					.map(Map.Entry::getKey)
 					.collect(Collectors.toSet());
-
-			System.out.println(LowestBin);
-
 		}).start();
 
 	}
@@ -207,6 +204,7 @@ public class AttributePrice {
 
 		for (String attr_key : item.attributes.keySet()) {
 			int attr_tier = item.attributes.get(attr_key);
+			if (!configFile.valueHighTierItems && attr_tier >= 7) return null;
 			total_tiers += 1 << attr_tier;
 			if (excludeAttributes.contains(attr_key)) continue;
 			if (!LowestAttributePrices.get(item.item_type).containsKey(attr_key)) continue;

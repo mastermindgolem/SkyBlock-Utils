@@ -91,7 +91,6 @@ public class Kuudra {
     public void onChat(ClientChatReceivedEvent event) {
         String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (message.equals("[NPC] Elle: Talk with me to begin!")) {
-            ChatUtils.addChatMessage(LocationUtils.getLocation());
             splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
             overview = new ArrayList<>();
             currentPhase = 0;
@@ -117,6 +116,7 @@ public class Kuudra {
         if (splits[0] == 0) return;
 
         if (message.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
+            ChatUtils.addChatMessage(LocationUtils.getLocation());
             currentPhase = 1;
             splits[1] = (float) Main.time.getCurrentMS();
             if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));

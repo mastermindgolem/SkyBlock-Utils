@@ -73,8 +73,10 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SLIDER, name = "Shard Minimum Tier", description = "Minimum tier to consider for valuing shards and showing them in /ap. 0 will check for exact match", category = "General", subcategory = "Kuudra Pricing", max = 10)
 	public int minShardTier = 0;
 
-	@Property(type = PropertyType.SWITCH, name = "Value Soulbound ARMOR", description = "Whether or not to value starred/soulbound kuudra armor.", category = "General", subcategory = "Kuudra Pricing")
+	@Property(type = PropertyType.SWITCH, name = "Value Starred ARMOR", description = "Whether or not to value starred/soulbound kuudra armor.", category = "General", subcategory = "Kuudra Pricing")
 	public boolean valueStarredArmor = true;
+	@Property(type = PropertyType.SWITCH, name = "Value High Tier Items", description = "Whether or not to value high tier (7 or above) items.", category = "General", subcategory = "Kuudra Pricing")
+	public boolean valueHighTierItems = true;
 	@Property(type = PropertyType.SWITCH, name = "Value Attribute Shards", description = "Whether or not to value shards in Kuudra chests.", category = "General", subcategory = "Kuudra Pricing")
 	public boolean valueShards = true;
 

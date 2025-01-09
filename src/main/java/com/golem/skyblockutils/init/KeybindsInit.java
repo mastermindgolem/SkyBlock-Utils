@@ -25,9 +25,9 @@ public class KeybindsInit {
 
 	public static void registerKeyBinds() {
 		KeyBinding[] keyBindings = {
-			openGUI = new KeyBinding("key.sbu_gui", Keyboard.KEY_V, "sbu"),
-			getComboValue = new KeyBinding("key.attribute_value", Keyboard.KEY_L, "sbu"),
-			getPartyInfo = new KeyBinding("key.get_party_info", Keyboard.KEY_O, "sbu"),
+			openGUI = new KeyBinding("key.sbu_gui", Keyboard.KEY_NONE, "sbu"),
+			getComboValue = new KeyBinding("key.attribute_value", Keyboard.KEY_NONE, "sbu"),
+			getPartyInfo = new KeyBinding("key.get_party_info", Keyboard.KEY_NONE, "sbu"),
 			timerButton = new KeyBinding("key.timer", Keyboard.KEY_NONE, "sbu")
 		};
 		for (KeyBinding keyBinding : keyBindings) {
