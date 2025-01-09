@@ -102,7 +102,7 @@ public class ProfitOverlay {
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
             String string2;
             if (configFile.includeDowntime) {
-                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             } else {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             }
@@ -132,7 +132,7 @@ public class ProfitOverlay {
             max = Math.max(renderWidth(string1), max);
             String string2;
             if (configFile.includeDowntime) {
-                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             } else {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             }
