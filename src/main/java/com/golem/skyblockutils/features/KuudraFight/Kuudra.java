@@ -6,7 +6,9 @@ import com.golem.skyblockutils.models.Overlay.TextOverlay.AlertOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ProfitOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
+import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.Colors;
+import com.golem.skyblockutils.utils.LocationUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -89,6 +91,7 @@ public class Kuudra {
     public void onChat(ClientChatReceivedEvent event) {
         String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (message.equals("[NPC] Elle: Talk with me to begin!")) {
+            ChatUtils.addChatMessage(LocationUtils.getLocation());
             splits = new Float[]{0F, 0F, 0F, 0F, 0F, 0F};
             overview = new ArrayList<>();
             currentPhase = 0;
@@ -116,7 +119,7 @@ public class Kuudra {
         if (message.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             currentPhase = 1;
             splits[1] = (float) Main.time.getCurrentMS();
-            addChatMessage(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
+            if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
             getKuudraTier();
 
@@ -138,7 +141,7 @@ public class Kuudra {
         if (message.equals("[NPC] Elle: OMG! Great work collecting my supplies!")) {
             currentPhase = 2;
             splits[2] = (float) Main.time.getCurrentMS();
-            addChatMessage(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
+            if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Supplies: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[2]/60000F - splits[1]/60000F));
 
             supplyWaypoints.put(Waypoints.supply1, -1);
@@ -154,7 +157,7 @@ public class Kuudra {
         if (message.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!")) {
             currentPhase = 3;
             splits[3] = (float) Main.time.getCurrentMS();
-            addChatMessage(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[2]/60000F));
+            if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[2]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Build: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[3]/60000F - splits[1]/60000F));
 
             supplyWaypoints.put(Waypoints.supply1, -1);
@@ -171,7 +174,7 @@ public class Kuudra {
             currentPhase = 4;
             stunner = false;
             splits[4] = (float) Main.time.getCurrentMS();
-            addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
+            if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[1]/60000F));
         }
 
@@ -182,10 +185,10 @@ public class Kuudra {
             splits[5] = (float) Main.time.getCurrentMS();
             //AlertOverlay.text = "";
             CratesOverlay.phase4.add(0F);
-            addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
+            if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[1]/60000F));
             overview.add(EnumChatFormatting.DARK_RED + "BOSS FAILED");
-            mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
+            if (configFile.showSplits) mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
             overview = new ArrayList<>();
             ProfitOverlay.runEndTime = time.getCurrentMS();
             ProfitOverlay.totalTime += (long) (splits[5] - splits[0]);
@@ -195,7 +198,6 @@ public class Kuudra {
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
-            //AlertOverlay.text = "";
             CratesOverlay.phase4.add(0F);
             overview.add(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[1]/60000F));
             if (configFile.showSplits) {
