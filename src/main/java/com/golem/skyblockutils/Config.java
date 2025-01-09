@@ -25,8 +25,6 @@ import java.util.Map;
 public class Config extends Vigilant
 {
 	public static String configFolder;
-
-
 	public File CONFIG_FILE;
 
 	@Property(type = PropertyType.SWITCH,
@@ -41,7 +39,7 @@ public class Config extends Vigilant
 			description = "Time to wait between updating AH data. (0 turns it off)",
 			category = "General",
 			subcategory = "Auction House",
-			min = 5,
+			min = 1,
 			max = 30
 	)
 	public int time_between_checks = 5;
@@ -339,6 +337,9 @@ public class Config extends Vigilant
 		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{ProfitOverlay.element}));
 		Main.display = null;
 	}
+
+	@Property(type = PropertyType.SWITCH, name = "Include downtime", description = "Whether or not to include downtime in profit / hr calculations", category = "Overlays", subcategory = "Kuudra Profit")
+	public boolean includeDowntime = false;
 
 	@Property(type = PropertyType.BUTTON,
 			name = "Reset Profit Overlay",

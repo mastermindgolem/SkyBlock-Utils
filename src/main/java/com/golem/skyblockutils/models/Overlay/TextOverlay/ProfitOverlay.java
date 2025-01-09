@@ -26,6 +26,7 @@ public class ProfitOverlay {
     private static long totalProfit = 0;
     private static int chests = 0;
     public static long totalTime = 0;
+    public static long totalTimeWithoutDowntime = 0;
     public static int totalRuns = 0;
     public static long runStartTime = 0;
     public static int numRerolls = 0;
@@ -99,12 +100,17 @@ public class ProfitOverlay {
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
-            String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
+            String string2;
+            if (configFile.includeDowntime) {
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
+            } else {
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
+            }
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
             String string5 = EnumChatFormatting.GOLD + "Rerolls: " + EnumChatFormatting.GREEN + numRerolls;
             String string6 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
-            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTime > 0 ? (double) totalProfit / totalTime * 3600000 : 0));
+            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTimeWithoutDowntime > 0 ? (double) totalProfit / (configFile.includeDowntime ? totalTime : totalTimeWithoutDowntime) * 3600000 : 0));
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
@@ -124,7 +130,12 @@ public class ProfitOverlay {
             int max = 0;
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
             max = Math.max(renderWidth(string1), max);
-            String string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
+            String string2;
+            if (configFile.includeDowntime) {
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
+            } else {
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
+            }
             max = Math.max(renderWidth(string2), max);
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             max = Math.max(renderWidth(string3), max);
@@ -134,7 +145,7 @@ public class ProfitOverlay {
             max = Math.max(renderWidth(string4), max);
             String string6 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
             max = Math.max(renderWidth(string5), max);
-            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((double) (totalProfit / ((totalTime)/3600000 + 1)));
+            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTimeWithoutDowntime > 0 ? (double) totalProfit / (configFile.includeDowntime ? totalTime : totalTimeWithoutDowntime) * 3600000 : 0));
             max = Math.max(renderWidth(string6), max);
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);

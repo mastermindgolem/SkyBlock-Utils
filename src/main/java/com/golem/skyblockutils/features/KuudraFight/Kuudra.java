@@ -188,7 +188,8 @@ public class Kuudra {
             mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GRAY + "(Run Overview)").setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(String.join("\n", overview))))));
             overview = new ArrayList<>();
             ProfitOverlay.runEndTime = time.getCurrentMS();
-            ProfitOverlay.totalTime += splits[5] - splits[0];
+            ProfitOverlay.totalTime += (long) (splits[5] - splits[0]);
+            ProfitOverlay.totalTimeWithoutDowntime += (long) (splits[5] - splits[0]);
             ProfitOverlay.totalRuns++;
         }
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
@@ -207,6 +208,7 @@ public class Kuudra {
             overview = new ArrayList<>();
             ProfitOverlay.runEndTime = time.getCurrentMS();
             ProfitOverlay.totalTime += (long) (splits[5] - splits[0]);
+            ProfitOverlay.totalTimeWithoutDowntime += (long) (splits[5] - splits[0]);
             ProfitOverlay.totalRuns++;
             JsonObject splitsData = new JsonObject();
             List<Float> splits2 = new ArrayList<>();
