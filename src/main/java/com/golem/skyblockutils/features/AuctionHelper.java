@@ -2,6 +2,7 @@ package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiEditSign;
+import com.golem.skyblockutils.models.AttributeArmorType;
 import com.golem.skyblockutils.models.AttributeItemType;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.AuctionAttributeItem;
@@ -62,12 +63,13 @@ public class AuctionHelper {
         AttributeItemType itemType = AttributeUtils.getItemType(result.item_id);
         String best_attr = result.best_attribute.attribute;
         HashMap<String, Integer> attributes = InventoryData.items.get(auctionSlot).attributes;
-        if (!Objects.equals(best_attr, "")) {
-            if (!AttributePrices.get(itemType).containsKey(best_attr)) return;
+        if (!Objects.equals(best_attr, "") || Objects.equals(result.top_display, "GR")) {
+            if (!AttributePrices.get(itemType).containsKey(best_attr) && !Objects.equals(best_attr, "")) return;
             List<AuctionAttributeItem> items = AttributePrices.get(itemType).get(best_attr);
+            AttributeArmorType armorType = AttributeUtils.getArmorVariation(result.item_id);
             if (Objects.equals(result.top_display, "GR")) {
                 items = items.stream()
-                        .filter(item -> item.attributeInfo.keySet().equals(attributes.keySet()))
+                        .filter(item -> item.attributeInfo.keySet().equals(attributes.keySet()) && Objects.equals(AttributeUtils.getArmorVariation(item.item_id), armorType))
                         .sorted(Comparator.comparingDouble((AuctionAttributeItem o) -> o.price))
                         .collect(Collectors.toList());
             } else {
