@@ -80,6 +80,9 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Value Attribute Shards", description = "Whether or not to value shards in Kuudra chests.", category = "General", subcategory = "Kuudra Pricing")
 	public boolean valueShards = true;
 
+	@Property(type = PropertyType.SWITCH, name = "Show Item Value in Lore", description = "Whether or not to show item's value in lore.", category = "General", subcategory = "Kuudra Pricing")
+	public boolean showValueInLore = false;
+
 	@Property(type = PropertyType.SWITCH, name = "Show LBIN Overlay", description = "Whether or not to show the LBIN overlay for items whose attributes are not worth more than LBIN.", category = "General", subcategory = "Attribute Overlay")
 	public boolean showLbinOverlay = true;
 
@@ -537,12 +540,11 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.SWITCH, name = "Corpse Locator", description = "Highlights any corpses visible on screen with a waypoint", category = "Mining", subcategory = "Corpse")
 	public boolean corpseLocator = false;
 
-	@Property(type = PropertyType.SWITCH, name = "Selling Helper", description = "Features that help you sell loot quicker", category = "Selling", subcategory = "Auction")
-	public boolean sellingHelper = false;
-	@Property(type = PropertyType.SWITCH, name = "Auction Helper", description = "Features that help you auction loot quicker", category = "Selling", subcategory = "Auction")
+	@Property(type = PropertyType.SWITCH, name = "Highlight Sell Method", description = "Highlights items. RED = Salvage, YELLOW = <5m value, GREEN = >5m value", category = "Selling", subcategory = "Auction")
+	public boolean highlightSellMethod = false;
+	@Property(type = PropertyType.SWITCH, name = "Show Value in Auction Sign", description = "Shows various values of the item in the auctioning sign. Click a line to enter its price in the sign", category = "Selling", subcategory = "Auction")
 	public boolean auctionHelper = false;
-
-	@Property(type = PropertyType.SWITCH, name = "Sorting Helper", description = "Features that help you sort loot quicker", category = "Selling", subcategory = "Auction")
+	@Property(type = PropertyType.SWITCH, name = "Sorting Helper", description = "Helps you sort your loot by telling you which chests to open and what items to put in.", category = "Selling", subcategory = "Auction")
 	public boolean sortingHelper = false;
 
 	public Config() {

@@ -3,8 +3,10 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.AttributeValueResult;
-import com.golem.skyblockutils.models.gui.ButtonManager;
-import com.golem.skyblockutils.utils.*;
+import com.golem.skyblockutils.utils.AttributeUtils;
+import com.golem.skyblockutils.utils.InventoryData;
+import com.golem.skyblockutils.utils.LocationUtils;
+import com.golem.skyblockutils.utils.RenderUtils;
 import lombok.Getter;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -41,7 +43,7 @@ public class SellingHelper {
         highlightChests.clear();
         if (event.event.gui instanceof GuiContainer) {
             if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
-            if (configFile.sellingHelper) highlightSellMethod();
+            if (configFile.highlightSellMethod) highlightSellMethod();
             if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
             if (configFile.sortingHelper) {
                 checkForSimilarItems();
@@ -129,7 +131,7 @@ public class SellingHelper {
     }
 
     private void highlightSellMethod() {
-        for (Slot slot : InventoryData.containerSlots.subList(0, InventoryData.containerSlots.size() - 36)) {
+        for (Slot slot : InventoryData.containerSlots) {
             AttributeValueResult result = InventoryData.values.get(slot);
             if (result == null) continue;
             if (Objects.equals(result.top_display, "SAL")) {
@@ -146,7 +148,7 @@ public class SellingHelper {
     public void onTick(RenderWorldLastEvent event) {
         if (mc.theWorld == null || mc.thePlayer == null) return;
         if (!configFile.sortingHelper) return;
-        if (!ButtonManager.isChecked("sortingHelper")) return;
+//        if (!ButtonManager.isChecked("sortingHelper")) return;
         if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
 
         for (Map.Entry<TileEntityChest, Color> entry : highlightChests.entrySet()) {
@@ -190,7 +192,7 @@ public class SellingHelper {
         if (!(event.gui instanceof GuiChest)) return;
         if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
         GuiChest gui = (GuiChest) event.gui;
-        if (ButtonManager.isChecked("sellMethod")) {
+        if (configFile.highlightSellMethod) {
             highlightSlots.forEach((slot, method) -> {
                 switch (method) {
                     case SALVAGE:
@@ -205,7 +207,7 @@ public class SellingHelper {
                 }
             });
         }
-        if (ButtonManager.isChecked("sortingHelper")) {
+        if (configFile.sortingHelper) {
             highlightInvSlots.forEach(o -> RenderUtils.highlight(new Color(0, 255, 255, 127), gui, o));
         }
     }

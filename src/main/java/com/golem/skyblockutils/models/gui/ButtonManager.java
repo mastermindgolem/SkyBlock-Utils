@@ -22,9 +22,9 @@ public class ButtonManager {
 
     public ButtonManager() {
         checkBoxes.put("containerValue", new GuiCheckBox(0, 5, 0, "Container Value", false));
-        checkBoxes.put("sellMethod", new GuiCheckBox(1, 5, 0, "Highlight Sell Method", false));
-        checkBoxes.put("auctionHelper", new GuiCheckBox(2, 5, 0, "Auction Helper", false));
-        checkBoxes.put("sortingHelper", new GuiCheckBox(3, 5, 0, "Sorting Helper", false));
+//        checkBoxes.put("sellMethod", new GuiCheckBox(1, 5, 0, "Highlight Sell Method", false));
+//        checkBoxes.put("auctionHelper", new GuiCheckBox(2, 5, 0, "Auction Helper", false));
+//        checkBoxes.put("sortingHelper", new GuiCheckBox(3, 5, 0, "Sorting Helper", false));
     }
 
     @SubscribeEvent
@@ -32,7 +32,7 @@ public class ButtonManager {
         if (!(event.gui instanceof GuiChest)) return;
         activeBoxes.clear();
         if (configFile.container_value != 0) activeBoxes.add("containerValue");
-        if (configFile.sellingHelper) activeBoxes.add("sellMethod");
+        if (configFile.highlightSellMethod) activeBoxes.add("sellMethod");
         if (configFile.auctionHelper) activeBoxes.add("auctionHelper");
         if (configFile.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) activeBoxes.add("sortingHelper");
 

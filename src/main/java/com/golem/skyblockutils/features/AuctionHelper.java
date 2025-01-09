@@ -5,7 +5,6 @@ import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiEdit
 import com.golem.skyblockutils.models.AttributeItemType;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.AuctionAttributeItem;
-import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.AttributeUtils;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.ScreenUtils;
@@ -46,7 +45,7 @@ public class AuctionHelper {
         value = 0;
         if (!(event.event.gui instanceof GuiChest)) return;
         if (!configFile.auctionHelper) return;
-        if (!ButtonManager.isChecked("auctionHelper")) return;
+//        if (!ButtonManager.isChecked("auctionHelper")) return;
         if (!Arrays.asList("Create Auction", "Create BIN Auction").contains(InventoryData.currentChestName)) return;
 
         Slot auctionSlot = InventoryData.containerSlots.get(13);
@@ -104,7 +103,7 @@ public class AuctionHelper {
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (!configFile.auctionHelper) return;
-        if (!ButtonManager.isChecked("auctionHelper")) return;
+//        if (!ButtonManager.isChecked("auctionHelper")) return;
         if (!(event.gui instanceof GuiEditSign)) return;
         sign = null;
         if (!Arrays.asList("Create Auction", "Create BIN Auction").contains(InventoryData.lastOpenChestName)) return;
@@ -125,7 +124,7 @@ public class AuctionHelper {
 
         if (sign == null) return;
         if (!configFile.auctionHelper) return;
-        if (!ButtonManager.isChecked("auctionHelper")) return;
+//        if (!ButtonManager.isChecked("auctionHelper")) return;
         if (!(sign.getWorld().getTileEntity(sign.getPos()) instanceof TileEntitySign)) return;
 
         int mouseX = Mouse.getEventX() * event.gui.width / Minecraft.getMinecraft().displayWidth;
