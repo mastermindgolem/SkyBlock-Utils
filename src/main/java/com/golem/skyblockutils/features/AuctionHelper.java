@@ -61,21 +61,37 @@ public class AuctionHelper {
         ));
 
         AttributeItemType itemType = AttributeUtils.getItemType(result.item_id);
-        String attr = result.best_attribute.attribute;
-        if (!Objects.equals(attr, "")) {
-            if (!AttributePrices.get(itemType).containsKey(attr)) return;
-            List<AuctionAttributeItem> items = AttributePrices.get(itemType).get(attr);
-            items = items.stream()
-                    .filter(item -> Objects.equals(item.attributes.get(attr), result.best_attribute.tier))
-                    .sorted(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attr).price_per))
-                    .collect(Collectors.toList());
+        String best_attr = result.best_attribute.attribute;
+        HashMap<String, Integer> attributes = InventoryData.items.get(auctionSlot).attributes;
+        if (!Objects.equals(best_attr, "")) {
+            if (!AttributePrices.get(itemType).containsKey(best_attr)) return;
+            List<AuctionAttributeItem> items = AttributePrices.get(itemType).get(best_attr);
+            if (Objects.equals(result.top_display, "GR")) {
+                items = items.stream()
+                        .filter(item -> item.attributeInfo.keySet().equals(attributes.keySet()))
+                        .sorted(Comparator.comparingDouble((AuctionAttributeItem o) -> o.price))
+                        .collect(Collectors.toList());
+            } else {
+                items = items.stream()
+                        .filter(item -> Objects.equals(item.attributes.get(best_attr), result.best_attribute.tier))
+                        .sorted(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(best_attr).price_per))
+                        .collect(Collectors.toList());
+            }
             if (items.isEmpty()) return;
             if (items.size() > 5) items = items.subList(0, 5);
             display.add(new RenderableString("", center[0] + 100, 50 + 10 * ++yOffset));
             display.add(new RenderableString("Cheapest 5 similar:", center[0] + 100, 50 + 10 * ++yOffset));
-            for (AuctionAttributeItem item : items) {
-                display.add(new RenderableString(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(attr).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + formatter.format(item.price), center[0] + 100, 50 + 10 * ++yOffset)
-                        .onClick(() -> setSign(item.price)));
+
+            if (Objects.equals(result.top_display, "GR")) {
+                for (AuctionAttributeItem item : items) {
+                    display.add(new RenderableString(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + formatter.format(item.price), center[0] + 100, 50 + 10 * ++yOffset)
+                            .onClick(() -> setSign(item.price)));
+                }
+            } else {
+                for (AuctionAttributeItem item : items) {
+                    display.add(new RenderableString(getRarityCode(item.tier) + item.item_name + " - " + EnumChatFormatting.YELLOW + coolFormat(item.attributeInfo.get(best_attr).price_per, 0) + EnumChatFormatting.RESET + " - " + EnumChatFormatting.GREEN + formatter.format(item.price), center[0] + 100, 50 + 10 * ++yOffset)
+                            .onClick(() -> setSign(item.price)));
+                }
             }
         }
 
@@ -95,11 +111,11 @@ public class AuctionHelper {
         if (value == 0) return;
 
         sign = ((AccessorGuiEditSign) event.gui).getTileSign();
-        if (sign != null && sign.getPos().getY() == 0
-                && Objects.equals(sign.signText[1].getUnformattedText(), "^^^^^^^^^^^^^^^")
-                && Objects.equals(sign.signText[2].getUnformattedText(), "Your auction")
-                && Objects.equals(sign.signText[3].getUnformattedText(), "starting bid")) {
-            sign.signText[0] = new ChatComponentText(String.valueOf(value));
+        if (sign == null || sign.getPos().getY() != 0
+                || !Objects.equals(sign.signText[1].getUnformattedText(), "^^^^^^^^^^^^^^^")
+                || !Objects.equals(sign.signText[2].getUnformattedText(), "Your auction")
+                || !Objects.equals(sign.signText[3].getUnformattedText(), "starting bid")) {
+            sign = null;
         }
     }
 
