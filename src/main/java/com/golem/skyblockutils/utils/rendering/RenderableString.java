@@ -1,5 +1,8 @@
 package com.golem.skyblockutils.utils.rendering;
 
+import com.golem.skyblockutils.models.gui.Alignment;
+import com.golem.skyblockutils.models.gui.OverlayUtils;
+import com.golem.skyblockutils.models.gui.TextStyle;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -12,8 +15,8 @@ import java.awt.*;
 public class RenderableString extends Renderable {
     @Getter
     private String text;
-    private int color = 0xFFFFFF;
-    private boolean shadow = true;
+    private TextStyle textStyle = TextStyle.Default;
+    private Alignment alignment = Alignment.Left;
 
     public RenderableString(String text, int x, int y) {
         super(x, y);
@@ -39,8 +42,9 @@ public class RenderableString extends Renderable {
     public void render() {
         if (!visible) return;
         GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, 0);
         GlStateManager.scale(scale, scale, 1);
-        Minecraft.getMinecraft().fontRendererObj.drawString(text, x, y, color, shadow);
+        OverlayUtils.drawString(0, 0, text, textStyle, alignment);
         if (underline) Gui.drawRect(x, y + getHeight(), x + getWidth(), y + getHeight() + 1, Color.WHITE.getRGB());
         GlStateManager.popMatrix();
     }
@@ -51,8 +55,9 @@ public class RenderableString extends Renderable {
     public void render(int mouseX, int mouseY) {
         if (!visible) return;
         GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, 0);
         GlStateManager.scale(scale, scale, 1);
-        Minecraft.getMinecraft().fontRendererObj.drawString(text, x, y, color, shadow);
+        OverlayUtils.drawString(0, 0, text, textStyle, alignment);
         if (underline) Gui.drawRect(x, y + getHeight(), x + getWidth(), y + getHeight() + 1, Color.WHITE.getRGB());
         GlStateManager.popMatrix();
         handleMouse(mouseX, mouseY);
@@ -60,7 +65,7 @@ public class RenderableString extends Renderable {
 
     @Override
     public int getWidth() {
-        return (int) (Minecraft.getMinecraft().fontRendererObj.getStringWidth(text));
+        return Minecraft.getMinecraft().fontRendererObj.getStringWidth(text);
     }
 
     @Override
@@ -68,13 +73,18 @@ public class RenderableString extends Renderable {
         return Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT;
     }
 
-    public RenderableString setColor(int color) {
-        this.color = color;
+    public RenderableString setText(String text) {
+        this.text = text;
         return this;
     }
 
-    public RenderableString setText(String text) {
-        this.text = text;
+    public RenderableString setTextStyle(TextStyle textStyle) {
+        this.textStyle = textStyle;
+        return this;
+    }
+
+    public RenderableString setAlignment(Alignment alignment) {
+        this.alignment = alignment;
         return this;
     }
 }

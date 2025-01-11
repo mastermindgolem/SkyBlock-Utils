@@ -1,7 +1,7 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
+import com.golem.skyblockutils.models.gui.Alignment;
 import com.golem.skyblockutils.models.gui.GuiElement;
-import com.golem.skyblockutils.models.gui.TextStyle;
 import com.golem.skyblockutils.utils.ScreenUtils;
 import com.golem.skyblockutils.utils.TimeHelper;
 import com.golem.skyblockutils.utils.rendering.RenderableString;
@@ -18,9 +18,7 @@ public class AlertOverlay {
     private static final TimeHelper time = new TimeHelper();
     private static long endTime = 0;
 
-    public static RenderableString display = new RenderableString("", 0, 0);
-
-    private final TextStyle textStyle = TextStyle.fromInt(1);
+    public static RenderableString display = new RenderableString("", 0, 0).setAlignment(Alignment.Center);
 
     public static int renderWidth(String text) {
         return mc.fontRendererObj.getStringWidth(text);
