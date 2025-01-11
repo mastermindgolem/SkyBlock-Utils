@@ -37,6 +37,6 @@ public enum AttributeItemType {
 
     @Override
     public String toString() {
-        return display.toUpperCase().replace(" ", "_");
+        return display.toUpperCase().replaceAll(" ", "_");
     }
 }

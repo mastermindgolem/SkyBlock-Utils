@@ -195,19 +195,31 @@ public class ChestDataGui extends GuiScreen {
             int amount = (int) ds.quantity;
             long value = ds.price;
             if (s.contains("Shard")) {
-                shardSB.append(ds.display_no_name.replace("§.", "")).append(" x").append(amount);
+                if (simplifyItems.isChecked()) {
+                    shardSB.append(ds.display_no_name.replaceAll("§.", "")).append(" x").append(amount);
+                } else {
+                    shardSB.append(s.replaceAll("§.", "")).append(" x").append(amount);
+                }
                 if (withPrices) {
                     shardSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
                 shardSB.append("\n");
             } else if (s.contains("Helmet") || s.contains("Chestplate") || s.contains("Leggings") || s.contains("Boots")) {
-                armorSB.append(ds.display_no_name.replace("§.", "")).append(" x").append(amount);
+                if (simplifyItems.isChecked()) {
+                    armorSB.append(ds.display_no_name.replaceAll("§.", "")).append(" x").append(amount);
+                } else {
+                    armorSB.append(s.replaceAll("§.", "")).append(" x").append(amount);
+                }
                 if (withPrices) {
                     armorSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
                 armorSB.append("\n");
             } else {
-                equipSB.append(ds.display_no_name.replace("§.", "")).append(" x").append(amount);
+                if (simplifyItems.isChecked()) {
+                    equipSB.append(ds.display_no_name.replaceAll("§.", "")).append(" x").append(amount);
+                } else {
+                    equipSB.append(s.replaceAll("§.", "")).append(" x").append(amount);
+                }
                 if (withPrices) {
                     equipSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
