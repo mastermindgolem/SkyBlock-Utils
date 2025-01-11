@@ -249,7 +249,13 @@ public class CratesOverlay {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || !configFile.runInfo) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
+
+        if (!(mc.currentScreen instanceof MoveGui) && (Kuudra.currentPhase == 4 || Kuudra.currentPhase == 5)) {
+            handleKuudraBossLogic();
+        }
+
+        if (!configFile.runInfo) return;
 
         if (mc.currentScreen instanceof MoveGui) {
             updateMoveGuiPreview();
@@ -264,9 +270,7 @@ public class CratesOverlay {
             rs.render();
         }
 
-        if (Kuudra.currentPhase == 4 || Kuudra.currentPhase == 5) {
-            handleKuudraBossLogic();
-        }
+
     }
 
     private void updateMoveGuiPreview() {
