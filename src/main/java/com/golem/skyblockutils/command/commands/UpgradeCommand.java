@@ -4,6 +4,7 @@ import com.golem.skyblockutils.models.AttributeItem;
 import com.golem.skyblockutils.models.AttributeItemType;
 import com.golem.skyblockutils.models.AuctionAttributeItem;
 import com.golem.skyblockutils.utils.AttributeUtils;
+import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -30,9 +30,7 @@ import static com.golem.skyblockutils.utils.Colors.getRarityCode;
 
 public class UpgradeCommand extends CommandBase implements Help {
 	private final List<String> helpStrings;
-	private final String[] item_types = new String[]{"AURORA", "CRIMSON", "TERROR", "HOLLOW", "FERVOR", "ATTRIBUTE_SHARD"};
-	private final String[] armor_types = new String[]{"HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"};
-	private int level;
+	private final DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 
 	public UpgradeCommand() {
 		helpStrings = new ArrayList<>();
@@ -147,7 +145,8 @@ public class UpgradeCommand extends CommandBase implements Help {
 
 			int start_tier = item.attributes.getOrDefault(attribute, 0);
 
-			int tiers_needed = 1 << (end_tier - 1) - 1 << (start_tier - 1);
+			int tiers_needed = (1 << (end_tier - 1)) - (1 << (start_tier - 1));
+			ChatUtils.addChatMessage(EnumChatFormatting.AQUA + "Upgrading " + start_tier + " to " + end_tier + " total tiers " + tiers_needed + "!");
 			String id = getItemId(itemNbt);
 			AttributeItemType itemType = AttributeUtils.getItemType(id);
 			if (itemType == null) {
@@ -171,8 +170,7 @@ public class UpgradeCommand extends CommandBase implements Help {
 			AttributeItemType itemType = AttributeUtils.getItemType(args[0]);
 			String attribute = AttributeUtils.AttributeAliases(args[1]);
 			int end_tier = Integer.parseInt(args[2]);
-			int start_tier = 0;
-			int tiers_needed = 1 << (end_tier - 1) - 1 << (start_tier - 1);
+			int tiers_needed = 1 << (end_tier - 1);
 			getAttributePrice(attribute, itemType, tiers_needed, end_tier);
 		}
 	}
@@ -203,7 +201,7 @@ public class UpgradeCommand extends CommandBase implements Help {
 		items.sort(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attribute).price_per));
 
 		int tiers_achieved = 0;
-		int price = 0;
+		long price = 0;
 
 		List<AuctionAttributeItem> auctions = new ArrayList<>();
 		for (AuctionAttributeItem item : items) {
@@ -214,9 +212,9 @@ public class UpgradeCommand extends CommandBase implements Help {
 		}
 
 		List<AuctionAttributeItem> chosen = new ArrayList<>();
+		auctions.sort(Comparator.comparingDouble((AuctionAttributeItem o) -> -o.attributeInfo.get(attribute).price_per));
 
 		for (AuctionAttributeItem item : auctions) {
-			items.sort(Comparator.comparingDouble((AuctionAttributeItem o) -> -o.attributeInfo.get(attribute).price_per));
 			int tiers = 1 << (item.attributeInfo.get(attribute).tier - 1);
 
 			if (tiers_achieved - tiers >= tiers_needed) {
@@ -228,28 +226,18 @@ public class UpgradeCommand extends CommandBase implements Help {
 
 		for (AuctionAttributeItem item : chosen) {
 			int tiers = item.attributeInfo.get(attribute).tier;
-			final IChatComponent msg = new ChatComponentText(getRarityCode(item.tier) + ToolTipListener.TitleCase(item.item_name) + EnumChatFormatting.YELLOW + ": " + attribute + " " + tiers + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0)).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID) {
-			}));
-			mc.thePlayer.addChatMessage(msg);
+			ChatUtils.addChatMessage(
+					getRarityCode(item.tier) + ToolTipListener.TitleCase(item.item_name) + EnumChatFormatting.YELLOW + ": " + attribute + " " + tiers + " - " + EnumChatFormatting.GREEN + coolFormat(item.price, 0),
+					new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/viewauction " + item.viewauctionID)
+			);
 			price += item.price;
 		}
-		addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase("Upgrading " + attribute + " to " + end_tier + " on " + key));
-		mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW + String.valueOf(tiers_achieved) + "/" + tiers_needed + " tiers"));
-		DecimalFormat formatter = new DecimalFormat("#,###");
-		mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Total Price: " + formatter.format(price)));
+		ChatUtils.addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase("Upgrading " + attribute + " to " + end_tier + " on " + key));
+		ChatUtils.addChatMessage(EnumChatFormatting.YELLOW + String.valueOf(tiers_achieved) + "/" + tiers_needed + " tiers");
+		ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Total Price: " + formatter.format(price));
 	}
 
 	private void addClickChatMessage(String message, String command) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(message).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command) {
-			@Override
-			public Action getAction() {
-				//custom behavior
-				return Action.RUN_COMMAND;
-			}
-		})));
-	}
-
-	public void addChatMessage(String string) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(string));
+		ChatUtils.addChatMessage(message, new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
 	}
 }
