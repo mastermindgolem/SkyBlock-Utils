@@ -258,6 +258,20 @@ public class Config extends Vigilant
 			category = "Overlays",
 			subcategory = "Run Overview")
 	public boolean runInfo = false;
+	@Property(type = PropertyType.BUTTON,
+			name = "Move Run Info",
+			description = "Edit GUI Location for Run Info",
+			category = "Overlays",
+			subcategory = "Run Overview", placeholder = "Edit")
+	@SuppressWarnings("unused")
+	public void MoveCratesOverlay() {
+		if (!runInfo) {
+			Main.mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GOLD + "SBU > " + EnumChatFormatting.RED + "You cannot move this since Show Run Info is off."));
+			return;
+		}
+		Main.mc.displayGuiScreen(new MoveGui(new GuiElement[]{CratesOverlay.element}));
+		Main.display = null;
+	}
 	@Property(type = PropertyType.COLOR,
 			name = "Supply Waypoints Color",
 			description = "Choose the color for supply waypoints",
