@@ -104,7 +104,7 @@ public class ProfitOverlay {
             if (configFile.includeDowntime) {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             } else {
-                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
             }
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
             String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
@@ -134,7 +134,7 @@ public class ProfitOverlay {
             if (configFile.includeDowntime) {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             } else {
-                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
+                string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
             }
             max = Math.max(renderWidth(string2), max);
             String string3 = EnumChatFormatting.GOLD + "Chests Opened: " + EnumChatFormatting.GREEN + chests;
