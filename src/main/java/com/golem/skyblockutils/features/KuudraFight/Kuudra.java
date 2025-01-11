@@ -94,7 +94,6 @@ public class Kuudra {
             overview = new ArrayList<>();
             currentPhase = 0;
             supplyWaypoints = new HashMap<>(6);
-            phase0 = new HashMap<>();
             CratesOverlay.phase1 = new HashMap<>();
             CratesOverlay.phase2 = new HashMap<>();
             CratesOverlay.phase4 = new ArrayList<>();
@@ -167,8 +166,6 @@ public class Kuudra {
             if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[3]/60000F));
             overview.add(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[1]/60000F));
         }
-
-        if (phase0.isEmpty()) return;
 
         if (message.contains("DEFEAT") && currentPhase == 4) {
             currentPhase = 5;
