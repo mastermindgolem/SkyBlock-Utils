@@ -6,9 +6,7 @@ import com.golem.skyblockutils.models.Overlay.TextOverlay.AlertOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ProfitOverlay;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
-import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.Colors;
-import com.golem.skyblockutils.utils.LocationUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
@@ -36,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.golem.skyblockutils.Main.*;
+import static com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay.phase0;
 
 public class Kuudra {
     public static HashMap<Vec3, Integer> supplyWaypoints = new HashMap<>(6);
@@ -52,7 +51,7 @@ public class Kuudra {
         if (event.entity != Main.mc.thePlayer) return;
         Kuudra.currentPhase = -1;
         supplyWaypoints = new HashMap<>(6);
-        CratesOverlay.phase0 = new HashMap<>();
+        phase0 = new HashMap<>();
         CratesOverlay.phase1 = new HashMap<>();
         CratesOverlay.phase2 = new HashMap<>();
         CratesOverlay.phase4 = new ArrayList<>();
@@ -95,7 +94,7 @@ public class Kuudra {
             overview = new ArrayList<>();
             currentPhase = 0;
             supplyWaypoints = new HashMap<>(6);
-            CratesOverlay.phase0 = new HashMap<>();
+            phase0 = new HashMap<>();
             CratesOverlay.phase1 = new HashMap<>();
             CratesOverlay.phase2 = new HashMap<>();
             CratesOverlay.phase4 = new ArrayList<>();
@@ -113,10 +112,7 @@ public class Kuudra {
             stunner = false;
         }
 
-        if (splits[0] == 0) return;
-
         if (message.equals("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
-            ChatUtils.addChatMessage(LocationUtils.getLocation());
             currentPhase = 1;
             splits[1] = (float) Main.time.getCurrentMS();
             if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Ready Up: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[1]/60000F - splits[0]/60000F));
@@ -136,8 +132,6 @@ public class Kuudra {
             }
         }
 
-        if (splits[1] == 0) return;
-
         if (message.equals("[NPC] Elle: OMG! Great work collecting my supplies!")) {
             currentPhase = 2;
             splits[2] = (float) Main.time.getCurrentMS();
@@ -151,8 +145,6 @@ public class Kuudra {
             supplyWaypoints.put(Waypoints.supply5, -1);
             supplyWaypoints.put(Waypoints.supply6, -1);
         }
-
-        if (splits[2] == 0) return;
 
         if (message.equals("[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!")) {
             currentPhase = 3;
@@ -168,8 +160,6 @@ public class Kuudra {
             supplyWaypoints.put(Waypoints.supply6, -1);
         }
 
-        if (splits[3] == 0) return;
-
         if (message.equals("[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!")) {
             currentPhase = 4;
             stunner = false;
@@ -178,7 +168,7 @@ public class Kuudra {
             overview.add(EnumChatFormatting.AQUA + "Fuel/Stun: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[4]/60000F - splits[1]/60000F));
         }
 
-        if (splits[4] == 0) return;
+        if (phase0.isEmpty()) return;
 
         if (message.contains("DEFEAT") && currentPhase == 4) {
             currentPhase = 5;
