@@ -205,7 +205,7 @@ public class AttributePrice {
 		for (String attr_key : item.attributes.keySet()) {
 			int attr_tier = item.attributes.get(attr_key);
 			if (!configFile.valueHighTierItems && attr_tier >= 7) return null;
-			total_tiers += 1 << attr_tier;
+			total_tiers += 1 << (attr_tier - 1);
 			if (excludeAttributes.contains(attr_key)) continue;
 			if (!LowestAttributePrices.get(item.item_type).containsKey(attr_key)) continue;
 			ArrayList<Long> items = LowestAttributePrices.get(item.item_type).get(attr_key);
@@ -234,6 +234,7 @@ public class AttributePrice {
 		if (dev) {
 			Kuudra.addChatMessage("Combo Value: " + combo_value);
 			Kuudra.addChatMessage("Best Attribute: " + best_attribute);
+			Kuudra.addChatMessage("Total Tiers: " + total_tiers);
 		}
 
 		added_value += combo_value;
