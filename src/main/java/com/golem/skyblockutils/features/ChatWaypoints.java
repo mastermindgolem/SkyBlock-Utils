@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.golem.skyblockutils.Main.config;
+
 public class ChatWaypoints {
 
 
@@ -25,7 +27,7 @@ public class ChatWaypoints {
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
-        if (Main.configFile.showWaypoints == 0) return;
+        if (config.getConfig().generalCategory.showWaypoints == 0) return;
         String message = event.message.getUnformattedText().replaceAll("§.", "");
         if (!message.startsWith("Party > ") || !message.contains("x: ") || !message.contains(", y:") || !message.contains(", z:")) return;
         Matcher matcher = pattern.matcher(message);
@@ -34,13 +36,13 @@ public class ChatWaypoints {
             String x = matcher.group(2);
             String y = matcher.group(3);
             String z = matcher.group(4);
-            waypoints.put(time.getCurrentMS() + 1000L * Main.configFile.showWaypoints, new Object[]{text, x, y, z});
+            waypoints.put(time.getCurrentMS() + 1000L * config.getConfig().generalCategory.showWaypoints, new Object[]{text, x, y, z});
         }
     }
 
     @SubscribeEvent
     public void RenderEvent(RenderWorldLastEvent event) {
-        if (Main.configFile.showWaypoints == 0 || Main.mc.thePlayer == null) return;
+        if (config.getConfig().generalCategory.showWaypoints == 0 || Main.mc.thePlayer == null) return;
         Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
         double viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * event.partialTicks;
         double viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * event.partialTicks;
@@ -49,7 +51,7 @@ public class ChatWaypoints {
         for (Map.Entry<Long, Object[]> entry : waypoints.entrySet()) if (time.getCurrentMS() < entry.getKey()) {
             Object[] waypoint = entry.getValue();
             RenderUtils.renderWaypointText(waypoint[0].toString(), Integer.parseInt(waypoint[1].toString()), Integer.parseInt(waypoint[2].toString()) + 2, Integer.parseInt(waypoint[3].toString()), event.partialTicks);
-            RenderUtils.renderBeaconBeam(Integer.parseInt(waypoint[1].toString()) - viewerX, Integer.parseInt(waypoint[2].toString()) - viewerY, Integer.parseInt(waypoint[3].toString()) - viewerZ, Main.configFile.supplyColor.getRGB(), 1.0f, event.partialTicks);
+            RenderUtils.renderBeaconBeam(Integer.parseInt(waypoint[1].toString()) - viewerX, Integer.parseInt(waypoint[2].toString()) - viewerY, Integer.parseInt(waypoint[3].toString()) - viewerZ, config.getConfig().generalCategory.waypointColor.getEffectiveColour().getRGB(), 1.0f, event.partialTicks);
             waypoints2.put(entry.getKey(), waypoint);
         }
         waypoints = waypoints2;
