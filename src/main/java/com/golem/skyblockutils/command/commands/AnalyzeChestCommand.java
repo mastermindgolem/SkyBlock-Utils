@@ -26,6 +26,9 @@ public class AnalyzeChestCommand extends CommandBase {
     public List<String> getCommandAliases() {
         List<String> al = new ArrayList<>();
         al.add("analyzechest");
+        al.add("analysechests");
+        al.add("analysechest");
+        al.add("ac-dev");
         return al;
     }
 
