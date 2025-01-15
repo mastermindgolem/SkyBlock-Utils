@@ -90,11 +90,10 @@ public class Main
 
 	@SubscribeEvent
 	public void tick(final TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.START) {
-			return;
-		}
+		if (event.phase != TickEvent.Phase.START) return;
+
 		if (Main.display != null) {
-			Main.mc.displayGuiScreen(Main.display);
+			mc.displayGuiScreen(Main.display);
 			Main.display = null;
 		}
 	}
