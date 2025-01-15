@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import org.lwjgl.input.Keyboard;
 
+import static com.golem.skyblockutils.Main.config;
+
 
 public class KeybindsInit {
 	public static KeyBinding openGUI;
@@ -38,7 +40,7 @@ public class KeybindsInit {
 	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		if (GameSettings.isKeyDown(openGUI)) {
-			Main.display = Main.configFile.gui();
+			config.openConfigGui();
 		}
 		if (GameSettings.isKeyDown(timerButton)) {
 			TimerOverlay.active = !TimerOverlay.active;
