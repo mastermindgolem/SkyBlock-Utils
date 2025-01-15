@@ -1,5 +1,6 @@
 package com.golem.skyblockutils;
 
+import com.golem.skyblockutils.features.ChestDataGui;
 import com.golem.skyblockutils.init.CommandInit;
 import com.golem.skyblockutils.init.EventInit;
 import com.golem.skyblockutils.init.HelpInit;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.List;
 
 @Mod(modid = Main.MODID, version = Main.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.9]")
@@ -40,7 +42,8 @@ public class Main
 	public static final TimeHelper time = new TimeHelper();
 	public static List<GuiElement> StaticPosition;
 	public static File jarFile = null;
-
+	public static Boolean OpenChestData = false;
+	public static LinkedList<Integer> ReleaseGui = new LinkedList<Integer>();
 	public static PersistentData persistentData = new PersistentData();
 
 	public static String modDir = "";
@@ -87,13 +90,30 @@ public class Main
 
 	@SubscribeEvent
 	public void tick(final TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.START) {
-			return;
-		}
+		if (event.phase != TickEvent.Phase.START) return;
+
 		if (Main.display != null) {
-			Main.mc.displayGuiScreen(Main.display);
+			mc.displayGuiScreen(Main.display);
 			Main.display = null;
 		}
+
+		if (ReleaseGui.isEmpty()) return;
+
+		if (OpenChestData) {
+			Logger.debug(ReleaseGui.get(0));
+			if (ReleaseGui.get(0) == 1) {
+				ReleaseGui.removeFirst();
+				mc.displayGuiScreen(new ChestDataGui());
+			} else if (ReleaseGui.get(0) != 1) {
+				Logger.debug(ReleaseGui.get(0));
+				int currentTick = ReleaseGui.getFirst() - 1;
+				ReleaseGui.removeFirst();
+				ReleaseGui.addFirst(currentTick);
+			} else {
+				mc.displayGuiScreen(Main.display);
+			}
+		}
+
 	}
 
 	public static String coolFormat(final double n, final int iteration) {
