@@ -59,7 +59,7 @@ public class ProfitOverlay {
         totalProfit += KuudraOverlay.totalProfit;
         chests++;
 
-        if (!configFile.sendProfitData) return;
+        if (!config.getConfig().overlayCategory.kuudraChestConfig.sendChestData) return;
         Container finalContainer = container;
         new Thread(() -> {
             try {
@@ -94,14 +94,14 @@ public class ProfitOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui && (configFile.profitOverlay == 1 || (configFile.profitOverlay == 2 && Kuudra.currentPhase > 0) || (configFile.profitOverlay == 3 && Kuudra.currentPhase == 5))) {
+        if (isOverlayOn()) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);
 
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
             String string2;
-            if (configFile.includeDowntime) {
+            if (config.getConfig().overlayCategory.kuudraProfitConfig.includeDowntime) {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             } else {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
@@ -110,7 +110,7 @@ public class ProfitOverlay {
             String string4 = EnumChatFormatting.GOLD + "Total Runs: " + EnumChatFormatting.GREEN + totalRuns;
             String string5 = EnumChatFormatting.GOLD + "Rerolls: " + EnumChatFormatting.GREEN + numRerolls;
             String string6 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
-            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTimeWithoutDowntime > 0 ? (double) totalProfit / (configFile.includeDowntime ? totalTime : totalTimeWithoutDowntime) * 3600000 : 0));
+            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTimeWithoutDowntime > 0 ? (double) totalProfit / (config.getConfig().overlayCategory.kuudraProfitConfig.includeDowntime ? totalTime : totalTimeWithoutDowntime) * 3600000 : 0));
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
             OverlayUtils.drawString(0, 10, string2, textStyle, Alignment.Left);
@@ -131,7 +131,7 @@ public class ProfitOverlay {
             String string1 = EnumChatFormatting.GOLD + "Total Profit: " + EnumChatFormatting.GREEN + Main.formatNumber(totalProfit);
             max = Math.max(renderWidth(string1), max);
             String string2;
-            if (configFile.includeDowntime) {
+            if (config.getConfig().overlayCategory.kuudraProfitConfig.includeDowntime) {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F) + EnumChatFormatting.YELLOW + " / " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTime) / 60000F);
             } else {
                 string2 = EnumChatFormatting.GOLD + "Run Time: " + EnumChatFormatting.GREEN + SplitsOverlay.format((totalTimeWithoutDowntime) / 60000F);
@@ -145,7 +145,7 @@ public class ProfitOverlay {
             max = Math.max(renderWidth(string4), max);
             String string6 = EnumChatFormatting.GOLD + "Profit / Chest: " + EnumChatFormatting.GREEN + Main.formatNumber((chests > 0 ? (double) totalProfit / chests : 0));
             max = Math.max(renderWidth(string5), max);
-            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTimeWithoutDowntime > 0 ? (double) totalProfit / (configFile.includeDowntime ? totalTime : totalTimeWithoutDowntime) * 3600000 : 0));
+            String string7 = EnumChatFormatting.GOLD + "Profit / Hour: " + EnumChatFormatting.GREEN + Main.formatNumber((totalTimeWithoutDowntime > 0 ? (double) totalProfit / (config.getConfig().overlayCategory.kuudraProfitConfig.includeDowntime ? totalTime : totalTimeWithoutDowntime) * 3600000 : 0));
             max = Math.max(renderWidth(string6), max);
 
             OverlayUtils.drawString(0, 0, string1, textStyle, Alignment.Left);
@@ -170,5 +170,18 @@ public class ProfitOverlay {
         runEndTime = 0;
         totalTime = 0;
         totalRuns = 0;
+    }
+
+    private static boolean isOverlayOn() {
+        switch (config.getConfig().overlayCategory.kuudraProfitConfig.profitOverlay) {
+            case ALWAYS_ON:
+                return true;
+            case IN_KUUDRA:
+                return Kuudra.currentPhase > 0;
+            case IN_P4:
+                return Kuudra.currentPhase == 5;
+            default:
+                return false;
+        }
     }
 }

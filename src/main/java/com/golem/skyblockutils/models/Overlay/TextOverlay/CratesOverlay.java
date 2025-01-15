@@ -7,6 +7,7 @@ import com.golem.skyblockutils.models.gui.MoveGui;
 import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.TabUtils;
 import com.golem.skyblockutils.utils.rendering.RenderableString;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityGiantZombie;
@@ -38,6 +39,7 @@ public class CratesOverlay {
     private static List<String> heldCrates = new ArrayList<>();
     private static boolean inPeak = false;
     private static final List<RenderableString> renderStrings = new ArrayList<>();
+    private static Direction direction = null;
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
@@ -49,10 +51,10 @@ public class CratesOverlay {
             }
         }
         if (message.equals("Your Fresh Tools Perk bonus doubles your building speed for the next 5 seconds!")) {
-            if (configFile.freshAlert) {
+            if (config.getConfig().kuudraCategory.phase2.freshToolsAlert) {
                 AlertOverlay.newAlert(EnumChatFormatting.DARK_GREEN + "FRESH TOOLS", 20);
             }
-            if (configFile.freshNotify) mc.thePlayer.sendChatMessage("/pc FRESH! " + configFile.freshMessage);
+            if (config.getConfig().kuudraCategory.phase2.notifyPartyFreshTools) mc.thePlayer.sendChatMessage("/pc FRESH!");
         }
         if (message.startsWith("Party") && message.contains(": FRESH!")) {
             for (String player : Kuudra.partyMembers) if (message.contains(player)) {
@@ -98,7 +100,7 @@ public class CratesOverlay {
         for (Entity entity : entities) {
             if (entity instanceof EntityGiantZombie) {
                 phase1.put(entity.getEntityId(), entity.getPosition());
-                if (configFile.crateWaypoints) RenderUtils.renderBeaconBeam(entity.posX - viewerX -1.5, entity.posY - viewerY, entity.posZ - viewerZ +2, 0xFF0000, 1.0F, event.partialTicks);
+                if (config.getConfig().kuudraCategory.phase1.showCrateWaypoint) RenderUtils.renderBeaconBeam(entity.posX - viewerX -1.5, entity.posY - viewerY, entity.posZ - viewerZ +2, config.getConfig().kuudraCategory.phase1.crateWaypointColour.getEffectiveColour().getRGB(), 1.0F, event.partialTicks);
             }
         }
 
@@ -232,13 +234,34 @@ public class CratesOverlay {
 
         boolean currentPeak = kuudra.posY < 25;
 
-        if (currentPeak != inPeak) {
-            if (configFile.showKuudraLocation) {
-                if (kuudra.posX < -128) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "RIGHT!", 20);
-                if (kuudra.posX > -72) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "LEFT!", 20);
-                if (kuudra.posZ < -132) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "BACK!", 20);
-                if (kuudra.posZ > -84) AlertOverlay.newAlert(EnumChatFormatting.BOLD + "FRONT!", 20);
+        if (config.getConfig().kuudraCategory.phase4.showKuudraLocation) {
+            if (kuudra.posX < -128) {
+                if (direction != Direction.Right) {
+                    AlertOverlay.newAlert(EnumChatFormatting.BOLD + Direction.Right.getMessage(), 20);
+                    direction = Direction.Right;
+                }
             }
+            if (kuudra.posX > -72) {
+                if (direction != Direction.Left) {
+                    AlertOverlay.newAlert(EnumChatFormatting.BOLD + Direction.Left.getMessage(), 20);
+                    direction = Direction.Left;
+                }
+            }
+            if (kuudra.posZ < -132) {
+                if (direction != Direction.Back) {
+                    AlertOverlay.newAlert(EnumChatFormatting.BOLD + Direction.Back.getMessage(), 20);
+                    direction = Direction.Back;
+                }
+            }
+            if (kuudra.posZ > -84) {
+                if (direction != Direction.Front) {
+                    AlertOverlay.newAlert(EnumChatFormatting.BOLD + Direction.Front.getMessage(), 20);
+                    direction = Direction.Front;
+                }
+            }
+        }
+
+        if (currentPeak != inPeak) {
             inPeak = currentPeak;
             if (inPeak) {
                 if (!phase4.isEmpty() && phase4.get(phase4.size() - 1) - kuudra.getHealth() < 0.008 * kuudra.getMaxHealth()) return;
@@ -255,14 +278,12 @@ public class CratesOverlay {
             handleKuudraBossLogic();
         }
 
-        if (!configFile.runInfo) return;
+        if (!config.getConfig().overlayCategory.runInfoConfig.runInfoOverlay) return;
 
         if (mc.currentScreen instanceof MoveGui) {
             updateMoveGuiPreview();
             return;
         }
-
-        if (!configFile.testGui) return;
 
         updateRenderStrings(Kuudra.currentPhase);
 
@@ -350,5 +371,20 @@ public class CratesOverlay {
         }
 
         return false;
+    }
+
+    @Getter
+    private enum Direction {
+        Front(EnumChatFormatting.BOLD + "FRONT!"),
+        Right(EnumChatFormatting.BOLD + "RIGHT!"),
+        Left(EnumChatFormatting.BOLD + "LEFT!"),
+        Back(EnumChatFormatting.BOLD + "BACK!");
+
+        private final String message;
+
+        Direction(String message) {
+            this.message = message;
+        }
+
     }
 }

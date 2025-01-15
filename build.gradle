@@ -35,6 +35,7 @@ repositories {
 	maven { url "https://repo.sk1er.club/repository/maven-public" }
 	maven { url "https://repo.sk1er.club/repository/maven-releases/" }
 	maven { url "net.minecraftforge.gradle.forge" }
+	maven { url "https://maven.notenoughupdates.org/releases/" }
 }
 
 configurations {
@@ -42,8 +43,8 @@ configurations {
 	configurations.implementation.extendsFrom(configurations.packageLib)
 }
 
-
 dependencies {
+	//
 	compileOnly 'org.projectlombok:lombok:1.18.26'
 	annotationProcessor 'org.projectlombok:lombok:1.18.26'
 	testCompileOnly 'org.projectlombok:lombok:1.18.26'
@@ -54,9 +55,10 @@ dependencies {
 	// Mixins
 	annotationProcessor "org.spongepowered:mixin:0.7.11-SNAPSHOT"
 	implementation "org.spongepowered:mixin:0.7.11-SNAPSHOT"
-	// Essential gui
+	// GUIs
 	implementation "gg.essential:loader-launchwrapper:1.1.3"
 	implementation "gg.essential:essential-1.8.9-forge:2666"
+	packageLib "org.notenoughupdates.moulconfig:legacy:3.5.0"
 	// Inc Tests
 	testImplementation "junit:junit:4.13.2"
 	// Logger
@@ -78,7 +80,7 @@ jar {
 			"ForceLoadAsMod": true,
 			"MixinConfigs": "mixins.skyblockutils.json",
 			"ModSide": "CLIENT",
-			"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+//			"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
 			"TweakOrder": "0"
 	)
 
@@ -86,16 +88,21 @@ jar {
 }
 
 shadowJar {
+	relocate("io.github.notenoughupdates.moulconfig", "com.golem.skyblockutils.deps.moulconfig")
+	relocate("logger", "com.golem.skyblockutils.injection.logger")
 
 	dependencies {
 		include(dependency("gg.essential:loader-launchwrapper:1.1.3"))
 		include(dependency("net.objecthunter:exp4j:0.4.8"))
+		include(dependency("org.notenoughupdates.moulconfig:legacy:3.5.0"))
 		include(dependency("com.github.VlxtIykg:Logger:1.1.0"))
 	}
 
 	archiveFileName = project.archivesBaseName + "-" + project.version + ".jar"
 	println(archiveFileName)
 }
+
+assemble.dependsOn shadowJar
 
 
 reobf {
@@ -109,7 +116,7 @@ processResources {
 	inputs.property "mcversion", project.minecraft.version
 	from(sourceSets.main.resources.srcDirs) {
 		include 'mcmod.info'
-		expand 'version':project.version, 'mcversion':project.minecraft.version
+		expand 'version': project.version, 'mcversion': project.minecraft.version
 	}
 	from(sourceSets.main.resources.srcDirs) {
 		exclude 'mcmod.info'

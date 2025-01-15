@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.init.KeybindsInit.mc;
 
 public class KuudraHealth {
@@ -45,13 +45,13 @@ public class KuudraHealth {
             List<Entity> kuudra = entities.stream().filter(e -> e instanceof EntityMagmaCube && e.width > 14 && ((EntityMagmaCube) e).getHealth() <= 100000).collect(Collectors.toList());
             for (Entity e : kuudra) {
                 Kuudra.boss = (EntityMagmaCube) e;
-                if (configFile.showKuudraHP) {
+                if (config.getConfig().kuudraCategory.kuudraConfig.displayKuudraHP) {
                     String string = EnumChatFormatting.RED + formatter.format(Kuudra.boss.getHealth()) + "/100,000";
                     if (Kuudra.tier == 5) string = EnumChatFormatting.RED + formatter.format((Kuudra.boss.getHealth() - 25000)/3*4) + "/100,000";
                     if (Kuudra.currentPhase >= 4) string = EnumChatFormatting.YELLOW + Main.formatNumber(Kuudra.boss.getHealth() * 9600).toUpperCase() + "/240M";
                     RenderUtils.renderNameTag(string, e.posX, e.posY + e.height / 2, e.posZ, 4.0f);
                 }
-                if (configFile.showKuudraBossBar) {
+                if (config.getConfig().kuudraCategory.kuudraConfig.displayKuudraHPBossBar) {
                     String string = EnumChatFormatting.RED + formatter2.format(Kuudra.boss.getHealth()/1000) + "%";
                     if (Kuudra.tier == 5) {
                         if (Kuudra.currentPhase < 4) {
@@ -101,7 +101,7 @@ public class KuudraHealth {
 
                     BossHPmessage = string;
                     }
-                if (configFile.showKuudraOutline) {
+                if (config.getConfig().kuudraCategory.kuudraConfig.showKuudraOutline) {
                     RenderUtils.drawEntityBox(e, Color.GREEN, 5, event.partialTicks);
                 }
             }
@@ -111,7 +111,7 @@ public class KuudraHealth {
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (!configFile.showKuudraBossBar) return;
+        if (!config.getConfig().kuudraCategory.kuudraConfig.displayKuudraHPBossBar) return;
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT || Kuudra.currentPhase <= 0) return;
 
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());

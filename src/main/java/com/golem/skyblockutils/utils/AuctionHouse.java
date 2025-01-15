@@ -29,9 +29,9 @@ public class AuctionHouse {
 	public void run(){
 		while(true) {
 			try {
-				if (configFile.time_between_checks == 0) continue;
+				if (config.getConfig().pricingCategory.timeBetweenChecks == 0) continue;
 				if (mc == null || mc.getSession() == null || mc.getSession().getPlayerID() == null) continue;
-				long sleepTime = lastKnownLastUpdated + 60000L * configFile.time_between_checks - System.currentTimeMillis() + 10000L;
+				long sleepTime = lastKnownLastUpdated + 60000L * config.getConfig().pricingCategory.timeBetweenChecks - System.currentTimeMillis() + 10000L;
 				if (sleepTime > 0) {
 					try {
 						Logger.info("Sleep Time: " + sleepTime);

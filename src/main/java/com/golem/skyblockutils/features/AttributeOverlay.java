@@ -9,17 +9,18 @@ import net.minecraft.inventory.Slot;
 
 import java.util.Objects;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 
 public class AttributeOverlay {
 
 
 	public static void drawSlot(Slot slot) {
-		if (slot == null || !slot.getHasStack() || !Main.configFile.attribute_overlay) return;
+		if (slot == null || !slot.getHasStack() || !config.getConfig().pricingCategory.showAttributeOverlay) return;
 		try {
 			AttributeValueResult valueData = InventoryData.values.get(slot);
 			if (valueData == null) return;
-			if (Objects.equals(valueData.top_display, "LBIN") && !configFile.showLbinOverlay) return;
+			if (Objects.equals(valueData.top_display, "LBIN") && !config.getConfig().pricingCategory.showLbinOverlay) return;
+			if (Objects.equals(valueData.top_display, "SAL") && !config.getConfig().pricingCategory.showSalvageOverlay) return;
 
 			UGraphics.disableLighting();
 			UGraphics.disableDepth();

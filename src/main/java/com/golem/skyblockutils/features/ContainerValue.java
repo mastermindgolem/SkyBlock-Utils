@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.configs.overlays.ContainerConfig;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributeValueResult;
@@ -24,7 +25,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 
 public class ContainerValue {
 	List<Renderable> renderStrings = new ArrayList<>();
@@ -37,7 +38,7 @@ public class ContainerValue {
 	public void onInventoryChange(InventoryChangeEvent event) {
 		try {
 			if (!(event.event.gui instanceof GuiChest)) return;
-			if (configFile.container_value == 0) return;
+			if (config.getConfig().overlayCategory.containerValueConfig.containerValueOverlay == ContainerConfig.ContainerValuePosition.OFF) return;
 
 			GuiChest gui = (GuiChest) event.event.gui;
 			Container container = gui.inventorySlots;
@@ -51,7 +52,7 @@ public class ContainerValue {
 			guiLeft = 0;
 			guiTop = (int) (ContainerOverlay.element.position.getY() - 5);
 
-			if (configFile.container_value == 1) {
+			if (config.getConfig().overlayCategory.containerValueConfig.containerValueOverlay == ContainerConfig.ContainerValuePosition.NEXT_TO_GUI) {
 				AccessorGuiContainer ac = (AccessorGuiContainer) gui;
 				xSize = ac.getXSize();
 				guiLeft = ac.getGuiLeft();
@@ -103,7 +104,7 @@ public class ContainerValue {
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
-			if (configFile.container_value == 0) return;
+			if (config.getConfig().overlayCategory.containerValueConfig.containerValueOverlay == ContainerConfig.ContainerValuePosition.OFF) return;
 			if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
 
 			if (!ButtonManager.isChecked("containerValue")) return;
@@ -142,8 +143,8 @@ public class ContainerValue {
 
 		// Define a custom comparator to compare values in descending order
 		Comparator<Map.Entry<String, DisplayString>> valueComparator;
-		switch (configFile.containerSorting) {
-			case 0:
+		switch (config.getConfig().overlayCategory.containerValueConfig.sortBy) {
+			case DESCENDING_PRICE:
 				valueComparator = (entry1, entry2) -> {
 					long product1 = (long) (entry1.getValue().quantity * entry1.getValue().price);
 					long product2 = (long) (entry2.getValue().quantity * entry2.getValue().price);
@@ -151,7 +152,7 @@ public class ContainerValue {
 				};
 				list.sort(valueComparator);
 				break;
-			case 1:
+			case ASCENDING_PRICE:
 				valueComparator = (entry1, entry2) -> {
 					long product1 = (long) (entry1.getValue().quantity * entry1.getValue().price);
 					long product2 = (long) (entry2.getValue().quantity * entry2.getValue().price);
@@ -159,11 +160,11 @@ public class ContainerValue {
 				};
 				list.sort(valueComparator);
 				break;
-			case 2:
+			case ALPHABETICAL:
 				valueComparator = Map.Entry.comparingByKey();
 				list.sort(valueComparator);
 				break;
-			case 3:
+			case ATTRIBUTE_TIER:
 				valueComparator = (entry1, entry2) -> {
 					int tier1 = entry1.getKey().split(" ")[1].matches("\\d+") ? Integer.parseInt(entry1.getKey().split(" ")[1]) : 0;
 					int tier2 = entry2.getKey().split(" ")[1].matches("\\d+") ? Integer.parseInt(entry2.getKey().split(" ")[1]) : 0;
@@ -171,7 +172,7 @@ public class ContainerValue {
 				};
 				list.sort(valueComparator);
 				break;
-			case 4:
+			case ITEM_TYPE:
 				valueComparator = Comparator.comparingInt(entry -> ItemType(entry.getKey()));
 				list.sort(valueComparator);
 				break;

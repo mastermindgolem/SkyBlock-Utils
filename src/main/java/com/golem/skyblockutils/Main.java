@@ -1,5 +1,6 @@
 package com.golem.skyblockutils;
 
+import com.golem.skyblockutils.configs.ConfigManager;
 import com.golem.skyblockutils.init.CommandInit;
 import com.golem.skyblockutils.init.EventInit;
 import com.golem.skyblockutils.init.HelpInit;
@@ -34,7 +35,7 @@ public class Main
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
 	public static final String VERSION = "1.1.0";
-	public static Config configFile;
+	public static ConfigManager config;
 	public static GuiScreen display;
 	public static final Minecraft mc;
 	public static final TimeHelper time = new TimeHelper();
@@ -59,11 +60,11 @@ public class Main
 		EventInit.registerEvents();
 		HelpInit.registerHelp();
 
+		config = new ConfigManager();
 	}
 
 	@Mod.EventHandler
 	public void post(FMLPostInitializationEvent event) {
-		configFile = new Config();
 		PersistentData.load();
 		Logger.debug("Successfully loaded data");
 		EventInit.registerOverlays();

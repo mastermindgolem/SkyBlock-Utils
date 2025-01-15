@@ -1,6 +1,6 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
-import com.golem.skyblockutils.features.KuudraFight.Kuudra;
+import com.golem.skyblockutils.configs.OverlayCategory;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.models.gui.MoveGui;
 import com.golem.skyblockutils.utils.TimeHelper;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.DecimalFormat;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.Main.mc;
 
 public class EndstoneOverlay {
@@ -36,9 +36,7 @@ public class EndstoneOverlay {
     public void onRenderOverlay(RenderGameOverlayEvent event) {
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
-        if (configFile.testGui && (configFile.endstoneTimer == 1 ||
-                (configFile.endstoneTimer == 2 && Kuudra.currentPhase > 0) ||
-                (configFile.endstoneTimer == 3 && Kuudra.currentPhase == 4))) {
+        if (OverlayCategory.isOverlayOn(config.getConfig().overlayCategory.endStoneConfig.endstoneOverlay)) {
 
             double buffLeft = lastUse + 5000 - time.getCurrentMS();
             String displayText;

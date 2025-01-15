@@ -10,8 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Objects;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class AlertOverlay {
     public static GuiElement element = new GuiElement("Alert Overlay", 50, 10);
@@ -28,7 +27,7 @@ public class AlertOverlay {
 
     public static void newAlert(String string, int ticks) {
         display.setText(string);
-        if (configFile.mainAlert) {
+        if (config.getConfig().overlayCategory.alertConfig.alertOverlay) {
             display.setPosition(element.position.getX(), element.position.getY());
             display.setScale(element.position.getScale());
         } else {

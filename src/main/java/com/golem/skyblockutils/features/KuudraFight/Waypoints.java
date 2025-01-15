@@ -1,6 +1,5 @@
 package com.golem.skyblockutils.features.KuudraFight;
 
-import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.utils.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -14,6 +13,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static com.golem.skyblockutils.Main.config;
 
 public class Waypoints {
 
@@ -36,12 +37,13 @@ public class Waypoints {
 
 
         for (Map.Entry<Vec3, Integer> supply : Kuudra.supplyWaypoints.entrySet()) {
-            if (supply.getValue() == 101 && Main.configFile.showSupplyWaypoint && supply.getKey().yCoord < 80) {
-                RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, Main.configFile.supplyColor.getRGB(), 1.0f, event.partialTicks);
+            if (supply.getValue() == 101 && config.getConfig().kuudraCategory.phase1.showSupplyWaypoint && supply.getKey().yCoord < 80) {
+                RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, config.getConfig().kuudraCategory.phase1.supplyWaypointColour.getEffectiveColour().getRGB(), 1.0f, event.partialTicks);
             }
-            else if (supply.getValue() < 101 && supply.getValue() > -1 && Main.configFile.showBuildWaypoint) {
+            else if (supply.getValue() < 101 && supply.getValue() > -1 && config.getConfig().kuudraCategory.phase2.showBuildWaypoint) {
                 int percent = supply.getValue();
-                int rgb = percent == 0 ? 0xFF0000 : percent == 100 ? 0x00FF00 : (int) ((1 - (percent / 100.0)) * 0xFF) << 16 | (int) ((percent / 100.0) * 0xFF) << 8;
+                int rgb = config.getConfig().kuudraCategory.phase2.buildWaypointColour.getEffectiveColour().getRGB();
+                if (config.getConfig().kuudraCategory.phase2.useGradient) rgb = percent == 0 ? 0xFF0000 : percent == 100 ? 0x00FF00 : (int) ((1 - (percent / 100.0)) * 0xFF) << 16 | (int) ((percent / 100.0) * 0xFF) << 8;
                 RenderUtils.renderBeaconBeam(supply.getKey().xCoord - viewerX, supply.getKey().yCoord - viewerY, supply.getKey().zCoord - viewerZ, rgb, 1.0f, event.partialTicks);
             }
         }
@@ -68,12 +70,7 @@ public class Waypoints {
             }
         }
 
-        if (Kuudra.currentPhase == 3 && Kuudra.stunner && Main.configFile.showStunLocation) {
-            RenderUtils.drawBlockBox(new BlockPos(-168, 29, -166), Color.GREEN, 5, event.partialTicks);
-            RenderUtils.drawBlockBox(new BlockPos(-169 , 31, -166), Color.GREEN, 5, event.partialTicks);
-        }
-
-        if (((Kuudra.currentPhase == 3 && (Kuudra.tier == 1 || Kuudra.tier == 2)) || Kuudra.currentPhase == 1) && Main.configFile.safeSpots) {
+        if (((Kuudra.currentPhase == 3 && (Kuudra.tier == 1 || Kuudra.tier == 2)) || Kuudra.currentPhase == 1) && config.getConfig().kuudraCategory.phase1.safeSpots) {
             RenderUtils.drawBlockBox(new BlockPos(-86, 77, -129), Color.GREEN, 5, event.partialTicks);
             RenderUtils.drawBlockBox(new BlockPos(-90, 77, -128), Color.GREEN, 5, event.partialTicks);
             RenderUtils.drawBlockBox(new BlockPos(-71, 78, -135), Color.GREEN, 5, event.partialTicks);
@@ -86,7 +83,7 @@ public class Waypoints {
             RenderUtils.drawBlockBox(new BlockPos(-131, 77, -115), Color.GREEN, 5, event.partialTicks);
             RenderUtils.drawBlockBox(new BlockPos(-136, 77, -129), Color.GREEN, 5, event.partialTicks);
         }
-        if (Kuudra.currentPhase == 1 && Main.configFile.safeSpots) {
+        if (Kuudra.currentPhase == 1 && config.getConfig().kuudraCategory.phase1.safeSpots) {
             RenderUtils.drawBlockBox(new BlockPos(-68, 76, -123), Color.GREEN, 5, event.partialTicks);
             RenderUtils.drawBlockBox(new BlockPos(-66, 75, -87), Color.GREEN, 5, event.partialTicks);
             RenderUtils.drawBlockBox(new BlockPos(-111, 75, -69), Color.GREEN, 5, event.partialTicks);
@@ -95,11 +92,7 @@ public class Waypoints {
             RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-66, 75, -87, event.partialTicks);
             RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-111, 75, -69, event.partialTicks);
             RenderUtils.renderWaypointText(EnumChatFormatting.YELLOW + "Start",-135, 76, -139, event.partialTicks);
-
         }
-
-
-
     }
 
 

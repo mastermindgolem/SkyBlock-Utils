@@ -194,7 +194,7 @@ public class MoltenCommand extends CommandBase implements Help {
             if (items == null) continue;
             if (level == 0) {
                 items = items.stream()
-                        .filter(item -> item.attributes.get(attribute) >= configFile.minArmorTier)
+                        .filter(item -> item.attributes.get(attribute) >= config.getConfig().pricingCategory.minArmorTier)
                         .collect(Collectors.toCollection(ArrayList::new));
             } else {
                 items = items.stream()
