@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.events.InventoryChangeEvent;
+import com.golem.skyblockutils.models.Attribute;
 import com.golem.skyblockutils.models.AttributeItem;
 import com.golem.skyblockutils.models.AttributeItemType;
 import com.golem.skyblockutils.utils.InventoryData;
@@ -15,7 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.models.AttributeItemType.*;
 
 public class CombineHelper {
@@ -39,7 +40,7 @@ public class CombineHelper {
                 Slot slot1 = null;
                 for (Map.Entry<Slot, AttributeItem> entry : InventoryData.items.entrySet()) {
                     if (piece == entry.getValue().item_type) {
-                        if (entry.getValue().attributes.getOrDefault(attributes[configFile.combineAttribute], 0) == level) {
+                        if (entry.getValue().attributes.getOrDefault(config.getConfig().auctionCategory.combineHelper.getId(), 0) == level) {
                             if (slot1 == null) {
                                 slot1 = entry.getKey();
                             } else {
@@ -60,12 +61,11 @@ public class CombineHelper {
     @SubscribeEvent
     public void onGuiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
-        if (configFile.combineAttribute == 0) return;
+        if (config.getConfig().auctionCategory.combineHelper == Attribute.NONE) return;
         if (!InventoryData.currentChestName.contains("Attribute Fusion")) return;
 
         for (Slot slot : highlightSlots) {
             RenderUtils.highlight(Color.GREEN, (GuiChest) event.gui, slot);
-//            Gui.drawRect(slot.xDisplayPosition, slot.yDisplayPosition, slot.xDisplayPosition + 16, slot.yDisplayPosition + 16, 0x11FCF3);
         }
     }
 }

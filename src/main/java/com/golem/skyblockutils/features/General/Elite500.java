@@ -12,13 +12,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.golem.skyblockutils.Main.config;
+
 public class Elite500 {
 
     public static List<String> elite500 = new ArrayList<>();
 
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent event) {
-        if (Main.mc.thePlayer == null || Main.mc.theWorld == null || !Main.configFile.showElite500) return;
+        if (Main.mc.thePlayer == null || Main.mc.theWorld == null || !config.getConfig().generalCategory.elite500) return;
         IChatComponent chatComponent = event.message;
         if (event.type == 0) {
             String startsWith = null;

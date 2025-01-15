@@ -1,21 +1,20 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.KuudraFight.Kuudra;
+import com.golem.skyblockutils.configs.OverlayCategory;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.text.DecimalFormat;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.Main.mc;
 
 public class ReaperOverlay {
@@ -48,7 +47,7 @@ public class ReaperOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui && (configFile.reaperTimer == 1 || (configFile.reaperTimer == 2 && Kuudra.currentPhase > 0) || (configFile.reaperTimer == 3 && Kuudra.currentPhase == 4))) {
+        if (OverlayCategory.isOverlayOn(config.getConfig().overlayCategory.reaperConfig.reaperOverlay)) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);

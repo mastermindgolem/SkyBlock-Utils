@@ -1,7 +1,9 @@
 package com.golem.skyblockutils.command.commands;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.configs.kuudra.PartyFinderConfig;
 import com.golem.skyblockutils.features.GuiEvent;
+import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.RequestUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.Main.mc;
 
 public class StatCommand extends CommandBase implements Help {
@@ -194,16 +197,16 @@ public class StatCommand extends CommandBase implements Help {
 		DecimalFormat formatter2 = new DecimalFormat("#,###.####");
 
 
-		addChatMessage(EnumChatFormatting.RED + "------------------");
+		ChatUtils.addChatMessage(EnumChatFormatting.RED + "------------------");
 		if (data.get("Expert Plus").getAsBoolean()) {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]", "/pv " + ign);
+			ChatUtils.addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert Plus]", "/pv " + ign);
 		} else if (data.get("Expert").getAsBoolean()) {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]", "/pv " + ign);
+			ChatUtils.addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign + EnumChatFormatting.DARK_GREEN + " [Expert]", "/pv " + ign);
 		} else {
-			addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign, "/pv " + ign);
+			ChatUtils.addChatMessage(EnumChatFormatting.AQUA + "Kuudra Stats for " + ign, "/pv " + ign);
 		}
-		addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
-		addChatMessage(EnumChatFormatting.GREEN + "Magical Power: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
+		ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Kuudra Level: " + EnumChatFormatting.YELLOW + data.get("Kuudra Level").getAsInt());
+		ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Magical Power: " + EnumChatFormatting.YELLOW + formatter.format(data.get("Magical Power").getAsInt()));
 
 		if (!GuiEvent.kuudraLevel.containsKey(ign) || (GuiEvent.kuudraLevel.containsKey(ign) && Main.time.getCurrentMS() - GuiEvent.kuudraLevel.getOrDefault(ign, new long[]{0L, 0L})[1] > 900)) {
 			GuiEvent.kuudraLevel.put(ign, new long[]{data.get("Kuudra Level").getAsInt(), Main.time.getCurrentMS()});
@@ -263,14 +266,14 @@ public class StatCommand extends CommandBase implements Help {
 		for (JsonElement equipment : data.get("Equipment").getAsJsonArray()) displayItem(equipment.getAsJsonObject());
 
 		if (data.get("Dominance").getAsInt() > data.get("Lifeline").getAsInt()) {
-			addChatMessage(EnumChatFormatting.GREEN + "Dominance: " + EnumChatFormatting.YELLOW + data.get("Dominance").getAsInt());
+			ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Dominance: " + EnumChatFormatting.YELLOW + data.get("Dominance").getAsInt());
 		} else {
-			addChatMessage(EnumChatFormatting.GREEN + "Lifeline: " + EnumChatFormatting.YELLOW + data.get("Lifeline").getAsInt());
+			ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Lifeline: " + EnumChatFormatting.YELLOW + data.get("Lifeline").getAsInt());
 		}
 
 		displayItem(data.get("Support Item").getAsJsonObject());
 
-		if (!data.get("InventoryAPI").getAsBoolean()) addChatMessage(EnumChatFormatting.RED + "This player has their inventory API disabled.");
+		if (!data.get("InventoryAPI").getAsBoolean()) ChatUtils.addChatMessage(EnumChatFormatting.RED + "This player has their inventory API disabled.");
 
 		msg = new ChatComponentText(
 			EnumChatFormatting.AQUA + "General Information: " + EnumChatFormatting.GRAY + "(Hover)"
@@ -284,85 +287,75 @@ public class StatCommand extends CommandBase implements Help {
 			))));
 		Main.mc.thePlayer.addChatMessage(msg);
 
-		addChatMessage(EnumChatFormatting.RED + "------------------");
+		ChatUtils.addChatMessage(EnumChatFormatting.RED + "------------------");
+
+		boolean meetsReqs = true;
 
 		if (partyFinder) {
-
-			if (Main.configFile.autoKick && data.get("Kuudra Level").getAsInt() < ParseInt(Main.configFile.minKuudraLevel)) {
-				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Kuudra Level");
-				mc.thePlayer.sendChatMessage("/party kick " + ign);
-				return;
+			if (data.get("Kuudra Level").getAsInt() < getConfig().minKuudraLevel) {
+				ChatUtils.addChatMessage(EnumChatFormatting.RED + "Player does not meet Kuudra Level requirement.");
+				meetsReqs = false;
 			}
-			if (Main.configFile.autoKick && data.get("Magical Power").getAsInt() < ParseInt(Main.configFile.minMagicalPower)) {
-				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Magical Power");
-				mc.thePlayer.sendChatMessage("/party kick " + ign);
-				return;
-			}
-			int comps = data.get("Basic Comps").getAsInt();
-			switch (Main.configFile.minCompsTier) {
-				case 1:
-					comps = data.get("Hot Comps").getAsInt();
-					break;
-				case 2:
-					comps = data.get("Burning Comps").getAsInt();
-					break;
-				case 3:
-					comps = data.get("Fiery Comps").getAsInt();
-					break;
-				case 4:
-					comps = data.get("Infernal Comps").getAsInt();
-					break;
+			if (data.get("Magical Power").getAsInt() < getConfig().minMagicalPower) {
+				ChatUtils.addChatMessage(EnumChatFormatting.RED + "Player does not meet Magical Power requirement.");
+				meetsReqs = false;
 			}
 
-			if (Main.configFile.autoKick && comps < ParseInt(Main.configFile.minComps)) {
-				addChatMessage(EnumChatFormatting.RED + "Kicking player for low Completions");
-				mc.thePlayer.sendChatMessage("/party kick " + ign);
-				return;
+			int comps = data.get(getConfig().minRunsTier.toString() + " Comps").getAsInt();
+
+			if (comps < getConfig().minRuns) {
+				ChatUtils.addChatMessage(EnumChatFormatting.RED + "Player does not meet minimum runs requirement.");
+				meetsReqs = false;
 			}
 
-			if (Main.configFile.autoKick && (!data.get("InventoryAPI").getAsBoolean() || !Main.configFile.kickAPIoff)) {
-				if (data.get("Dominance").getAsInt() < Main.configFile.minDomLevel) {
-					addChatMessage(EnumChatFormatting.RED + "Kicking player for low Dominance Levels");
-					mc.thePlayer.sendChatMessage("/party kick " + ign);
-					return;
+			if (!data.get("InventoryAPI").getAsBoolean() && getConfig().kickAPIOffPlayers) {
+				ChatUtils.addChatMessage(EnumChatFormatting.RED + "Player has API off.");
+				meetsReqs = false;
+			}
+
+			if (!data.get("InventoryAPI").getAsBoolean() && !getConfig().autoKickPlayers) {
+				if (!meetsReqs) mc.thePlayer.sendChatMessage("/party kick " + ign);
+			}
+
+
+			if (data.get("Damage Buff").getAsInt() < getConfig().minDamageBuff) {
+				ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low Damage Buff %");
+				meetsReqs = false;
+			}
+
+			if (getConfig().minRCMTier != PartyFinderConfig.KuudraTier.NONE) {
+				if (!data.get("RCM Chestplate").getAsJsonObject().has("stars") || data.get("RCM Chestplate").getAsJsonObject().get("stars").getAsInt() < getConfig().minRCMTier.getStars()) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low RCM Tier (Chestplate)");
+					meetsReqs = false;
 				}
-
-				if (Main.configFile.minAuroraTier > 0) {
-					if (Main.configFile.autoKick && (!data.get("Aurora Chestplate").getAsJsonObject().has("stars") || data.get("Aurora Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier)) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
-						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						return;
-					}
-					if (Main.configFile.autoKick && (!data.get("Aurora Leggings").getAsJsonObject().has("stars") || data.get("Aurora Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier)) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
-						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						return;
-					}
-					if (Main.configFile.autoKick && (!data.get("Aurora Boots").getAsJsonObject().has("stars") || data.get("Aurora Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minAuroraTier)) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Aurora Tier");
-						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						return;
-					}
+				if (!data.get("RCM Leggings").getAsJsonObject().has("stars") || data.get("RCM Leggings").getAsJsonObject().get("stars").getAsInt() < getConfig().minRCMTier.getStars()) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low RCM Tier (Chestplate)");
+					meetsReqs = false;
 				}
-				if (Main.configFile.minTerrorTier > 0) {
-					if (Main.configFile.autoKick && (!data.get("Terror Chestplate").getAsJsonObject().has("stars") || data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier)) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
-						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						return;
-					}
-					if (Main.configFile.autoKick && (!data.get("Terror Leggings").getAsJsonObject().has("stars") || data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier)) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
-						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						return;
-					}
-					if (Main.configFile.autoKick && (!data.get("Terror Boots").getAsJsonObject().has("stars") || data.get("Terror Boots").getAsJsonObject().get("stars").getAsInt() < 10 * Main.configFile.minTerrorTier)) {
-						addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier");
-						mc.thePlayer.sendChatMessage("/party kick " + ign);
-						return;
-					}
+				if (!data.get("RCM Boots").getAsJsonObject().has("stars") || data.get("RCM Boots").getAsJsonObject().get("stars").getAsInt() < getConfig().minRCMTier.getStars()) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low RCM Tier (Boots)");
+					meetsReqs = false;
 				}
 			}
 
+			if (getConfig().minTerrorTier != PartyFinderConfig.KuudraTier.NONE) {
+				if (!data.get("Terror Chestplate").getAsJsonObject().has("stars") || data.get("Terror Chestplate").getAsJsonObject().get("stars").getAsInt() < getConfig().minTerrorTier.getStars()) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier (Chestplate)");
+					meetsReqs = false;
+				}
+				if (!data.get("Terror Leggings").getAsJsonObject().has("stars") || data.get("Terror Leggings").getAsJsonObject().get("stars").getAsInt() < getConfig().minTerrorTier.getStars()) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier (Chestplate)");
+					meetsReqs = false;
+				}
+				if (!data.get("Terror Boots").getAsJsonObject().has("stars") || data.get("Terror Boots").getAsJsonObject().get("stars").getAsInt() < getConfig().minTerrorTier.getStars()) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Kicking player for low Terror Tier (Boots)");
+					meetsReqs = false;
+				}
+			}
+
+			if (getConfig().autoKickPlayers && !meetsReqs) {
+				mc.thePlayer.sendChatMessage("/party kick " + ign);
+			}
 
 			mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_RED + "[Kick Player]").setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party kick " + ign))));
 		}
@@ -400,16 +393,11 @@ public class StatCommand extends CommandBase implements Help {
 		}).start();
 	}
 
-	private static int ParseInt(String s) {
-		try {
-			return Integer.parseInt(s);
-		} catch (Exception ignored) {return 0;}
-	}
-	public static void addChatMessage(String string) {
-		mc.thePlayer.addChatMessage(new ChatComponentText(string));
-	}
 	public static void addChatMessage(String string, String command) {
-		IChatComponent msg = new ChatComponentText(string).setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
-		mc.thePlayer.addChatMessage(msg);
+		ChatUtils.addChatMessage(string, new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+	}
+
+	public static PartyFinderConfig getConfig() {
+		return config.getConfig().kuudraCategory.partyFinder;
 	}
 }

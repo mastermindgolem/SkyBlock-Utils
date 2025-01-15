@@ -24,8 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class ChestAnalyzer {
 
@@ -85,7 +84,7 @@ public class ChestAnalyzer {
     public void onInventoryChange(InventoryChangeEvent event) {
         if (lastOpenedChest == null) return;
         if (!(event.event.gui instanceof GuiChest)) return;
-        if (!analyzeChests && !configFile.sortingHelper) return;
+        if (!analyzeChests && !config.getConfig().auctionCategory.sortingHelper) return;
 
         GuiChest gui = (GuiChest) event.event.gui;
         Container container = gui.inventorySlots;
@@ -106,7 +105,7 @@ public class ChestAnalyzer {
 
         if (!Objects.equals(InventoryData.currentChestName, "Large Chest") && !Objects.equals(InventoryData.currentChestName, "Small Chest")) return;
 
-        if (configFile.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) {
+        if (config.getConfig().auctionCategory.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) {
             SellingHelper.addChest(lastOpenedChest, chestInventory);
         }
     }

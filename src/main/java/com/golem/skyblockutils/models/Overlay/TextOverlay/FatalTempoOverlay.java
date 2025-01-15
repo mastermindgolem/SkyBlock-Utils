@@ -1,8 +1,9 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.KuudraFight.Kuudra;
-import com.golem.skyblockutils.models.gui.*;
+import com.golem.skyblockutils.configs.OverlayCategory;
+import com.golem.skyblockutils.models.gui.GuiElement;
+import com.golem.skyblockutils.models.gui.MoveGui;
 import com.golem.skyblockutils.utils.TimeHelper;
 import com.golem.skyblockutils.utils.rendering.RenderableString;
 import net.minecraft.item.ItemStack;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.Main.mc;
 
 public class FatalTempoOverlay {
@@ -48,7 +49,7 @@ public class FatalTempoOverlay {
     public void onRenderOverlay(RenderGameOverlayEvent event) {
         if (event.type != RenderGameOverlayEvent.ElementType.TEXT) return;
 
-        if (configFile.testGui && (configFile.ftOverlay == 1 || (configFile.ftOverlay == 2 && Kuudra.currentPhase > 0) || (configFile.ftOverlay == 3 && Kuudra.currentPhase == 4))) {
+        if (OverlayCategory.isOverlayOn(config.getConfig().overlayCategory.fatalTempoConfig.fataltempoOverlay)) {
             int percent = (int) hits.stream().filter(hit -> time.getCurrentMS() - hit < 3000).count() * level * 10;
             percent = Math.min(200, percent);
 

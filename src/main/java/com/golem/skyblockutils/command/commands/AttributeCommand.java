@@ -1,8 +1,6 @@
 package com.golem.skyblockutils.command.commands;
 
 import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.ChestDataGui;
-import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.*;
 import com.golem.skyblockutils.utils.AttributeUtils;
 import com.golem.skyblockutils.utils.ChatUtils;
@@ -15,10 +13,10 @@ import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.models.AttributeItemType.*;
@@ -208,16 +206,14 @@ public class AttributeCommand extends CommandBase implements Help {
 	public void getAttributePrice(String attribute, AttributeItemType[] keys, int level) {
 		for (AttributeItemType key : keys) {
 			if (!AttributePrices.get(key).containsKey(attribute)) continue;
-			ArrayList<AuctionAttributeItem> items = AttributePrices.get(key).get(attribute);
+			List<AuctionAttributeItem> items = AttributePrices.get(key).get(attribute);
 			if (items == null) continue;
 			if (level == 0) {
-				items.removeIf(item -> item.attributes.get(attribute) < (key.equals(Shard) ? configFile.minShardTier : configFile.minArmorTier));
+				items.stream().filter(item -> item.attributes.get(attribute) >= (key.equals(Shard) ? config.getConfig().pricingCategory.minShardTier : config.getConfig().pricingCategory.minArmorTier)).sorted(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attribute).price_per)).collect(Collectors.toList());
 			} else {
-				items.removeIf(item -> item.attributes.get(attribute) != level);
+				items = items.stream().filter(item -> item.attributes.get(attribute) == level).sorted(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attribute).price_per)).collect(Collectors.toList());
 			}
 
-
-			items.sort(Comparator.comparingDouble((AuctionAttributeItem o) -> o.attributeInfo.get(attribute).price_per));
 			ChatUtils.addChatMessage(EnumChatFormatting.AQUA + ToolTipListener.TitleCase(key.getDisplay()), firstMessageID + messagesSent++);
 			if (items.size() < 5) {
 				for (AuctionAttributeItem item: items) {

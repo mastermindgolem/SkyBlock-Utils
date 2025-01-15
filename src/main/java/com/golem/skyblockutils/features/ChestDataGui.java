@@ -112,6 +112,7 @@ public class ChestDataGui extends GuiScreen {
                 if (simplifyItems.isChecked()) {
                     if (Arrays.asList("LBIN", "GR", "SAL").contains(valueData.top_display)) {
                         displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
+                        displayStrings.get(displayString).display_no_name = displayString;
                     } else {
                         int tier = valueData.display_string.contains("Shard") ? 4 : 5;
                         String display = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier + " " + valueData.display_name;

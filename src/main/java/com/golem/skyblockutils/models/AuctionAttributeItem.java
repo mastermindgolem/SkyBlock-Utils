@@ -7,7 +7,7 @@ import java.util.HashMap;
 public class AuctionAttributeItem extends AttributeItem {
     public Long price;
     public String viewauctionID;
-    public HashMap<String, Attribute> attributeInfo = new HashMap<>();
+    public HashMap<String, AttributeInfo> attributeInfo = new HashMap<>();
     public String tier;
 
     public AuctionAttributeItem(JsonObject auction_data) {
@@ -19,8 +19,8 @@ public class AuctionAttributeItem extends AttributeItem {
         this.tier = auction_data.get("tier").getAsString();
     }
 
-    public Attribute addAttribute(String attribute) {
-        attributeInfo.put(attribute, new Attribute(attribute, attributes.get(attribute), price));
+    public AttributeInfo addAttribute(String attribute) {
+        attributeInfo.put(attribute, new AttributeInfo(attribute, attributes.get(attribute), price));
         return attributeInfo.get(attribute);
     }
 
