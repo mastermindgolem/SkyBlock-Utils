@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class SellingHelper {
 
@@ -43,9 +42,9 @@ public class SellingHelper {
         highlightChests.clear();
         if (event.event.gui instanceof GuiContainer) {
             if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
-            if (configFile.highlightSellMethod) highlightSellMethod();
+            if (config.getConfig().auctionCategory.highlightSellMethod) highlightSellMethod();
             if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
-            if (configFile.sortingHelper) {
+            if (config.getConfig().auctionCategory.sortingHelper) {
                 checkForSimilarItems();
                 addChestsToHighlight();
             }
@@ -145,7 +144,7 @@ public class SellingHelper {
     @SubscribeEvent
     public void onTick(RenderWorldLastEvent event) {
         if (mc.theWorld == null || mc.thePlayer == null) return;
-        if (!configFile.sortingHelper) return;
+        if (!config.getConfig().auctionCategory.sortingHelper) return;
 //        if (!ButtonManager.isChecked("sortingHelper")) return;
         if (!Objects.equals(LocationUtils.getLocation(), "dynamic")) return;
 
@@ -190,7 +189,7 @@ public class SellingHelper {
         if (!(event.gui instanceof GuiChest)) return;
         if (InventoryData.currentChestName.contains("Paid Chest") || InventoryData.currentChestName.contains("Free Chest")) return;
         GuiChest gui = (GuiChest) event.gui;
-        if (configFile.highlightSellMethod) {
+        if (config.getConfig().auctionCategory.highlightSellMethod) {
             highlightSlots.forEach((slot, method) -> {
                 switch (method) {
                     case SALVAGE:
@@ -205,7 +204,7 @@ public class SellingHelper {
                 }
             });
         }
-        if (configFile.sortingHelper) {
+        if (config.getConfig().auctionCategory.sortingHelper) {
             highlightInvSlots.forEach(o -> RenderUtils.highlight(new Color(0, 255, 255, 127), gui, o));
         }
     }

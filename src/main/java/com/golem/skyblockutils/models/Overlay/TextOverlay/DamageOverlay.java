@@ -1,6 +1,8 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.configs.OverlayCategory;
+import com.golem.skyblockutils.configs.overlays.DamageBonusConfig;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.models.gui.MoveGui;
@@ -10,8 +12,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 
 public class DamageOverlay {
 
@@ -31,16 +32,16 @@ public class DamageOverlay {
     }
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || configFile.damageOverlay == 0) return;
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || config.getConfig().overlayCategory.damageBonusConfig.damageOverlay == OverlayCategory.OverlayOption.OFF) return;
 
         display.setPosition(element.position.getX(), element.position.getY());
         display.setScale(element.position.getScale());
 
-        if (configFile.testGui && Kuudra.currentPhase == 4) {
-            if (configFile.damageOverlay == 1) {
+        if (Kuudra.currentPhase == 4) {
+            if (config.getConfig().overlayCategory.damageBonusConfig.damageAttribute == DamageBonusConfig.DamageAttribute.DOMINANCE) {
                 display.setText(EnumChatFormatting.YELLOW + "Dominance: " + (hp >= 36 ? EnumChatFormatting.GREEN + "ACTIVE" : EnumChatFormatting.RED + "INACTIVE"));
             }
-            if (configFile.damageOverlay == 2) {
+            if (config.getConfig().overlayCategory.damageBonusConfig.damageAttribute == DamageBonusConfig.DamageAttribute.LIFELINE) {
                 display.setText(EnumChatFormatting.YELLOW + "Lifeline: " + (hp <= 8 ? EnumChatFormatting.GREEN + "ACTIVE" : EnumChatFormatting.RED + "INACTIVE"));
             }
 
@@ -49,11 +50,11 @@ public class DamageOverlay {
         }
         else if (mc.currentScreen instanceof MoveGui) {
             int max = 0;
-            if (configFile.damageOverlay == 1) {
+            if (config.getConfig().overlayCategory.damageBonusConfig.damageAttribute == DamageBonusConfig.DamageAttribute.DOMINANCE) {
                 display.setText(EnumChatFormatting.YELLOW + "Dominance: " + (hp >= 36 ? EnumChatFormatting.GREEN + "ACTIVE" : EnumChatFormatting.RED + "INACTIVE"));
                 max = renderWidth(display.getText());
             }
-            if (configFile.damageOverlay == 2) {
+            if (config.getConfig().overlayCategory.damageBonusConfig.damageAttribute == DamageBonusConfig.DamageAttribute.LIFELINE) {
                 display.setText(EnumChatFormatting.YELLOW + "Lifeline: " + (hp <= 8 ? EnumChatFormatting.GREEN + "ACTIVE" : EnumChatFormatting.RED + "INACTIVE"));
                 max = renderWidth(display.getText());
             }

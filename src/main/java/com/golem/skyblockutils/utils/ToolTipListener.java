@@ -8,13 +8,9 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 
 public class ToolTipListener {
-	private long comboprice = -1;
-	private String previousItemSearched = "";
-
-	private String[] previousAttributesSearched = new String[0];
 
 	public String getItemId(NBTTagCompound extraAttributes) {
 		String itemId = extraAttributes.getString("id");
@@ -24,7 +20,7 @@ public class ToolTipListener {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onItemToolTipEvent(ItemTooltipEvent event) {
-		if (!configFile.showValueInLore) return;
+		if (!config.getConfig().pricingCategory.showValueInLore) return;
 		ItemStack item = event.itemStack;
 		InventoryData.values.forEach((key, value) -> {
             if (!key.getHasStack()) return;

@@ -27,8 +27,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.coolFormat;
+import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.models.AttributePrice.AttributePrices;
 import static com.golem.skyblockutils.utils.Colors.getRarityCode;
 
@@ -45,8 +44,7 @@ public class AuctionHelper {
         display.clear();
         value = 0;
         if (!(event.event.gui instanceof GuiChest)) return;
-        if (!configFile.auctionHelper) return;
-//        if (!ButtonManager.isChecked("auctionHelper")) return;
+        if (!config.getConfig().auctionCategory.auctionHelper) return;
         if (!Arrays.asList("Create Auction", "Create BIN Auction").contains(InventoryData.currentChestName)) return;
 
         Slot auctionSlot = InventoryData.containerSlots.get(13);
@@ -100,14 +98,8 @@ public class AuctionHelper {
 
     private void setSign(Long price) {
         try {
-            long undercut1 = 0;
-            long undercut2 = 0;
-            if (!Objects.equals(configFile.undercutCoins, "")) {
-                undercut1 = Integer.parseInt(configFile.undercutCoins);
-            }
-            if (!Objects.equals(configFile.undercutPercent, "")) {
-                undercut2 = Integer.parseInt(configFile.undercutPercent) * price / 100;
-            }
+            long undercut1 = config.getConfig().auctionCategory.undercutCoins;
+            long undercut2 = config.getConfig().auctionCategory.undercutPercent * price / 100;
             if (undercut1 != 0 && undercut2 != 0) price -= Math.min(undercut1, undercut2);
             else price -= Math.max(undercut1, undercut2);
         } catch (NumberFormatException ignored) {}
@@ -116,8 +108,7 @@ public class AuctionHelper {
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        if (!configFile.auctionHelper) return;
-//        if (!ButtonManager.isChecked("auctionHelper")) return;
+        if (!config.getConfig().auctionCategory.auctionHelper) return;
         if (!(event.gui instanceof GuiEditSign)) return;
         sign = null;
         if (!Arrays.asList("Create Auction", "Create BIN Auction").contains(InventoryData.lastOpenChestName)) return;
@@ -137,7 +128,7 @@ public class AuctionHelper {
         if (!(event.gui instanceof GuiEditSign)) return;
 
         if (sign == null) return;
-        if (!configFile.auctionHelper) return;
+        if (!config.getConfig().auctionCategory.auctionHelper) return;
 //        if (!ButtonManager.isChecked("auctionHelper")) return;
         if (!(sign.getWorld().getTileEntity(sign.getPos()) instanceof TileEntitySign)) return;
 

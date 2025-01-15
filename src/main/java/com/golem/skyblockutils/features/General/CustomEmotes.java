@@ -8,11 +8,12 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.util.HashMap;
 
+import static com.golem.skyblockutils.Main.config;
+
 @ChannelHandler.Sharable
 public class CustomEmotes extends ChannelOutboundHandlerAdapter {
 
     //Adapted from VolcAddons
-
     private final HashMap<String, String> replacements = new HashMap<String, String>() {{
         put("<3", "❤");
         put(":star:", "✮");
@@ -20,7 +21,7 @@ public class CustomEmotes extends ChannelOutboundHandlerAdapter {
         put(":no:", "✖");
         put(":java:", "☕");
         put(":arrow:", "➜");
-        put(":shrug:", "¯\\_(ツ)_/¯");
+        put(":shrug:", "¯\\\\_(ツ)_/¯");
         put(":tableflip:", "(╯°□°）╯︵ ┻━┻");
         put("o/", "( ﾟ◡ﾟ)/");
         put(":123:", "123");
@@ -50,7 +51,7 @@ public class CustomEmotes extends ChannelOutboundHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
         if (msg instanceof C01PacketChatMessage) {
-            if (Main.configFile.customEmotes) {
+            if (config.getConfig().generalCategory.customEmotes) {
                 String message = ((C01PacketChatMessage) msg).getMessage();
                 if (replacements.keySet().stream().anyMatch(message::contains)) {
                     for (String r : replacements.keySet()) message = message.replaceAll(r, replacements.get(r));

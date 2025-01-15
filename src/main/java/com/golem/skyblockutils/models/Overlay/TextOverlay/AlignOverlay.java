@@ -1,7 +1,6 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
-import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.KuudraFight.Kuudra;
+import com.golem.skyblockutils.configs.OverlayCategory;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,10 +10,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.DecimalFormat;
-import java.util.Objects;
-import java.util.regex.Pattern;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.Main.mc;
 
 public class    AlignOverlay {
@@ -45,7 +42,7 @@ public class    AlignOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui && (configFile.alignTimer == 1 || (configFile.alignTimer == 2 && Kuudra.currentPhase > 0) || (configFile.alignTimer == 3 && Kuudra.currentPhase == 4))) {
+        if (OverlayCategory.isOverlayOn(config.getConfig().overlayCategory.alignConfig.alignOverlay)) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);

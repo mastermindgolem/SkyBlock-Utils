@@ -7,7 +7,7 @@ public class AttributeValueResult {
     public int bottom_display;
     public String display_string;
     public long value;
-    public Attribute best_attribute;
+    public AttributeInfo best_attribute;
     public String display_name;
     public String item_id;
 
