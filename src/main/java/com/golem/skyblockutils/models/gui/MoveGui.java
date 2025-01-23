@@ -1,18 +1,14 @@
 package com.golem.skyblockutils.models.gui;
 
 import com.golem.skyblockutils.PersistentData;
-import com.sun.jna.platform.win32.Guid;
-import logger.Logger;
-import net.minecraft.client.gui.Gui;
+import gg.essential.universal.UResolution;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import gg.essential.universal.UResolution;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static com.golem.skyblockutils.Main.persistentData;
 
@@ -25,6 +21,9 @@ public class MoveGui extends GuiScreen {
 	public MoveGui(GuiElement[] elements) {
 		this.Element = elements;
 	}
+
+
+
 
 
 	@Override
