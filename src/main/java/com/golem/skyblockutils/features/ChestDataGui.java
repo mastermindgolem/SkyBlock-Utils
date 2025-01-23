@@ -112,6 +112,7 @@ public class ChestDataGui extends GuiScreen {
                 if (simplifyItems.isChecked()) {
                     if (Arrays.asList("LBIN", "GR", "SAL").contains(valueData.top_display)) {
                         displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
+                        displayStrings.get(displayString).display_no_name = displayString.split(" ")[0];
                     } else {
                         int tier = valueData.display_string.contains("Shard") ? 4 : 5;
                         String display = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier + " " + valueData.display_name;
@@ -192,34 +193,22 @@ public class ChestDataGui extends GuiScreen {
         for (Map.Entry<String, DisplayString> entry : displayStrings.entrySet()) {
             String s = entry.getKey();
             DisplayString ds = entry.getValue();
-            int amount = (int) ds.quantity;
+            double amount = ds.quantity;
             long value = ds.price;
             if (s.contains("Shard")) {
-                if (simplifyItems.isChecked()) {
-                    shardSB.append(ds.display_no_name.replaceAll("§.", "")).append(" x").append(amount);
-                } else {
-                    shardSB.append(s.replaceAll("§.", "")).append(" x").append(amount);
-                }
+                shardSB.append(s.replaceAll("§.", "")).append(" x").append(df.format(amount));
                 if (withPrices) {
                     shardSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
                 shardSB.append("\n");
             } else if (s.contains("Helmet") || s.contains("Chestplate") || s.contains("Leggings") || s.contains("Boots")) {
-                if (simplifyItems.isChecked()) {
-                    armorSB.append(ds.display_no_name.replaceAll("§.", "")).append(" x").append(amount);
-                } else {
-                    armorSB.append(s.replaceAll("§.", "")).append(" x").append(amount);
-                }
+                armorSB.append(s.replaceAll("§.", "")).append(" x").append(df.format(amount));
                 if (withPrices) {
                     armorSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
                 armorSB.append("\n");
             } else {
-                if (simplifyItems.isChecked()) {
-                    equipSB.append(ds.display_no_name.replaceAll("§.", "")).append(" x").append(amount);
-                } else {
-                    equipSB.append(s.replaceAll("§.", "")).append(" x").append(amount);
-                }
+                equipSB.append(s.replaceAll("§.", "")).append(" x").append(df.format(amount));
                 if (withPrices) {
                     equipSB.append(": ").append(Main.formatNumber(value)).append(" per");
                 }
