@@ -109,7 +109,6 @@ public class SellingHelper {
         if (sim == null) {
             return;
         }
-//        ChatUtils.addUpdatingMessage("Added chest containing " + sim);
         chestFilters.put(sim, chest);
     }
 
