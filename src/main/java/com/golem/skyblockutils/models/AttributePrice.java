@@ -34,6 +34,7 @@ public class AttributePrice {
 	public static List<String> equipmentExcludeAttributes;
 	public static List<String> armorExcludeAttributes;
 	public static List<String> priorityAttributes;
+	public final static Set<String> weaponAttributes = new HashSet<>(Arrays.asList(new String[]{"arachno", "attack speed", "blazing", "combo", "elite", "ender", "ignition", "life_recovery", "mana_steal", "midas_touch", "undead", "warrior", "deadeye"}));
 	public static Set<String> expensiveAttributes = new HashSet<>();
 
 
@@ -203,6 +204,7 @@ public class AttributePrice {
 		long value;
 
 		for (String attr_key : item.attributes.keySet()) {
+			if (configFile.excludeWeaponAttributes && weaponAttributes.contains(attr_key)) continue;
 			int attr_tier = item.attributes.get(attr_key);
 			if (!configFile.valueHighTierItems && attr_tier >= 7) return null;
 			total_tiers += 1 << (attr_tier - 1);

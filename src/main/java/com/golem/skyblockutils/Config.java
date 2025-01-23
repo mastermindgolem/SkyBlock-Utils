@@ -95,6 +95,9 @@ public class Config extends Vigilant
 	@Property(type = PropertyType.TEXT, name = "Excluded Attributes (Equipment)", description = "Attributes here will not be valued in any circumstance for equipment.", category = "General", subcategory = "Kuudra Pricing")
 	public String attributesToExcludeEquip = "experience, arachno_resistance, blazing_resistance, undead_resistance, life_regeneration, ender_resistance";
 
+	@Property(type = PropertyType.SWITCH, name = "Exclude Weapon Attributes on Shards", description = "Excludes weapon attributes on shards from being valued.", category = "General", subcategory = "Kuudra Pricing")
+	public boolean excludeWeaponAttributes = false;
+
 	@Property(type = PropertyType.SWITCH, name = "Show Player Info", description = "Gives a summary on players joining kuudra parties.", category = "General", subcategory = "Party Finder")
 	public boolean showKuudraPlayerInfo = false;
 
