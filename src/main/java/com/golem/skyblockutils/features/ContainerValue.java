@@ -23,8 +23,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.mc;
 
 public class ContainerValue {
 	List<Renderable> renderStrings = new ArrayList<>();
@@ -58,7 +60,7 @@ public class ContainerValue {
 				guiTop = ac.getGuiTop();
 			}
 
-			for (Slot slot : InventoryData.containerSlots.subList(0, InventoryData.containerSlots.size() - 36)) {
+			for (Slot slot : InventoryData.containerSlots.stream().filter(slot -> slot.inventory != mc.thePlayer.inventory).collect(Collectors.toList())) {
 				AttributeValueResult value = InventoryData.values.get(slot);
 				if (value == null) continue;
 				String displayString = value.display_string;
