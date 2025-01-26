@@ -191,7 +191,7 @@ public class ContainerValue {
 		return sortedMap;
 	}
 
-	private static int ItemType(String entry) {
+	static int ItemType(String entry) {
 		if (entry.contains("Helmet")) return 0;
 		if (entry.contains("Chestplate")) return 1;
 		if (entry.contains("Leggings")) return 2;

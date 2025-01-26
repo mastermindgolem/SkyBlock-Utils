@@ -3,7 +3,9 @@ package com.golem.skyblockutils.features;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.AttributeValueResult;
-import com.golem.skyblockutils.models.DisplayString;
+import com.golem.skyblockutils.utils.rendering.Renderable;
+import com.golem.skyblockutils.utils.rendering.RenderableString;
+import lombok.Getter;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.init.Blocks;
@@ -15,6 +17,9 @@ import net.minecraftforge.fml.client.config.GuiCheckBox;
 
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.features.ContainerValue.ItemType;
 
 public class ChestDataGui extends GuiScreen {
 
@@ -33,6 +38,7 @@ public class ChestDataGui extends GuiScreen {
     private GuiButton exit;
     LinkedHashMap<String, DisplayString> displayStrings = new LinkedHashMap<>();
     DecimalFormat df;
+    List<Renderable> renderables = new ArrayList<>();
 
     @Override
     public void initGui() {
@@ -77,15 +83,21 @@ public class ChestDataGui extends GuiScreen {
         this.drawString(this.fontRendererObj, EnumChatFormatting.BLUE + "Price Per", 3 * this.width / 5, 50, 0xffffffff);
         this.drawString(this.fontRendererObj, EnumChatFormatting.BLUE + "Value", 4 * this.width / 5, 50, 0xffffffff);
 
+        renderables.clear();
+
         for (String displayString : displayStrings.keySet()) {
             double amount = displayStrings.get(displayString).quantity;
             long value = displayStrings.get(displayString).price;
-            this.drawString(this.fontRendererObj, displayString, xSize, guiTop + 10 * counter, 0xffffffff);
+
+            renderables.add(new RenderableString(displayString, xSize, guiTop + 10 * counter));
+
             this.drawString(this.fontRendererObj, df.format(amount), 2 * xSize, guiTop + 10 * counter, 0xffffffff);
             this.drawString(this.fontRendererObj, Main.formatNumber(value), 3 * xSize, guiTop + 10 * counter, 0xffffffff);
             this.drawString(this.fontRendererObj, Main.formatNumber(value * amount), 4 * xSize, guiTop + 10 * counter, 0xffffffff);
             counter++;
         }
+
+        renderables.forEach(r -> r.render(mouseX, mouseY));
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -109,32 +121,35 @@ public class ChestDataGui extends GuiScreen {
                 } else {
                     if (!showEquipment.isChecked()) continue;
                 }
-                if (simplifyItems.isChecked()) {
-                    if (Arrays.asList("LBIN", "GR", "SAL").contains(valueData.top_display)) {
-                        displayStrings.put(displayString, new DisplayString(displayStrings.getOrDefault(displayString, new DisplayString(0, 0)).quantity + 1, valueData.value));
-                        displayStrings.get(displayString).display_no_name = displayString.split(" ")[0];
-                    } else {
-                        int tier = valueData.display_string.contains("Shard") ? 4 : 5;
-                        String display = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier + " " + valueData.display_name;
-                        if (displayStrings.get(display) == null) {
-                            if (tier > valueData.best_attribute.tier) {
-                                displayStrings.put(display, new DisplayString(0, valueData.value << (tier - valueData.best_attribute.tier)));
-                            } else {
-                                displayStrings.put(display, new DisplayString(0, valueData.value >> (valueData.best_attribute.tier - tier)));
-                            }
-                        }
-                        displayStrings.get(display).display_no_name = AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute) + " " + tier;
-                        displayStrings.get(display).quantity += (double) (1 << valueData.best_attribute.tier) / (1 << tier);
-                    }
+
+                DisplayString ds = new DisplayString(1, valueData.value).setDisplay(displayString).setDisplayNameOnly(valueData.display_name);
+                if (Arrays.asList("LBIN", "GR", "SAL").contains(valueData.top_display)) {
+                    ds.setAttributeDisplay(valueData.top_display);
+                    ds.setTier(0);
+                    ds.setSimplifiedDisplay(ds.getAttributeDisplay() + " " + ds.getDisplayNameOnly());
                 } else {
-                    if (displayStrings.get(displayString) == null) {
-                        displayStrings.put(displayString, new DisplayString(0, valueData.value));
+                    int tier = valueData.display_string.contains("Shard") ? 4 : 5;
+                    ds.setAttributeDisplay(AttributePrice.ShortenedAttribute(valueData.best_attribute.attribute));
+                    ds.setTier(valueData.best_attribute.tier);
+                    if (valueData.best_attribute.attribute.isEmpty()) {
+                        ds.setAttributeDisplay(valueData.top_display);
+                        ds.setTier(valueData.bottom_display);
                     }
-                    displayStrings.get(displayString).quantity++;
+                    ds.setSimplifiedDisplay(ds.getAttributeDisplay() + " " + tier + " " + ds.getDisplayNameOnly());
+                }
+
+                if (simplifyItems.isChecked()) {
+                    ds.simplify();
+                }
+
+                if (displayStrings.get(ds.display) == null) {
+                    displayStrings.put(ds.display, ds);
+                } else {
+                    displayStrings.get(ds.display).quantity += ds.quantity;
                 }
             }
         }
-        displayStrings = ContainerValue.sort(displayStrings);
+        displayStrings = sort(displayStrings);
     }
 
     private void flipCheckBoxes(GuiCheckBox btn) {
@@ -281,4 +296,127 @@ public class ChestDataGui extends GuiScreen {
         return sortedMap;
     }
 
+    private class DisplayString {
+        @Getter
+        String display;
+        String simplified_display;
+        double quantity;
+        long price;
+        String attribute_display;
+        @Getter
+        int tier;
+        String display_name_only;
+
+        public DisplayString(double quantity, long price) {
+            this.quantity = quantity;
+            this.price = price;
+        }
+
+        public String getSimplifiedDisplay() {
+            return simplified_display;
+        }
+
+        public String getAttributeDisplay() {
+            return attribute_display;
+        }
+
+        public String getDisplayNameOnly() {
+            return display_name_only;
+        }
+
+        public DisplayString setDisplay(String display) {
+            this.display = display;
+            return this;
+        }
+
+        public DisplayString setSimplifiedDisplay(String simplified_display) {
+            this.simplified_display = simplified_display;
+            return this;
+        }
+
+        public DisplayString setAttributeDisplay(String attribute_display) {
+            this.attribute_display = attribute_display;
+            return this;
+        }
+
+        public DisplayString setTier(int tier) {
+            this.tier = tier;
+            return this;
+        }
+
+        public DisplayString setDisplayNameOnly(String display_name_only) {
+            this.display_name_only = display_name_only;
+            return this;
+        }
+
+        public void simplify() {
+            if (simplified_display != null) {
+                display = simplified_display;
+            }
+            if (tier != 0) {
+                int t = (display.contains("Shard") ? 4 : 5);
+                quantity *= (double) (1 << tier) / (1 << t);
+                if (t > tier) {
+                    price <<= (t - tier);
+                } else {
+                    price >>= (tier - t);
+                }
+                tier = t;
+            }
+        }
+    }
+
+
+    private static LinkedHashMap<String, DisplayString> sort(LinkedHashMap<String, DisplayString> map) {
+        // Convert the LinkedHashMap to a list of Map.Entry objects
+        List<Map.Entry<String, DisplayString>> list = new ArrayList<>(map.entrySet());
+
+        // Define a custom comparator to compare values in descending order
+        Comparator<Map.Entry<String, DisplayString>> valueComparator;
+        switch (configFile.containerSorting) {
+            case 0:
+                valueComparator = (entry1, entry2) -> {
+                    long product1 = (long) (entry1.getValue().quantity * entry1.getValue().price);
+                    long product2 = (long) (entry2.getValue().quantity * entry2.getValue().price);
+                    return Long.compare(product2, product1); // Sorting in descending order
+                };
+                list.sort(valueComparator);
+                break;
+            case 1:
+                valueComparator = (entry1, entry2) -> {
+                    long product1 = (long) (entry1.getValue().quantity * entry1.getValue().price);
+                    long product2 = (long) (entry2.getValue().quantity * entry2.getValue().price);
+                    return Long.compare(product1, product2); // Sorting in ascending order
+                };
+                list.sort(valueComparator);
+                break;
+            case 2:
+                valueComparator = Map.Entry.comparingByKey();
+                list.sort(valueComparator);
+                break;
+            case 3:
+                valueComparator = (entry1, entry2) -> {
+                    int tier1 = entry1.getKey().split(" ")[1].matches("\\d+") ? Integer.parseInt(entry1.getKey().split(" ")[1]) : 0;
+                    int tier2 = entry2.getKey().split(" ")[1].matches("\\d+") ? Integer.parseInt(entry2.getKey().split(" ")[1]) : 0;
+                    return Integer.compare(tier2, tier1);
+                };
+                list.sort(valueComparator);
+                break;
+            case 4:
+                valueComparator = Comparator.comparingInt(entry -> ItemType(entry.getKey()));
+                list.sort(valueComparator);
+                break;
+
+        }
+
+        // Create a new LinkedHashMap to hold the sorted entries
+        LinkedHashMap<String, DisplayString> sortedMap = new LinkedHashMap<>();
+
+        // Populate the new LinkedHashMap with sorted entries
+        for (Map.Entry<String, DisplayString> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedMap;
+    }
 }
