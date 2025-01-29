@@ -7,8 +7,10 @@ import com.golem.skyblockutils.command.HelpInvocation;
 import com.golem.skyblockutils.features.Bestiary.Bestiary;
 import com.golem.skyblockutils.features.Bestiary.Mob;
 import com.golem.skyblockutils.models.AttributePrice;
+import com.golem.skyblockutils.models.CustomItem;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.SplitsOverlay;
 import com.golem.skyblockutils.utils.AuctionHouse;
+import com.golem.skyblockutils.utils.ChatUtils;
 import com.golem.skyblockutils.utils.RequestUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -18,10 +20,18 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.event.HoverEvent;
-import net.minecraft.util.*;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import static com.golem.skyblockutils.Main.*;
 
@@ -171,6 +181,106 @@ public class SbuCommand extends CommandBase {
 
 				}
 			}
+
+			if (args[0].equals("rename")) {
+				ItemStack item = mc.thePlayer.getHeldItem();
+				if (item == null) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to rename it.", true);
+					return;
+				}
+				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+				if (!extraAttribute.hasKey("uuid")) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be renamed.", true);
+					return;
+				}
+				String uuid = extraAttribute.getString("uuid");
+				String newName = "§r" + args[1].replaceAll("&", "§");
+				if (newName.equals("§rnull")) {
+					CustomItem customItem = customItems.get(uuid);
+					if (customItem != null) customItem.newName = "";
+					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item name reset", true);
+					PersistentData.saveCustomItems();
+					return;
+				}
+				CustomItem customItem = customItems.get(uuid);
+				if (customItem != null) {
+					customItem.newName = newName;
+                } else {
+					CustomItem newCustomItem = new CustomItem();
+					newCustomItem.newName = newName;
+					customItems.put(uuid, newCustomItem);
+                }
+                PersistentData.saveCustomItems();
+                ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item renamed to " + newName, true);
+            }
+			if (args[0].equals("retexture")) {
+				ItemStack item = mc.thePlayer.getHeldItem();
+				if (item == null) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to retexture it.", true);
+					return;
+				}
+				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+				if (!extraAttribute.hasKey("uuid")) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be renamed.", true);
+					return;
+				}
+				String uuid = extraAttribute.getString("uuid");
+				String newItem = args[1];
+				if (newItem.equals("null")) {
+					CustomItem customItem = customItems.get(uuid);
+					if (customItem != null) customItem.newItem = "";
+					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item texture reset", true);
+					PersistentData.saveCustomItems();
+					return;
+				}
+				CustomItem customItem = Main.customItems.get(uuid);
+				if (customItem != null) {
+					customItem.newItem = newItem;
+                } else {
+					CustomItem newCustomItem = new CustomItem();
+					newCustomItem.newItem = newItem;
+					customItems.put(uuid, newCustomItem);
+                }
+                PersistentData.saveCustomItems();
+                ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item retextured to " + newItem, true);
+            }
+
+			if (args[0].equals("recolor")) {
+				ItemStack item = mc.thePlayer.getHeldItem();
+				if (item == null) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to recolor it.", true);
+					return;
+				}
+				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+				if (!extraAttribute.hasKey("uuid")) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be recolored.", true);
+					return;
+				}
+				if (!(item.getItem() instanceof ItemArmor)) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be recolored.", true);
+					return;
+				}
+				String uuid = extraAttribute.getString("uuid");
+				String newColor = args[1];
+				if (newColor.equals("null")) {
+					CustomItem customItem = customItems.get(uuid);
+					if (customItem != null) customItem.newColor = -1;
+					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item color reset", true);
+					PersistentData.saveCustomItems();
+					return;
+				}
+				CustomItem customItem = Main.customItems.get(uuid);
+				if (customItem != null) {
+					customItem.newColor = Integer.parseInt(newColor, 16);
+				} else {
+					CustomItem newCustomItem = new CustomItem();
+					newCustomItem.newColor = Integer.parseInt(newColor, 16);
+					customItems.put(uuid, newCustomItem);
+				}
+				PersistentData.saveCustomItems();
+				ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item recolored to " + newColor, true);
+			}
+
 		}
 		if (args.length == 3) {
 			if (Objects.equals(args[0], "split") || Objects.equals(args[0], "splits")) {

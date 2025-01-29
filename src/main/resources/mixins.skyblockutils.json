@@ -8,6 +8,7 @@
     "minecraft.client.AccessorGuiContainer",
     "minecraft.client.AccessorGuiEditSign",
     "minecraft.client.MixinGuiContainer",
-    "minecraft.client.MixinGuiScreen"
+    "minecraft.client.MixinGuiScreen",
+    "minecraft.client.MixinRenderItem"
   ]
 }

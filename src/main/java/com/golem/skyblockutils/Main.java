@@ -4,6 +4,7 @@ import com.golem.skyblockutils.init.CommandInit;
 import com.golem.skyblockutils.init.EventInit;
 import com.golem.skyblockutils.init.HelpInit;
 import com.golem.skyblockutils.init.KeybindsInit;
+import com.golem.skyblockutils.models.CustomItem;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.TimeHelper;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 
 @Mod(modid = Main.MODID, version = Main.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.9]")
@@ -30,6 +32,7 @@ public class Main
 {
 	public static final String MODID = "SkyblockUtils";
 	private static final String[] c = new String[]{"k", "m", "b"};
+	public static HashMap<String, CustomItem> customItems = new HashMap<>();
 	private AuctionHouse all_auctions;
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
