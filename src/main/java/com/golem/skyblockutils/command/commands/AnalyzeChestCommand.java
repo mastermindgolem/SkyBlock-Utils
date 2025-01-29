@@ -50,7 +50,7 @@ public class AnalyzeChestCommand extends CommandBase {
         } else if (args[0].equalsIgnoreCase("off")) {
             ChestAnalyzer.disableAnalyzer();
         } else if (args[0].equalsIgnoreCase("gui") && !ChestAnalyzer.analyzeChests) {
-            Main.mc.displayGuiScreen(new ChestDataGui());
+            Main.display = new ChestDataGui();
         }
     }
 
