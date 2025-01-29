@@ -7,6 +7,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import org.lwjgl.input.Mouse;
 
+import java.awt.*;
+
 public class RenderableItem extends Renderable {
     private ItemStack itemStack;
     private boolean bordered;
@@ -42,8 +44,10 @@ public class RenderableItem extends Renderable {
         if (!visible || itemStack == null) return;
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale, scale, 1);
-        if (bordered) {
-            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, 0x80000000, 0x80000000);
+        if (underline) {
+            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, Color.GREEN.getRGB(), Color.GREEN.getRGB());
+        } else if (bordered) {
+            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, Color.YELLOW.getRGB(), Color.YELLOW.getRGB());
         }
         Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
         handleMouse(mouseX, mouseY);
@@ -55,8 +59,10 @@ public class RenderableItem extends Renderable {
         if (!visible || itemStack == null) return;
         GlStateManager.pushMatrix();
         GlStateManager.scale(scale, scale, 1);
-        if (bordered) {
-            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, 0x80000000, 0x80000000);
+        if (underline) {
+            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, Color.GREEN.getRGB(), Color.GREEN.getRGB());
+        } else if (bordered) {
+            RenderUtils.drawBorderedRect(x - 1, y - 1, x + 17, y + 17, 1, Color.YELLOW.getRGB(), Color.YELLOW.getRGB());
         }
         Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, x, y);
         GlStateManager.popMatrix();

@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.command.commands;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.features.AttributePriceGui;
 import com.golem.skyblockutils.features.ChestDataGui;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.*;
@@ -132,12 +133,14 @@ public class AttributeCommand extends CommandBase implements Help {
 	@Override
 	public void processCommand(ICommandSender sender, String[] args) {
 		if (args.length == 0) {
-			StringBuilder sb = new StringBuilder();
-			for (String str : getHoverStrings()) {
-				sb.append(str);
-			}
-			String hover = sb.toString();
-			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(getHelpMessage()).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hover)))));
+			Main.display = new AttributePriceGui();
+			return;
+//			StringBuilder sb = new StringBuilder();
+//			for (String str : getHoverStrings()) {
+//				sb.append(str);
+//			}
+//			String hover = sb.toString();
+//			Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(getHelpMessage()).setChatStyle(new ChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hover)))));
 		}
 
 		String attribute1;
@@ -202,7 +205,6 @@ public class AttributeCommand extends CommandBase implements Help {
 		, firstMessageID + messagesSent++);
 
 	}
-
 
 
 	public void getAttributePrice(String attribute, AttributeItemType[] keys, int level) {

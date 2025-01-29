@@ -1,9 +1,14 @@
 package com.golem.skyblockutils.utils.rendering;
 
+import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.gui.ButtonManager;
 import lombok.Getter;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.input.Mouse;
+
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class Renderable {
     @Getter
@@ -16,6 +21,7 @@ public abstract class Renderable {
     protected boolean underline = false;
     protected Runnable onClick;
     protected Runnable onHover;
+    protected List<String> hoverText;
 
     public Renderable(int x, int y) {
         this.x = x;
@@ -52,6 +58,12 @@ public abstract class Renderable {
         }
     }
 
+    public void renderTooltip(int mouseX, int mouseY) {
+        if (hoverText != null && isHovered(mouseX, mouseY)) {
+            GuiUtils.drawHoveringText(hoverText, mouseX, mouseY, Main.mc.currentScreen.width, Main.mc.currentScreen.height, -1, Main.mc.fontRendererObj);
+        }
+    }
+
     protected boolean isHovered(int mouseX, int mouseY) {
         return mouseX >= x && mouseX <= x + getWidth() &&
                 mouseY >= y && mouseY <= y + getHeight();
@@ -77,6 +89,11 @@ public abstract class Renderable {
 
     public Renderable onHover(Runnable onHover) {
         this.onHover = onHover;
+        return this;
+    }
+
+    public Renderable setHoverText(String text) {
+        this.hoverText = Arrays.asList(text.split("\n"));
         return this;
     }
 
