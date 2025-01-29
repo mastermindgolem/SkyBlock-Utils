@@ -91,7 +91,6 @@ public class InventoryData {
                     if (LowestBin.containsKey(item.item_id)) {
                         items.put(slot, item);
                         values.put(slot, new AttributeValueResult(item.item_name, LowestBin.get(item.item_id)));
-                        ;
                     }
                 }
                 items.put(slot, item);

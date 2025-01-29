@@ -383,4 +383,92 @@ public class AttributePrice {
 		}
 	}
 
+	public static String VeryShortenedAttribute(String attribute) {
+		switch (attribute) {
+			case "mana_pool":
+				return "MP";
+			case "mana_regeneration":
+				return "MR";
+			case "veteran":
+				return "VE";
+			case "dominance":
+				return "DO";
+			case "mending":
+				return "VI";
+			case "magic_find":
+				return "MF";
+			case "speed":
+				return "SP";
+			case "breeze":
+				return "BR";
+			case "arachno":
+				return "AR";
+			case "arachno_resistance":
+				return "AR";
+			case "attack_speed":
+				return "AS";
+			case "combo":
+				return "CO";
+			case "elite":
+				return "EL";
+			case "ignition":
+				return "IG";
+			case "life_recovery":
+				return "LR";
+			case "midas_touch":
+				return "MT";
+			case "undead":
+				return "UN";
+			case "undead_resistance":
+				return "UR";
+			case "mana_steal":
+				return "MS";
+			case "ender":
+				return "EN";
+			case "ender_resistance":
+				return "ER";
+			case "blazing":
+				return "BL";
+			case "blazing_resistance":
+				return "BL";
+			case "warrior":
+				return "WA";
+			case "deadeye":
+				return "DE";
+			case "experience":
+				return "EX";
+			case "lifeline":
+				return "LL";
+			case "life_regeneration":
+				return "LR";
+			case "fortitude":
+				return "FO";
+			case "blazing_fortune":
+				return "BF";
+			case "fishing_experience":
+				return "FE";
+			case "double_hook":
+				return "DH";
+			case "fisherman":
+				return "FM";
+			case "fishing_speed":
+				return "FS";
+			case "HUNTER":
+				return "HU";
+			case "trophy_hunter":
+				return "TH";
+			case "infection":
+				return "IN";
+			case "hunter":
+				return "HU";
+			default:
+				Logger.warn(attribute);
+				try {
+					return Arrays.stream(attribute.replace("_", " ").toUpperCase().split(" "))
+							.map(word -> String.valueOf(word.charAt(0)))
+							.collect(Collectors.joining());
+				} catch (Exception ignored) {return "";}
+		}
+	}
+
 }

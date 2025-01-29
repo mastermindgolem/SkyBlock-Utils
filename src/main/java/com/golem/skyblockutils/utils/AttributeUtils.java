@@ -35,6 +35,8 @@ public class AttributeUtils {
 
 	public static AttributeItemType getItemType(String item_id) {
 		switch (item_id) {
+			case "MAGMA_ROD":
+				return MagmaRod;
 			case "TAURUS_HELMET":
 				return FishingHelmet;
 			case "FLAMING_CHESTPLATE":

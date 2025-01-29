@@ -409,12 +409,13 @@ public class Config extends Vigilant
 	)
 	public int min_godroll_price = 50;
 
-	@Property(type = PropertyType.SWITCH,
+	@Property(type = PropertyType.SELECTOR,
 			name = "Display Attribute Overlay",
 			description = "Show the best attribute on any attribute item (Will also show if it's a godroll).",
 			category = "Overlays",
-			subcategory = "Attributes")
-	public boolean attribute_overlay = true;
+			subcategory = "Attributes",
+			options = {"Off", "SBU Style", "SkyHanni Style"})
+	public int attribute_overlay = 1;
 
 	@Property(type = PropertyType.SELECTOR,
 			name = "Combine Helper",

@@ -206,7 +206,7 @@ public class ContainerValue {
 		return 10;
 	}
 
-	private void clickSlot(Slot slot, int type, int mode) {
+	public static void clickSlot(Slot slot, int type, int mode) {
 		Main.mc.playerController.windowClick(Main.mc.thePlayer.openContainer.windowId, slot.slotNumber, type, mode, Main.mc.thePlayer);
 	}
 
