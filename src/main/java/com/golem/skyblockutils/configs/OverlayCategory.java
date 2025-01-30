@@ -10,6 +10,7 @@ import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.Category;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
+import logger.Logger;
 
 public class OverlayCategory {
 
@@ -92,6 +93,10 @@ public class OverlayCategory {
     }
 
     public static boolean isOverlayOn(OverlayOption overlayOption) {
+        if (overlayOption == null) {
+            Logger.warn("Overlay option is null which it shouldn't be!!!");
+            return false;
+        }
         switch (overlayOption) {
             case ALWAYS_ON:
                 return true;

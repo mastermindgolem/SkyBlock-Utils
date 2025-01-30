@@ -9,6 +9,7 @@ import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.RequestUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import logger.Logger;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.GlStateManager;
@@ -173,6 +174,11 @@ public class ProfitOverlay {
     }
 
     private static boolean isOverlayOn() {
+        if (config.getConfig().overlayCategory.kuudraProfitConfig.profitOverlay == null) {
+            Logger.warn("Overlay option is null which it shouldn't be!!!");
+            return false;
+        }
+
         switch (config.getConfig().overlayCategory.kuudraProfitConfig.profitOverlay) {
             case ALWAYS_ON:
                 return true;
