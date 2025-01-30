@@ -29,10 +29,8 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.*;
 
@@ -160,6 +158,17 @@ public class SbuCommand extends CommandBase {
 				PersistentData.saveCustomItems();
 			}
 		}
+
+		if (args.length >= 2) {
+			if (args[0].equals("rename")) {
+				renameItem(args);
+			}
+
+			if (args[0].equals("retexture")) {
+				retextureItem(args);
+			}
+		}
+
 		if (args.length == 2) {
 			if (Objects.equals(args[0], "split") || Objects.equals(args[0], "splits")) {
 				if (Objects.equals(args[1], "best")) {
@@ -244,73 +253,6 @@ public class SbuCommand extends CommandBase {
 					mc.thePlayer.addChatMessage(new ChatComponentText(displaySplit(best)));
 				}
 			}
-
-			if (args[0].equals("rename")) {
-				ItemStack item = mc.thePlayer.getHeldItem();
-				if (item == null) {
-					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to rename it.", true);
-					return;
-				}
-				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
-				if (!extraAttribute.hasKey("uuid")) {
-					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be renamed.", true);
-					return;
-				}
-				String uuid = extraAttribute.getString("uuid");
-				String newName = "§r" + args[1].replaceAll("&", "§");
-				if (newName.equals("§rnull")) {
-					CustomItem customItem = customItems.get(uuid);
-					if (customItem != null) customItem.newName = "";
-					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item name reset", true);
-					PersistentData.saveCustomItems();
-					return;
-				}
-				CustomItem customItem = customItems.get(uuid);
-				if (customItem != null) {
-					customItem.newName = newName;
-                } else {
-					CustomItem newCustomItem = new CustomItem();
-					newCustomItem.newName = newName;
-					customItems.put(uuid, newCustomItem);
-                }
-                PersistentData.saveCustomItems();
-                ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item renamed to " + newName, true);
-            }
-			if (args[0].equals("retexture")) {
-				ItemStack item = mc.thePlayer.getHeldItem();
-				if (item == null) {
-					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to retexture it.", true);
-					return;
-				}
-				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
-				if (!extraAttribute.hasKey("uuid")) {
-					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be retextured.", true);
-					return;
-				}
-				String uuid = extraAttribute.getString("uuid");
-				String newItem = args[1].replaceAll(" ", "_");
-				if (newItem.equals("null")) {
-					CustomItem customItem = customItems.get(uuid);
-					if (customItem != null) customItem.newItem = "";
-					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item texture reset", true);
-					PersistentData.saveCustomItems();
-					return;
-				}
-				if (Item.getByNameOrId(newItem) == null) {
-					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Invalid item name", true);
-					return;
-				}
-				CustomItem customItem = Main.customItems.get(uuid);
-				if (customItem != null) {
-					customItem.newItem = newItem;
-                } else {
-					CustomItem newCustomItem = new CustomItem();
-					newCustomItem.newItem = newItem;
-					customItems.put(uuid, newCustomItem);
-                }
-                PersistentData.saveCustomItems();
-                ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item retextured to " + newItem, true);
-            }
 
 			if (args[0].equals("recolor")) {
 				ItemStack item = mc.thePlayer.getHeldItem();
@@ -477,6 +419,74 @@ public class SbuCommand extends CommandBase {
 			default:
 				return EnumChatFormatting.DARK_RED + "Unknown: ";
 		}
+	}
+
+	private static void renameItem(String[] args) {
+		ItemStack item = mc.thePlayer.getHeldItem();
+		if (item == null) {
+			ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to rename it.", true);
+			return;
+		}
+		NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+		if (!extraAttribute.hasKey("uuid")) {
+			ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be renamed.", true);
+			return;
+		}
+		String uuid = extraAttribute.getString("uuid");
+		String newName = "§r" + Arrays.stream(args).skip(1).collect(Collectors.joining(" "));
+		if (newName.equals("§rnull")) {
+			CustomItem customItem = customItems.get(uuid);
+			if (customItem != null) customItem.newName = "";
+			ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item name reset", true);
+			PersistentData.saveCustomItems();
+			return;
+		}
+		CustomItem customItem = customItems.get(uuid);
+		if (customItem != null) {
+			customItem.newName = newName;
+		} else {
+			CustomItem newCustomItem = new CustomItem();
+			newCustomItem.newName = newName;
+			customItems.put(uuid, newCustomItem);
+		}
+		PersistentData.saveCustomItems();
+		ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item renamed to " + newName, true);
+	}
+
+	private static void retextureItem(String[] args) {
+		ItemStack item = mc.thePlayer.getHeldItem();
+		if (item == null) {
+			ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item to retexture it.", true);
+			return;
+		}
+		NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+		if (!extraAttribute.hasKey("uuid")) {
+			ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be retextured.", true);
+			return;
+		}
+		String uuid = extraAttribute.getString("uuid");
+		String newItem = Arrays.stream(args).skip(1).collect(Collectors.joining("_"));
+		if (newItem.equals("null")) {
+			CustomItem customItem = customItems.get(uuid);
+			if (customItem != null) customItem.newItem = "";
+			ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item texture reset", true);
+			PersistentData.saveCustomItems();
+			return;
+		}
+		if (Item.getByNameOrId(newItem) == null) {
+			ChatUtils.addChatMessage(EnumChatFormatting.RED + "Invalid item name", true);
+			return;
+		}
+		CustomItem customItem = Main.customItems.get(uuid);
+		if (customItem != null) {
+			customItem.newItem = newItem;
+		} else {
+			CustomItem newCustomItem = new CustomItem();
+			newCustomItem.newItem = newItem;
+			customItems.put(uuid, newCustomItem);
+		}
+		PersistentData.saveCustomItems();
+		ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item retextured to " + newItem, true);
 	}
 
 	public static CustomItem getDataForItem(ItemStack stack) {

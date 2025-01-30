@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({RenderItem.class})
 public abstract class MixinRenderItem {
-
     @Inject(method = "renderItemOverlayIntoGUI", at = @At("HEAD"))
     public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, String text, CallbackInfo ci) {
         try {
@@ -85,5 +84,4 @@ public abstract class MixinRenderItem {
         }
         return stack.hasEffect();
     }
-
 }
