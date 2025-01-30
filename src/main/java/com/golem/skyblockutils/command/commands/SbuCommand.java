@@ -20,6 +20,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.event.HoverEvent;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -94,6 +95,69 @@ public class SbuCommand extends CommandBase {
 					for (Mob mob : Bestiary.bestiary.values()) mob.updateKills(be);
 					mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Bestiary updated"));
 				}).start();
+			}
+
+			if (args[0].equals("glint")) {
+				ItemStack item = mc.thePlayer.getHeldItem();
+				if (item == null) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item.", true);
+					return;
+				}
+				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+				if (!extraAttribute.hasKey("uuid")) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item does not have a UUID.", true);
+					return;
+				}
+
+				String uuid = extraAttribute.getString("uuid");
+
+				CustomItem customItem = Main.customItems.get(uuid);
+				if (customItem != null) {
+					if (customItem.newGlint == 1) {
+						customItem.newGlint = 0;
+						ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Enchant glint set to default for this item.", true);
+					} else {
+						customItem.newGlint = 1;
+						ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Enchant glint added to item.", true);
+					}
+				} else {
+					CustomItem newCustomItem = new CustomItem();
+					newCustomItem.newGlint = 1;
+					customItems.put(uuid, newCustomItem);
+					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Enchant glint added to item.", true);
+				}
+				PersistentData.saveCustomItems();
+			}
+			if (args[0].equals("unglint")) {
+				ItemStack item = mc.thePlayer.getHeldItem();
+				if (item == null) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "You must be holding an item.", true);
+					return;
+				}
+				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+				if (!extraAttribute.hasKey("uuid")) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item does not have a UUID.", true);
+					return;
+				}
+
+				String uuid = extraAttribute.getString("uuid");
+
+				CustomItem customItem = Main.customItems.get(uuid);
+				if (customItem != null) {
+					if (customItem.newGlint == -1) {
+						customItem.newGlint = 0;
+						ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Enchant glint set to default for this item.", true);
+					} else {
+						customItem.newGlint = -1;
+						ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Enchant glint removed from this item.", true);
+					}
+				} else {
+					CustomItem newCustomItem = new CustomItem();
+					newCustomItem.newGlint = -1;
+					customItems.put(uuid, newCustomItem);
+					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Enchant glint removed from this item.", true);
+				}
+				PersistentData.saveCustomItems();
 			}
 		}
 		if (args.length == 2) {
@@ -178,7 +242,6 @@ public class SbuCommand extends CommandBase {
 						return;
 					}
 					mc.thePlayer.addChatMessage(new ChatComponentText(displaySplit(best)));
-
 				}
 			}
 
@@ -221,16 +284,20 @@ public class SbuCommand extends CommandBase {
 				}
 				NBTTagCompound extraAttribute = item.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
 				if (!extraAttribute.hasKey("uuid")) {
-					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be renamed.", true);
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be retextured.", true);
 					return;
 				}
 				String uuid = extraAttribute.getString("uuid");
-				String newItem = args[1];
+				String newItem = args[1].replaceAll(" ", "_");
 				if (newItem.equals("null")) {
 					CustomItem customItem = customItems.get(uuid);
 					if (customItem != null) customItem.newItem = "";
 					ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item texture reset", true);
 					PersistentData.saveCustomItems();
+					return;
+				}
+				if (Item.getByNameOrId(newItem) == null) {
+					ChatUtils.addChatMessage(EnumChatFormatting.RED + "Invalid item name", true);
 					return;
 				}
 				CustomItem customItem = Main.customItems.get(uuid);
@@ -256,7 +323,7 @@ public class SbuCommand extends CommandBase {
 					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be recolored.", true);
 					return;
 				}
-				if (!(item.getItem() instanceof ItemArmor)) {
+				if (!(item.getItem() instanceof ItemArmor) && (getDataForItem(item) == null || !(Item.getByNameOrId(getDataForItem(item).newItem) instanceof ItemArmor))) {
 					ChatUtils.addChatMessage(EnumChatFormatting.RED + "This item cannot be recolored.", true);
 					return;
 				}
@@ -280,7 +347,6 @@ public class SbuCommand extends CommandBase {
 				PersistentData.saveCustomItems();
 				ChatUtils.addChatMessage(EnumChatFormatting.GREEN + "Item recolored to " + newColor, true);
 			}
-
 		}
 		if (args.length == 3) {
 			if (Objects.equals(args[0], "split") || Objects.equals(args[0], "splits")) {
@@ -411,5 +477,13 @@ public class SbuCommand extends CommandBase {
 			default:
 				return EnumChatFormatting.DARK_RED + "Unknown: ";
 		}
+	}
+
+	public static CustomItem getDataForItem(ItemStack stack) {
+		if (stack == null) return null;
+		NBTTagCompound extraAttributes = stack.serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes");
+		if (!extraAttributes.hasKey("uuid")) return null;
+		String uuid = extraAttributes.getString("uuid");
+		return Main.customItems.get(uuid);
 	}
 }

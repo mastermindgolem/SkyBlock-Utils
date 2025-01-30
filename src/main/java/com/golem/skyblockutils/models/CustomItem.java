@@ -9,4 +9,6 @@ public class CustomItem {
     public String newName = "";
     @SerializedName("newColor")
     public int newColor = -1;
+    @SerializedName("newGlint")
+    public int newGlint = 0;
 }
