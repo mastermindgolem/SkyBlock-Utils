@@ -170,6 +170,7 @@ public class Kuudra {
         if (message.contains("DEFEAT") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
+            if (splits[5] - splits[0] > 60 * 60 * 1000) return;
             //AlertOverlay.text = "";
             CratesOverlay.phase4.add(0F);
             if (configFile.showSplits) addChatMessage(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[4]/60000F));
@@ -185,6 +186,7 @@ public class Kuudra {
         if (message.contains("KUUDRA DOWN") && currentPhase == 4) {
             currentPhase = 5;
             splits[5] = (float) Main.time.getCurrentMS();
+            if (splits[5] - splits[0] > 60 * 60 * 1000) return;
             CratesOverlay.phase4.add(0F);
             overview.add(EnumChatFormatting.AQUA + "Kuudra Kill: " + EnumChatFormatting.RESET + SplitsOverlay.format(splits[5]/60000F - splits[1]/60000F));
             if (configFile.showSplits) {
