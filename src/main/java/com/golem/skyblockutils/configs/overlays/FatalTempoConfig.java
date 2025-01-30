@@ -16,7 +16,7 @@ public class FatalTempoConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "Fatal Tempo Overlay", desc = "Shows Ferocity buff from Fatal Tempo.")
     @Expose
-    public OverlayCategory.OverlayOption fataltempoOverlay;
+    public OverlayCategory.OverlayOption fataltempoOverlay = OverlayCategory.OverlayOption.OFF;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Fatal Tempo Overlay", desc = "Click to move Fatal Tempo Overlay")

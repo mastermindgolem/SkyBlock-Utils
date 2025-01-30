@@ -16,7 +16,7 @@ public class EndStoneConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "End Stone Sword Overlay", desc = "Shows end stone sword invincibility timer.")
     @Expose
-    public OverlayCategory.OverlayOption endstoneOverlay;
+    public OverlayCategory.OverlayOption endstoneOverlay = OverlayCategory.OverlayOption.OFF;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move End Stone Sword Overlay", desc = "Click to move End Stone Sword Overlay")

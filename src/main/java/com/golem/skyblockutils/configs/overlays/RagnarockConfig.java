@@ -16,7 +16,7 @@ public class RagnarockConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "Ragnarock Overlay", desc = "Shows cooldown for Ragnarock Axe.")
     @Expose
-    public OverlayCategory.OverlayOption ragnarockOverlay;
+    public OverlayCategory.OverlayOption ragnarockOverlay = OverlayCategory.OverlayOption.OFF;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Ragnarock Overlay", desc = "Click to move Ragnarock Overlay")

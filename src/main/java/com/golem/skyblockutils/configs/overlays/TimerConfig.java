@@ -17,12 +17,12 @@ public class TimerConfig {
     @ConfigEditorBoolean
     @ConfigOption(name = "Timer Overlay", desc = "Timer that alerts you in x seconds.")
     @Expose
-    public boolean timerOverlay;
+    public boolean timerOverlay = false;
 
     @ConfigEditorSlider(minValue = 0, maxValue = 1200, minStep = 1)
     @ConfigOption(name = "Timer Length", desc = "In how long you should be reminded.")
     @Expose
-    public int timerLength;
+    public int timerLength = 0;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Timer Overlay", desc = "Click to move Timer Overlay")

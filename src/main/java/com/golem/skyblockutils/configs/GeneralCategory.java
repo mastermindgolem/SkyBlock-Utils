@@ -12,12 +12,12 @@ public class GeneralCategory {
     @ConfigEditorBoolean
     @ConfigOption(name = "Hide Sack Messages", desc = "Hides messages related to items entering/exiting sacks.")
     @Expose
-    public boolean hideSackMessages;
+    public boolean hideSackMessages = false;
 
     @ConfigEditorBoolean
     @ConfigOption(name = "Show Elite 500", desc = "Show player's SkyBlock level leaderboard position.")
     @Expose
-    public boolean elite500;
+    public boolean elite500 = false;
 
     @ConfigEditorSlider(minValue = 0, maxValue = 60, minStep = 1)
     @ConfigOption(name = "Show Chat Waypoints", desc = "Select delay before waypoints when coordinates sent in chat disappear. 0 = off")

@@ -15,7 +15,7 @@ public class AlertConfig {
     @ConfigEditorBoolean
     @ConfigOption(name = "Custom Alert Location", desc = "Off = Alerts in center of screen. On = Custom location")
     @Expose
-    public boolean alertOverlay;
+    public boolean alertOverlay = false;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Alert Overlay", desc = "Click to move Alert Overlay")

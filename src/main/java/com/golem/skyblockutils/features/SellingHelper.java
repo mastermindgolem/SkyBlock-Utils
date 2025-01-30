@@ -135,7 +135,7 @@ public class SellingHelper {
             if (result == null) continue;
             if (Objects.equals(result.top_display, "SAL")) {
                 highlightSlots.put(slot, SellMethod.SALVAGE);
-            } else if (result.value > 5_000_000) {
+            } else if (result.value > config.getConfig().auctionCategory.cheapItemCutoff) {
                 highlightSlots.put(slot, SellMethod.AUCTION_EXPENSIVE);
             } else {
                 highlightSlots.put(slot, SellMethod.AUCTION_CHEAP);

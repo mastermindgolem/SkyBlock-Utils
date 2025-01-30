@@ -17,7 +17,7 @@ public class KuudraProfitConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "Kuudra Profit Overlay", desc = "Shows total profit from Kuudra.")
     @Expose
-    public OverlayCategory.OverlayOption profitOverlay;
+    public OverlayCategory.OverlayOption profitOverlay = OverlayCategory.OverlayOption.OFF;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Profit Overlay", desc = "Click to move Profit Overlay")
