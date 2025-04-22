@@ -273,7 +273,7 @@ public class AttributePrice {
 			result.display_string = ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName;
 			result.value = best_value;
 			return result;
-		} else if (item.item_type == Shard) {
+		} else if (item.item_type == Shard && !attrArray.isEmpty()) {
 			result.top_display = ShortenedAttribute(attrArray.get(0));
 			result.bottom_display = item.attributes.get(attrArray.get(0));
 			result.display_string = ShortenedAttribute(attrArray.get(0)) + " " + item.attributes.get(attrArray.get(0)) + " " + displayName;
