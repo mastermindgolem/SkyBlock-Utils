@@ -1,6 +1,7 @@
 package com.golem.skyblockutils.models.gui;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.configs.overlays.ContainerConfig;
 import com.golem.skyblockutils.utils.LocationUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 
 public class ButtonManager {
     private static final HashMap<String, GuiCheckBox> checkBoxes = new HashMap<>();
@@ -31,10 +32,10 @@ public class ButtonManager {
     public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (!(event.gui instanceof GuiChest)) return;
         activeBoxes.clear();
-        if (configFile.container_value != 0) activeBoxes.add("containerValue");
-        if (configFile.highlightSellMethod) activeBoxes.add("sellMethod");
-        if (configFile.auctionHelper) activeBoxes.add("auctionHelper");
-        if (configFile.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) activeBoxes.add("sortingHelper");
+        if (config.getConfig().overlayCategory.containerValueConfig.containerValueOverlay != ContainerConfig.ContainerValuePosition.OFF) activeBoxes.add("containerValue");
+        if (config.getConfig().auctionCategory.highlightSellMethod) activeBoxes.add("sellMethod");
+        if (config.getConfig().auctionCategory.auctionHelper) activeBoxes.add("auctionHelper");
+        if (config.getConfig().auctionCategory.sortingHelper && Objects.equals(LocationUtils.getLocation(), "dynamic")) activeBoxes.add("sortingHelper");
 
         int y = event.gui.height - 25;
 

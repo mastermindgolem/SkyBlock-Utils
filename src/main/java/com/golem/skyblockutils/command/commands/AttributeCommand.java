@@ -207,6 +207,7 @@ public class AttributeCommand extends CommandBase implements Help {
 	}
 
 
+
 	public void getAttributePrice(String attribute, AttributeItemType[] keys, int level) {
 		for (AttributeItemType key : keys) {
 			if (!AttributePrices.get(key).containsKey(attribute)) continue;

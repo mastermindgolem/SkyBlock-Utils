@@ -1,12 +1,15 @@
 package com.golem.skyblockutils.features;
 
 import com.golem.skyblockutils.Main;
+import com.golem.skyblockutils.configs.PricingCategory;
+import com.golem.skyblockutils.configs.overlays.KuudraChestConfig;
 import com.golem.skyblockutils.events.InventoryChangeEvent;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.injection.mixins.minecraft.client.AccessorGuiContainer;
 import com.golem.skyblockutils.models.AttributePrice;
 import com.golem.skyblockutils.models.AttributeValueResult;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.ContainerOverlay;
+import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.utils.InventoryData;
 import com.golem.skyblockutils.utils.RenderUtils;
 import com.golem.skyblockutils.utils.ToolTipListener;
@@ -32,11 +35,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.golem.skyblockutils.Main.bazaar;
-import static com.golem.skyblockutils.Main.configFile;
+import static com.golem.skyblockutils.Main.config;
 import static com.golem.skyblockutils.models.AttributePrice.LowestBin;
 
 public class KuudraOverlay {
 
+	public static GuiElement element = new GuiElement("Kuudra Chest Overlay", 50, 50);
 	private final Pattern ESSENCE_PATTERN = Pattern.compile("§d(.+) Essence §8x([\\d,]+)");
 	public static int keyCost = 0;
 	private int xSize = 0;
@@ -54,8 +58,7 @@ public class KuudraOverlay {
 	public void onInventoryChange(InventoryChangeEvent event) {
 		try {
 			if (!(event.event.gui instanceof GuiChest)) return;
-			if (!configFile.kuudra_overlay) return;
-			if (configFile.customProfitOverlay == 0) return;
+			if (getConfig().kuudraChestOverlay == KuudraChestConfig.KuudraChestPosition.OFF) return;
 
 			if (!InventoryData.currentChestName.contains("Paid Chest") && !InventoryData.currentChestName.contains("Free Chest")) return;
 			List<Slot> fullChestInventory = InventoryData.containerSlots;
@@ -65,11 +68,11 @@ public class KuudraOverlay {
 
 			GuiChest gui = (GuiChest) event.event.gui;
 
-			if (configFile.customProfitOverlay == 1) {
+			if (getConfig().kuudraChestOverlay == KuudraChestConfig.KuudraChestPosition.NEXT_TO_GUI) {
 				xSize = ((AccessorGuiContainer) gui).getXSize();
 				guiLeft = ((AccessorGuiContainer) gui).getGuiLeft();
 				guiTop = ((AccessorGuiContainer) gui).getGuiTop();
-			} else if (configFile.customProfitOverlay == 2) {
+			} else if (getConfig().kuudraChestOverlay == KuudraChestConfig.KuudraChestPosition.CUSTOM) {
 				xSize = (int) (ContainerOverlay.element.position.getX());
 				guiLeft = 0;
 				guiTop = (int) (ContainerOverlay.element.position.getY());
@@ -82,7 +85,7 @@ public class KuudraOverlay {
 					if (!slot.getHasStack() || slot.getStack().getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane))
 						continue;
 					Matcher matcher = ESSENCE_PATTERN.matcher(slot.getStack().getDisplayName());
-					if (matcher.matches() && configFile.considerEssenceValue) {
+					if (matcher.matches() && config.getConfig().pricingCategory.considerEssenceValue) {
 						int buy_price = 1000;
 						int sell_price = 1000;
 						int amount = 1;
@@ -98,8 +101,7 @@ public class KuudraOverlay {
 					if (Objects.equals(slot.getStack().getItem().getRegistryName(), Items.enchanted_book.getRegistryName())) {
 						NBTTagCompound enchants = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getCompoundTag("enchantments");
 						for (String enchant : enchants.getKeySet()) {
-							String sell_type = (configFile.book_sell_method == 0 ? "sell_summary" : "buy_summary");
-							if (Objects.equals(enchant, "hardened_mana")) sell_type = "sell_summary";
+							String sell_type = (config.getConfig().pricingCategory.bookSellMethod == PricingCategory.BookSellMethod.INSTANT_SELL ? "sell_summary" : "buy_summary");
 							int price = 0;
 							String enchantString = "ENCHANTMENT_" + enchant.toUpperCase() + "_" + enchants.getInteger(enchant);
 							try {
@@ -115,7 +117,6 @@ public class KuudraOverlay {
 					}
 
 					String item_id = slot.getStack().serializeNBT().getCompoundTag("tag").getCompoundTag("ExtraAttributes").getString("id");
-					if (Objects.equals(item_id, "ATTRIBUTE_SHARD") && !configFile.valueShards) continue;
 					switch (item_id) {
 						case "BURNING_KUUDRA_CORE":
 						case "WHEEL_OF_FATE":
@@ -130,7 +131,7 @@ public class KuudraOverlay {
 						}
 						case "MANDRAA":
 						case "KUUDRA_MANDIBLE": {
-							String sell_type = (configFile.book_sell_method == 0 ? "sell_summary" : "buy_summary");
+							String sell_type = (config.getConfig().pricingCategory.bookSellMethod == PricingCategory.BookSellMethod.INSTANT_SELL ? "sell_summary" : "buy_summary");
 							int price = 0;
 							try {
 								price = bazaar.get("products").getAsJsonObject().get(item_id).getAsJsonObject().get(sell_type).getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
@@ -161,14 +162,14 @@ public class KuudraOverlay {
 				int myceliumCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_MYCELIUM").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 				int redSandCost = bazaar.get("products").getAsJsonObject().get("ENCHANTED_RED_SAND").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt();
 
-				switch (configFile.faction) {
-					case 0: // Mage
+				switch (config.getConfig().pricingCategory.faction) {
+					case MAGE:
 						itemCost = myceliumCost;
 						break;
-					case 1: // Barbarian
+					case BARBARIAN:
 						itemCost = redSandCost;
 						break;
-					case 2: // Cheapest
+					case CHEAPEST:
 						itemCost = Math.min(myceliumCost, redSandCost);
 						break;
 				}
@@ -218,8 +219,7 @@ public class KuudraOverlay {
 	public void guiDraw(GuiScreenEvent.BackgroundDrawnEvent event) {
 		try {
 			if (!(event.gui instanceof GuiChest)) return;
-			if (!configFile.kuudra_overlay) return;
-			if (configFile.customProfitOverlay == 0) return;
+			if (getConfig().kuudraChestOverlay == KuudraChestConfig.KuudraChestPosition.OFF) return;
 
 			GuiChest gui = (GuiChest) event.gui;
 			Container container = gui.inventorySlots;
@@ -227,11 +227,19 @@ public class KuudraOverlay {
 			String chestName = ((ContainerChest) container).getLowerChestInventory().getDisplayName().getUnformattedText();
 			if (!chestName.contains("Paid Chest") && !chestName.contains("Free Chest")) return;
 
-			if (expectedProfit.size() == 5) {
-				if (!usedKismet && totalValue < expectedProfit.get(Kuudra.tier - 1) - bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt()) {
-					RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(50));
+			if (config.getConfig().overlayCategory.kuudraChestConfig.highlightBestOption && expectedProfit.size() == 5) {
+				if (config.getConfig().overlayCategory.kuudraChestConfig.rerollBelowProfit == 0) {
+					if (!usedKismet && totalValue < expectedProfit.get(Kuudra.tier - 1) - bazaar.get("products").getAsJsonObject().get("KISMET_FEATHER").getAsJsonObject().get("buy_summary").getAsJsonArray().get(0).getAsJsonObject().get("pricePerUnit").getAsInt()) {
+						RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(50));
+					} else {
+						RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(31));
+					}
 				} else {
-					RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(31));
+					if (!usedKismet && totalProfit < config.getConfig().overlayCategory.kuudraChestConfig.rerollBelowProfit * 1000000L) {
+						RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(50));
+					} else {
+						RenderUtils.highlight(Color.GREEN, gui, InventoryData.containerSlots.get(31));
+					}
 				}
 			}
 
@@ -278,18 +286,22 @@ public class KuudraOverlay {
 
 
 	public static int KuudraPetEssenceBonus (int amount) {
-		switch (configFile.kuudraPetRarity) {
-			case 0:
-				return (int) (amount * (1+configFile.kuudraPetLevel * 0.001));
-			case 1:
-			case 2:
-				return (int) (amount * (1+configFile.kuudraPetLevel * 0.0015));
-			case 3:
-			case 4:
-				return (int) (amount * (1+configFile.kuudraPetLevel * 0.002));
+		switch (config.getConfig().pricingCategory.kuudraPetRarity) {
+			case COMMON:
+				return (int) (amount * (1 + config.getConfig().pricingCategory.kuudraPetLevel * 0.001));
+			case UNCOMMON:
+			case RARE:
+				return (int) (amount * (1 + config.getConfig().pricingCategory.kuudraPetLevel * 0.0015));
+			case EPIC:
+			case LEGENDARY:
+				return (int) (amount * (1 + config.getConfig().pricingCategory.kuudraPetLevel * 0.002));
 			default:
 				return amount;
 		}
+	}
+
+	private KuudraChestConfig getConfig() {
+		return config.getConfig().overlayCategory.kuudraChestConfig;
 	}
 
 }

@@ -10,8 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.text.DecimalFormat;
 
-import static com.golem.skyblockutils.Main.configFile;
-import static com.golem.skyblockutils.Main.mc;
+import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.features.KuudraFight.Kuudra.splits;
 
 public class SplitsOverlay {
@@ -33,7 +32,7 @@ public class SplitsOverlay {
 
         TextStyle textStyle = TextStyle.fromInt(1);
 
-        if (configFile.testGui && configFile.splitsOverlay && Kuudra.currentPhase > 0) {
+        if (config.getConfig().overlayCategory.splitsConfig.splitsOverlay && Kuudra.currentPhase > 0) {
             GlStateManager.pushMatrix();
             GlStateManager.translate(element.position.getX(), element.position.getY(), 500.0);
             GlStateManager.scale(element.position.getScale(), element.position.getScale(), 1.0);

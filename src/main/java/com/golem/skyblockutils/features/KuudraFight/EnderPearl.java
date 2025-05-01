@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.golem.skyblockutils.Main.config;
+
 public class EnderPearl {
 
     // Method to check if a double value is close to zero
@@ -135,7 +137,7 @@ public class EnderPearl {
 
     @SubscribeEvent
     public void RenderEvent(RenderWorldLastEvent event) {
-        if (Main.mc.theWorld == null || Main.mc.thePlayer == null || Kuudra.currentPhase != 1 || !Main.configFile.enderPearl) return;
+        if (Main.mc.theWorld == null || Main.mc.thePlayer == null || Kuudra.currentPhase != 1 || !config.getConfig().kuudraCategory.phase1.showPearlWaypoint) return;
         ItemStack heldItem = Main.mc.thePlayer.getHeldItem();
         if (heldItem == null) return;
         if (!heldItem.getDisplayName().contains("Ender Pearl") && !heldItem.getDisplayName().contains("Elle's Supplies")) return;
@@ -162,7 +164,7 @@ public class EnderPearl {
                     //double d = Math.abs(distance - (100 * u * Math.log(1 + t/100)));
                     if ((heldItem.getDisplayName().contains("Elle's Supplies") && d < 1)) {
                         double y = supply.yCoord + distance * Math.tan(Math.toRadians(i));
-                        RenderUtils.drawPixelBox(new Vec3(x, y, z), Main.configFile.enderPearlColor, 0.5, event.partialTicks);
+                        RenderUtils.drawPixelBox(new Vec3(x, y, z), config.getConfig().kuudraCategory.phase1.pearlWaypointColour.getEffectiveColour(), 0.5, event.partialTicks);
                     }
 
                     if (heldItem.getDisplayName().contains("Ender Pearl") && d < mindist) {
@@ -172,7 +174,7 @@ public class EnderPearl {
                 }
                 if (heldItem.getDisplayName().contains("Ender Pearl")) {
                     double y = supply.yCoord + distance * Math.tan(Math.toRadians(bestAngle));
-                    RenderUtils.drawPixelBox(new Vec3(x, y, z), Main.configFile.enderPearlColor, 0.5, event.partialTicks);
+                    RenderUtils.drawPixelBox(new Vec3(x, y, z), config.getConfig().kuudraCategory.phase1.pearlWaypointColour.getEffectiveColour(), 0.5, event.partialTicks);
                 }
             }
         }

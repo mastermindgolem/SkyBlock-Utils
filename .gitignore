@@ -43,3 +43,7 @@ my.patcharchive
 my.patch
 ApiInit.java
 ApiInitializer.java
+
+# DevEnv related gitignore
+microsoft_accounts.json
+config.toml

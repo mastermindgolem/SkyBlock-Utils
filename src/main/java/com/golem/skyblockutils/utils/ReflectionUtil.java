@@ -13,7 +13,7 @@ public class ReflectionUtil {
             try {
                 f = clazz.getDeclaredField(name);
                 break;
-            } catch (NoSuchFieldException e) {
+            } catch (NoSuchFieldException ignored) {
             }
         }
         if (f == null)

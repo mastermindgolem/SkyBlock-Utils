@@ -2,11 +2,13 @@ package com.golem.skyblockutils.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Getter
 public class RequestData {
 	private final Map<String, List<String>> headers;
 	private final JsonElement json;
@@ -17,20 +19,9 @@ public class RequestData {
 		this.json = jsonData;
 	}
 
-	public Map<String, List<String>> getHeaders() {
-		return headers;
-	}
-
 	public JsonObject getJsonAsObject() {
 		return json.getAsJsonObject();
 	}
 
-	public JsonElement getJson() {
-		return json;
-	}
 
-
-	public int getStatus() {
-		return status;
-	}
 }

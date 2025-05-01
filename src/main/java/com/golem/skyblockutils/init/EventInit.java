@@ -4,7 +4,6 @@ import com.golem.skyblockutils.ChatListener;
 import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.events.ChannelHandlerInput;
 import com.golem.skyblockutils.features.*;
-import com.golem.skyblockutils.features.Dungeons.PlayerAlert;
 import com.golem.skyblockutils.features.General.CustomEmotes;
 import com.golem.skyblockutils.features.General.Elite500;
 import com.golem.skyblockutils.features.General.Perspective;
@@ -12,8 +11,6 @@ import com.golem.skyblockutils.features.KuudraFight.EnderPearl;
 import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.features.KuudraFight.TokenHelper;
 import com.golem.skyblockutils.features.KuudraFight.Waypoints;
-import com.golem.skyblockutils.features.Mining.Corpses;
-import com.golem.skyblockutils.features.Mining.FossilFinder;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.*;
 import com.golem.skyblockutils.models.gui.ButtonManager;
 import com.golem.skyblockutils.utils.InventoryData;
@@ -43,11 +40,8 @@ public class EventInit {
 				new Perspective(),
 				new CustomEmotes(),
 				new Elite500(),
-				new PlayerAlert(),
 				new TokenHelper(),
 				new ChannelHandlerInput(),
-				new FossilFinder(),
-				new Corpses(),
 				new ChestAnalyzer(),
 				new SellingHelper(),
 				new ButtonManager(),
@@ -69,7 +63,6 @@ public class EventInit {
 				new RagnarokOverlay(),
 				new EndstoneOverlay(),
 				new CratesOverlay(),
-				new FishingOverlay(),
 				new AlertOverlay(),
 				new SplitsOverlay(),
 				new ReaperOverlay(),

@@ -1,22 +1,15 @@
 package com.golem.skyblockutils.models.Overlay.TextOverlay;
 
-import com.golem.skyblockutils.Main;
-import com.golem.skyblockutils.features.KuudraFight.Kuudra;
 import com.golem.skyblockutils.models.gui.*;
 import com.golem.skyblockutils.utils.TimeHelper;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import static com.golem.skyblockutils.Main.configFile;
 import static com.golem.skyblockutils.Main.mc;
 
 public class ContainerOverlay {
