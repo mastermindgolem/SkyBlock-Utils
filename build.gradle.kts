@@ -27,22 +27,40 @@ fun createFileName(): String {
 
 // Toolchains:
 java {
+	withSourcesJar()
 	toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 // Minecraft configuration:
 loom {
 	log4jConfigs.from(file("log4j2.xml"))
-	launchConfigs {
+	runConfigs {
 		"client" {
 			// If you don't want mixins, remove these lines
-			property("mixin.debug", "true")
-			arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
-//			arg("--tweakClass", "io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
+
+//			arg("--tweakClass", "com.golem.deps.io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
 		}
+//	launchConfigs {
+//		"client" {
+//			// If you don't want mixins, remove these lines
+//			property("mixin.debug", "true")
+//			property("asmhelper.verbose", "true")
+//			property("devauth.enabled", "true")
+//			arg("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
+//			arg("--tweakClass", "io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
+//			arg("--mixin", "mixins.skyblockutils.json")
+////			arg("--tweakClass", "com.golem.deps.io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
+//		}
 	}
 	runConfigs {
 		"client" {
+			property("mixin.debug", "true")
+			property("asmhelper.verbose", "true")
+			property("devauth.enabled", "true")
+			programArgs("--tweakClass", "org.spongepowered.asm.launch.MixinTweaker")
+			programArgs("--tweakClass", "io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
+			programArgs("--mixin", "mixins.skyblockutils.json")
+			
 			if (SystemUtils.IS_OS_MAC_OSX) {
 				// This argument causes a crash on macOS
 				vmArgs.remove("-XstartOnFirstThread")
@@ -54,6 +72,7 @@ loom {
 		pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
 		// If you don't want mixins, remove this lines
 		mixinConfig("mixins.$modid.json")
+		println("mixins.$modid.json")
 		if (transformerFile.exists()) {
 			println("Installing access transformer")
 			accessTransformer(transformerFile)
@@ -63,6 +82,7 @@ loom {
 	}
 	// If you don't want mixins, remove these lines
 	mixin {
+		useLegacyMixinAp.set(true)
 		defaultRefmapName.set("mixins.$modid.refmap.json")
 	}
 }
@@ -81,8 +101,13 @@ repositories {
 	/*
 		Essentials
 	 */
-	maven("https://repo.sk1er.club/repository/maven-public")
-	maven("https://repo.sk1er.club/repository/maven-releases/")
+//	maven("https://repo.sk1er.club/repository/maven-public")
+//	maven("https://repo.sk1er.club/repository/maven-releases/")
+	maven("https://repo.essential.gg/repository/maven-public")
+	maven("https://repo.essential.gg/repository/maven-releases")
+	/*
+		NEU
+	 */
 	maven("https://maven.notenoughupdates.org/releases/")
 }
 
@@ -96,9 +121,11 @@ dependencies {
 	forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 	
 	// If you don't want mixins, remove these lines
-	shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+	/*shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
 		isTransitive = false
-	}
+	}*/
+	implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+//	implementation("org.spongepowered:mixin:0.8.5-SNAPSHOT")
 	annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
 	runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.2.1")
 	
@@ -106,7 +133,8 @@ dependencies {
 	implementation("org.projectlombok:lombok:1.18.26")
 	annotationProcessor("org.projectlombok:lombok:1.18.26")
 	// Our logging dependency
-	implementation("com.github.VlxtIykg:Logger:1.1.0")
+//	implementation("com.github.VlxtIykg:Logger:1.1.0")
+	shadowImpl("com.github.VlxtIykg:Logger:1.1.0")
 	// Old essential GUI -> Porting to Moul Config
 	implementation("gg.essential:loader-launchwrapper:1.1.3")
 	shadowImpl("org.notenoughupdates.moulconfig:legacy:3.5.0")
@@ -174,6 +202,8 @@ tasks.shadowJar {
 	fun relocate(name: String) = relocate(name, "$baseGroup.deps.$name")
 	relocate("io.github.notenoughupdates.moulconfig")
 	relocate("logger")
+	println("Mods moved")
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)
+
