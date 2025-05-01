@@ -10,7 +10,15 @@ import net.minecraft.command.ICommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnalyzeChestCommand extends CommandBase {
+import static com.golem.skyblockutils.Main.OpenChestData;
+import static com.golem.skyblockutils.Main.ReleaseGui;
+
+public class AnalyzeChestCommand extends CommandBase implements Help {
+    private final List<String> helpStrings;
+
+    public AnalyzeChestCommand() {
+        helpStrings = new ArrayList<>();
+    }
 
     @Override
     public int getRequiredPermissionLevel() {
@@ -26,6 +34,9 @@ public class AnalyzeChestCommand extends CommandBase {
     public List<String> getCommandAliases() {
         List<String> al = new ArrayList<>();
         al.add("analyzechest");
+        al.add("analysechests");
+        al.add("analysechest");
+        al.add("ac-dev");
         return al;
     }
 
@@ -50,7 +61,10 @@ public class AnalyzeChestCommand extends CommandBase {
         } else if (args[0].equalsIgnoreCase("off")) {
             ChestAnalyzer.disableAnalyzer();
         } else if (args[0].equalsIgnoreCase("gui") && !ChestAnalyzer.analyzeChests) {
-            Main.mc.displayGuiScreen(new ChestDataGui());
+            Logger.debug("Analyzing Chest GUI...");
+//            mc.displayGuiScreen(new ChestDataGui());
+            ReleaseGui.addFirst(3);
+            OpenChestData = true;
         }
     }
 
