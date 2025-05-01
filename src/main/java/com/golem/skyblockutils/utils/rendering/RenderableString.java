@@ -45,7 +45,7 @@ public class RenderableString extends Renderable {
         GlStateManager.translate(x, y, 0);
         GlStateManager.scale(scale, scale, 1);
         OverlayUtils.drawString(0, 0, text, textStyle, alignment);
-        if (underline) Gui.drawRect(x, y + getHeight(), x + getWidth(), y + getHeight() + 1, Color.WHITE.getRGB());
+        if (underline) Gui.drawRect(0, getHeight(), getWidth(), getHeight() + 1, Color.WHITE.getRGB());
         GlStateManager.popMatrix();
     }
 

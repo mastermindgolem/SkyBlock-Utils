@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.*;
 import static com.golem.skyblockutils.models.AttributeItemType.Shard;
+
 public class AttributePrice {
 
 	public static final String[] all_attributes = new String[]{"arachno", "attack_speed", "combo", "elite", "ignition", "lifeline", "breeze", "speed", "experience", "mana_pool", "life_regeneration", "blazing_resistance", "arachno_resistance", "undead_resistance", "blazing_fortune", "fishing_experience", "double_hook", "infection", "trophy_hunter", "fisherman", "hunter", "fishing_speed", "life_recovery", "midas_touch", "mana_regeneration", "veteran", "mending", "ender_resistance", "dominance", "mana_steal", "ender", "blazing", "undead", "warrior", "deadeye", "fortitude", "magic_find"};
 	public static final AttributeItemType[] all_kuudra_categories = AttributeItemType.values();
-	public static final String[] COMPACTING_STRINGS = {"Terror ", "Aurora ", "Crimson ", "Fervor ", "Hollow ", "Molten ", "Gauntlet of ", "Attribute "};
 	private static HashMap<String, AuctionAttributeItem> AllCombos = new HashMap<>();
 	public static HashMap<String, Long> LowestBin = new HashMap<>();
 	public static HashMap<AttributeItemType, HashMap<String, ArrayList<AuctionAttributeItem>>> AttributePrices = new HashMap<>();
@@ -33,7 +33,8 @@ public class AttributePrice {
 	static final IChatComponent ErrorMessage = new ChatComponentText(EnumChatFormatting.RED + "Auctions not checked yet. If you have logged in more than 5 minutes ago, contact golem. Run /sbu refresh");
 	public static List<String> equipmentExcludeAttributes;
 	public static List<String> armorExcludeAttributes;
-	public static List<String> shardExcludeAttributes;
+	public static List<String> priorityAttributes;
+	public final static Set<String> weaponAttributes = new HashSet<>(Arrays.asList(new String[]{"arachno", "attack speed", "blazing", "combo", "elite", "ender", "ignition", "life_recovery", "mana_steal", "midas_touch", "undead", "warrior", "deadeye"}));
 	public static Set<String> expensiveAttributes = new HashSet<>();
 
 
@@ -63,7 +64,7 @@ public class AttributePrice {
 					}
 
 					for (String attr : item.attributes.keySet()) {
-						AttributeInfo attribute = item.addAttribute(attr);
+						Attribute attribute = item.addAttribute(attr);
 
 						LowestAttributePrices.get(itemType).putIfAbsent(attribute.attribute, new ArrayList<>(Collections.nCopies(11, 0L)));
 
@@ -82,10 +83,9 @@ public class AttributePrice {
 					error.printStackTrace();
 				}
 			}
-			equipmentExcludeAttributes = config.getConfig().pricingCategory.equipmentAttributesToExclude.stream().map(o -> o.getId()).collect(Collectors.toList());
-			armorExcludeAttributes = config.getConfig().pricingCategory.armorAttributesToExclude.stream().map(o -> o.getId()).collect(Collectors.toList());
-			shardExcludeAttributes = config.getConfig().pricingCategory.shardAttributesToExclude.stream().map(o -> o.getId()).collect(Collectors.toList());
-
+			equipmentExcludeAttributes = Arrays.asList(configFile.attributesToExcludeEquip.split(", "));
+			armorExcludeAttributes = Arrays.asList(configFile.attributesToExcludeArmor.split(", "));
+			priorityAttributes = Arrays.asList(configFile.priorityAttributes.split(", "));
 
 			expensiveAttributes = LowestAttributePrices.get(Shard).entrySet().stream()
 					.filter(entry -> !entry.getValue().isEmpty())
@@ -185,7 +185,7 @@ public class AttributePrice {
 
 		String item_id = item.item_id;
 
-		if (!config.getConfig().pricingCategory.valueStarred && (item_id.startsWith("HOT_") || item_id.startsWith("BURNING_") || item_id.startsWith("FIERY_") || item_id.startsWith("INFERNAL"))) {
+		if (!Main.configFile.valueStarredArmor && (item_id.startsWith("HOT_") || item_id.startsWith("BURNING_") || item_id.startsWith("FIERY_") || item_id.startsWith("INFERNAL"))) {
 			return null;
 		}
 
@@ -204,13 +204,14 @@ public class AttributePrice {
 		long value;
 
 		for (String attr_key : item.attributes.keySet()) {
+			if (configFile.excludeWeaponAttributes && weaponAttributes.contains(attr_key)) continue;
 			int attr_tier = item.attributes.get(attr_key);
-			if (attr_tier > config.getConfig().pricingCategory.maxTier) return null;
+			if (!configFile.valueHighTierItems && attr_tier >= 7) return null;
 			total_tiers += 1 << (attr_tier - 1);
 			if (excludeAttributes.contains(attr_key)) continue;
 			if (!LowestAttributePrices.get(item.item_type).containsKey(attr_key)) continue;
 			ArrayList<Long> items = LowestAttributePrices.get(item.item_type).get(attr_key);
-			int min_tier = (item.item_type == Shard ? config.getConfig().pricingCategory.minShardTier : config.getConfig().pricingCategory.minArmorTier);
+			int min_tier = (item.item_type == Shard ? configFile.minShardTier : configFile.minArmorTier);
 			if (min_tier > 0) {
 				value = items.get(min_tier) << (attr_tier - 1);
 			} else {
@@ -218,6 +219,10 @@ public class AttributePrice {
 			}
 			if (dev) Kuudra.addChatMessage(attr_key + " " + attr_tier + " value : " + value);
 			added_value += value;
+			if (priorityAttributes.contains(best_attribute) && !priorityAttributes.contains(attr_key) && !Objects.equals(best_attribute, ""))
+				continue;
+			if (!priorityAttributes.contains(best_attribute) && priorityAttributes.contains(attr_key))
+				best_value = 0;
 			if (value > best_value) {
 				best_value = value;
 				best_attribute = attr_key;
@@ -242,21 +247,21 @@ public class AttributePrice {
 
 		int salvageValue = (int) (10 * total_tiers * AuctionHouse.ESSENCE_VALUE);
 
-		if (config.getConfig().overlayCategory.containerValueConfig.compactDisplayMode)
-			for (String r : COMPACTING_STRINGS)
+		if (configFile.compactContainerValue)
+			for (String r : new String[]{"Terror ", "Aurora ", "Crimson ", "Fervor ", "Hollow ", "Molten ", "Gauntlet of ", "Attribute "})
 				displayName = displayName.replace(r, "");
 
-		result.best_attribute = new AttributeInfo(best_attribute, best_tier, best_value);
+		result.best_attribute = new Attribute(best_attribute, best_tier, best_value);
 		result.display_name = displayName;
 		result.item_id = item_id;
 
-		if (best_tier > 5 && combo_value > config.getConfig().pricingCategory.minGodrollPrice * 1_000_000) {
+		if (best_tier > 5 && combo_value > configFile.min_godroll_price * 1_000_000) {
 			result.top_display = "GR";
 			result.bottom_display = 0;
 			result.display_string = String.join(" ", attrArray.stream().map(o -> ShortenedAttribute(o) + " " + item.attributes.get(o)).collect(Collectors.toList())) + " " + displayName;
 			result.value = added_value;
 			return result;
-		} else if (combo_value > config.getConfig().pricingCategory.minGodrollPrice * 1000000 && combo_value > best_value) {
+		} else if (combo_value > configFile.min_godroll_price * 1000000 && combo_value > best_value) {
 			result.top_display = "GR";
 			result.bottom_display = 0;
 			result.display_string = String.join(" ", attrArray.stream().map(AttributePrice::ShortenedAttribute).sorted().collect(Collectors.toList())) + " " + displayName;
@@ -268,7 +273,7 @@ public class AttributePrice {
 			result.display_string = ShortenedAttribute(best_attribute) + " " + best_tier + " " + displayName;
 			result.value = best_value;
 			return result;
-		} else if (item.item_type == Shard) {
+		} else if (item.item_type == Shard && !attrArray.isEmpty()) {
 			result.top_display = ShortenedAttribute(attrArray.get(0));
 			result.bottom_display = item.attributes.get(attrArray.get(0));
 			result.display_string = ShortenedAttribute(attrArray.get(0)) + " " + item.attributes.get(attrArray.get(0)) + " " + displayName;
@@ -368,6 +373,94 @@ public class AttributePrice {
 				return "INF";
 			case "hunter":
 				return "HUN";
+			default:
+				Logger.warn(attribute);
+				try {
+					return Arrays.stream(attribute.replace("_", " ").toUpperCase().split(" "))
+							.map(word -> String.valueOf(word.charAt(0)))
+							.collect(Collectors.joining());
+				} catch (Exception ignored) {return "";}
+		}
+	}
+
+	public static String VeryShortenedAttribute(String attribute) {
+		switch (attribute) {
+			case "mana_pool":
+				return "MP";
+			case "mana_regeneration":
+				return "MR";
+			case "veteran":
+				return "VE";
+			case "dominance":
+				return "DO";
+			case "mending":
+				return "VI";
+			case "magic_find":
+				return "MF";
+			case "speed":
+				return "SP";
+			case "breeze":
+				return "BR";
+			case "arachno":
+				return "AR";
+			case "arachno_resistance":
+				return "AR";
+			case "attack_speed":
+				return "AS";
+			case "combo":
+				return "CO";
+			case "elite":
+				return "EL";
+			case "ignition":
+				return "IG";
+			case "life_recovery":
+				return "LR";
+			case "midas_touch":
+				return "MT";
+			case "undead":
+				return "UN";
+			case "undead_resistance":
+				return "UR";
+			case "mana_steal":
+				return "MS";
+			case "ender":
+				return "EN";
+			case "ender_resistance":
+				return "ER";
+			case "blazing":
+				return "BL";
+			case "blazing_resistance":
+				return "BL";
+			case "warrior":
+				return "WA";
+			case "deadeye":
+				return "DE";
+			case "experience":
+				return "EX";
+			case "lifeline":
+				return "LL";
+			case "life_regeneration":
+				return "LR";
+			case "fortitude":
+				return "FO";
+			case "blazing_fortune":
+				return "BF";
+			case "fishing_experience":
+				return "FE";
+			case "double_hook":
+				return "DH";
+			case "fisherman":
+				return "FM";
+			case "fishing_speed":
+				return "FS";
+			case "HUNTER":
+				return "HU";
+			case "trophy_hunter":
+				return "TH";
+			case "infection":
+				return "IN";
+			case "hunter":
+				return "HU";
 			default:
 				Logger.warn(attribute);
 				try {

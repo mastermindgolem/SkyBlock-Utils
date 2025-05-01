@@ -93,10 +93,6 @@ public class OverlayCategory {
     }
 
     public static boolean isOverlayOn(OverlayOption overlayOption) {
-        if (overlayOption == null) {
-            Logger.warn("Overlay option is null which it shouldn't be!!!");
-            return false;
-        }
         switch (overlayOption) {
             case ALWAYS_ON:
                 return true;

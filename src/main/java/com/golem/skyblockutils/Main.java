@@ -1,11 +1,10 @@
 package com.golem.skyblockutils;
 
-import com.golem.skyblockutils.configs.ConfigManager;
-import com.golem.skyblockutils.features.ChestDataGui;
 import com.golem.skyblockutils.init.CommandInit;
 import com.golem.skyblockutils.init.EventInit;
 import com.golem.skyblockutils.init.HelpInit;
 import com.golem.skyblockutils.init.KeybindsInit;
+import com.golem.skyblockutils.models.CustomItem;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.utils.AuctionHouse;
 import com.golem.skyblockutils.utils.TimeHelper;
@@ -25,7 +24,7 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 
 @Mod(modid = Main.MODID, version = Main.VERSION, clientSideOnly = true, acceptedMinecraftVersions = "[1.8.9]")
@@ -33,18 +32,18 @@ public class Main
 {
 	public static final String MODID = "SkyblockUtils";
 	private static final String[] c = new String[]{"k", "m", "b"};
+	public static HashMap<String, CustomItem> customItems = new HashMap<>();
 	private AuctionHouse all_auctions;
 	public static JsonArray auctions = new JsonArray();
 	public static JsonObject bazaar = new JsonObject();
-	public static final String VERSION = "1.1.0";
-	public static ConfigManager config;
+	public static final String VERSION = "1.1.2";
+	public static Config configFile;
 	public static GuiScreen display;
 	public static final Minecraft mc;
 	public static final TimeHelper time = new TimeHelper();
 	public static List<GuiElement> StaticPosition;
 	public static File jarFile = null;
-	public static Boolean OpenChestData = false;
-	public static LinkedList<Integer> ReleaseGui = new LinkedList<Integer>();
+
 	public static PersistentData persistentData = new PersistentData();
 
 	public static String modDir = "";
@@ -63,11 +62,11 @@ public class Main
 		EventInit.registerEvents();
 		HelpInit.registerHelp();
 
-		config = new ConfigManager();
 	}
 
 	@Mod.EventHandler
 	public void post(FMLPostInitializationEvent event) {
+		configFile = new Config();
 		PersistentData.load();
 		Logger.debug("Successfully loaded data");
 		EventInit.registerOverlays();
@@ -97,24 +96,6 @@ public class Main
 			mc.displayGuiScreen(Main.display);
 			Main.display = null;
 		}
-
-		if (ReleaseGui.isEmpty()) return;
-
-		if (OpenChestData) {
-			Logger.debug(ReleaseGui.get(0));
-			if (ReleaseGui.get(0) == 1) {
-				ReleaseGui.removeFirst();
-				mc.displayGuiScreen(new ChestDataGui());
-			} else if (ReleaseGui.get(0) != 1) {
-				Logger.debug(ReleaseGui.get(0));
-				int currentTick = ReleaseGui.getFirst() - 1;
-				ReleaseGui.removeFirst();
-				ReleaseGui.addFirst(currentTick);
-			} else {
-				mc.displayGuiScreen(Main.display);
-			}
-		}
-
 	}
 
 	public static String coolFormat(final double n, final int iteration) {

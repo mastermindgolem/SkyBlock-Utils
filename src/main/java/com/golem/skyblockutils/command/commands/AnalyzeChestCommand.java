@@ -61,10 +61,7 @@ public class AnalyzeChestCommand extends CommandBase implements Help {
         } else if (args[0].equalsIgnoreCase("off")) {
             ChestAnalyzer.disableAnalyzer();
         } else if (args[0].equalsIgnoreCase("gui") && !ChestAnalyzer.analyzeChests) {
-            Logger.debug("Analyzing Chest GUI...");
-//            mc.displayGuiScreen(new ChestDataGui());
-            ReleaseGui.addFirst(3);
-            OpenChestData = true;
+            Main.display = new ChestDataGui();
         }
     }
 

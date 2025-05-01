@@ -174,11 +174,6 @@ public class ProfitOverlay {
     }
 
     private static boolean isOverlayOn() {
-        if (config.getConfig().overlayCategory.kuudraProfitConfig.profitOverlay == null) {
-            Logger.warn("Overlay option is null which it shouldn't be!!!");
-            return false;
-        }
-
         switch (config.getConfig().overlayCategory.kuudraProfitConfig.profitOverlay) {
             case ALWAYS_ON:
                 return true;

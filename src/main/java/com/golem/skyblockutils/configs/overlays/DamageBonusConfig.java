@@ -16,7 +16,7 @@ public class DamageBonusConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "Damage Bonus Overlay", desc = "Displays whether dominance/lifeline is active.")
     @Expose
-    public OverlayCategory.OverlayOption damageOverlay = OverlayCategory.OverlayOption.OFF;
+    public OverlayCategory.OverlayOption damageOverlay;
 
     @ConfigEditorDropdown
     @ConfigOption(name = "Damage Bonus Attribute", desc = "Choose which attribute to display.")

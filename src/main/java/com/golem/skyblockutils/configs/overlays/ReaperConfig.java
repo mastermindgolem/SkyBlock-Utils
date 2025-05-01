@@ -16,7 +16,7 @@ public class ReaperConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "Reaper Overlay", desc = "Shows cooldown for Reaper Armor.")
     @Expose
-    public OverlayCategory.OverlayOption reaperOverlay = OverlayCategory.OverlayOption.OFF;
+    public OverlayCategory.OverlayOption reaperOverlay;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Reaper Overlay", desc = "Click to move Reaper Overlay")

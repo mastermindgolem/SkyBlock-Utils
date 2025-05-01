@@ -15,7 +15,7 @@ public class SplitsConfig {
     @ConfigEditorBoolean
     @ConfigOption(name = "Splits Overlay", desc = "Shows splits for the Kuudra run.")
     @Expose
-    public boolean splitsOverlay = false;
+    public boolean splitsOverlay;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Splits Overlay", desc = "Click to move Splits Overlay")

@@ -24,7 +24,8 @@ public enum AttributeItemType {
     FishingHelmet("Taurus Helmet", "TAURUS_HELMET"),
     FishingChestplate("Flaming Chestplate", "FLAMING_CHESTPLATE"),
     FishingLeggings("Moogma Leggings", "MOOGMA_LEGGINGS"),
-    FishingBoots("Slug Boots", "SLUG_BOOTS");
+    FishingBoots("Slug Boots", "SLUG_BOOTS"),
+    MagmaRod("Magma Rod", "MAGMA_ROD");
 
     private final String display;
     @Getter

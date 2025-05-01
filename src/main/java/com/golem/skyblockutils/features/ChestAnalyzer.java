@@ -23,6 +23,7 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.golem.skyblockutils.Main.*;
 
@@ -88,13 +89,8 @@ public class ChestAnalyzer {
 
         GuiChest gui = (GuiChest) event.event.gui;
         Container container = gui.inventorySlots;
-        List<Slot> chestInventory = container.inventorySlots;
+        List<Slot> chestInventory = container.inventorySlots.stream().filter(slot -> slot.inventory != mc.thePlayer.inventory).collect(Collectors.toList());
         if (!(container instanceof ContainerChest)) return;
-        if (getAdjacentChest(lastOpenedChest) != null) {
-            chestInventory = chestInventory.subList(0, 54);
-        } else {
-            chestInventory = chestInventory.subList(0, 27);
-        }
         if (analyzeChests) {
             if (!chestData.containsKey(lastOpenedChest.getPos())) {
                 if (getAdjacentChest(lastOpenedChest) == null || !chestData.containsKey(getAdjacentChest(lastOpenedChest))) {

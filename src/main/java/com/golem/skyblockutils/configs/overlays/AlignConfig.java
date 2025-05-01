@@ -16,7 +16,7 @@ public class AlignConfig {
     @ConfigEditorDropdown
     @ConfigOption(name = "Align Overlay", desc = "Shows time left on Gyrokinetic Wand's Aligning ability.")
     @Expose
-    public OverlayCategory.OverlayOption alignOverlay = OverlayCategory.OverlayOption.OFF;
+    public OverlayCategory.OverlayOption alignOverlay;
 
     @ConfigEditorButton(buttonText = "Move")
     @ConfigOption(name = "Move Align Overlay", desc = "Click to move Align Overlay")

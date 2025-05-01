@@ -4,7 +4,6 @@ import com.golem.skyblockutils.Main;
 import com.golem.skyblockutils.models.Overlay.TextOverlay.CratesOverlay;
 import com.golem.skyblockutils.models.gui.GuiElement;
 import com.golem.skyblockutils.models.gui.MoveGui;
-import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
@@ -14,7 +13,6 @@ import net.minecraft.util.EnumChatFormatting;
 public class RunInfoConfig {
 
     @ConfigEditorBoolean
-    @Expose
     @ConfigOption(name = "Run Info Overlay", desc = "Shows information about your current run.")
     public boolean runInfoOverlay = false;
 

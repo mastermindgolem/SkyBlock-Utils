@@ -77,14 +77,13 @@ public class SellingHelper {
     }
 
     private void checkForSimilarItems() {
-        List<Slot> slots = InventoryData.containerSlots.subList(0, InventoryData.containerSlots.size() - 36);
+        List<Slot> slots = InventoryData.containerSlots.stream().filter(slot -> slot.inventory != mc.thePlayer.inventory).collect(Collectors.toList());
 
         similarity = getSimilarity(slots).stream().max(Comparator.comparingInt(Signature::getLevel)).orElse(null);
 
         if (similarity == null) return;
 
-        if (InventoryData.containerSlots.size() < 36) return;
-        slots = InventoryData.containerSlots.subList(InventoryData.containerSlots.size() - 36, InventoryData.containerSlots.size()).stream().filter(Slot::getHasStack).collect(Collectors.toList());
+        slots = InventoryData.containerSlots.stream().filter(Slot::getHasStack).filter(slot -> slot.inventory == mc.thePlayer.inventory).collect(Collectors.toList());
         for (Slot slot : slots) {
             if (!slot.getHasStack()) continue;
             Set<Signature> signatures = getSignature(slot);
@@ -109,7 +108,6 @@ public class SellingHelper {
         if (sim == null) {
             return;
         }
-//        ChatUtils.addUpdatingMessage("Added chest containing " + sim);
         chestFilters.put(sim, chest);
     }
 
